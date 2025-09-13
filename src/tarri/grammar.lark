@@ -1,0 +1,141 @@
+// === Grammar TARRI Stabil Multi-Titikawal ===
+
+start: top_level_stmt*
+
+// Top-level statements yang bisa muncul di root
+?top_level_stmt: var_decl
+               | const_decl
+               | func_decl
+               | class_decl
+               | entry_point
+               | import_stmt
+               | expr_stmt
+
+// Struktur Program
+entry_point: "titikawal" block
+
+block: "{" statement* "}"
+
+?statement: var_decl
+          | const_decl
+          | func_decl
+          | class_decl
+          | if_stmt
+          | loop_stmt
+          | try_catch_stmt
+          | return_stmt
+          | break_stmt
+          | continue_stmt
+          | print_stmt
+          | expr_stmt
+          | entry_point
+
+// Import & Modul
+import_stmt: "undang" NAME ("dari" NAME)?
+
+// Variabel & Konstanta
+var_decl: ("biarkan" | "ingat") VAR_NAME EQUAL expr
+        | VAR_NAME EQUAL expr -> auto_var_decl
+const_decl: "tetap" VAR_NAME EQUAL expr
+
+// Fungsi
+func_decl: "fungsi" NAME "(" [params] ")" block
+params: param ("," param)*
+param: VAR_NAME | NAME
+return_stmt: "tampilkan" expr
+           | "sembunyikan"
+
+// Class & OOP
+class_decl: "kelas" NAME ["perluas" NAME] block
+
+// Kontrol Alur
+if_stmt: "jika" expr block ("ataujika" expr block)* ["lainnya" block]
+
+// Perulangan
+loop_stmt: "ulangi" block
+         | "ulangidari" LOOP_VAR EQUAL expr "hingga" expr block
+         | "selama" expr block
+         | "setiap" LOOP_VAR "dari" expr block
+         | "setiapdari" LOOP_VAR EQUAL expr "hingga" expr "dari" expr block
+         | "untuk" LOOP_VAR "dalam" expr block
+
+break_stmt: "hentikan"
+continue_stmt: "lanjutkan"
+
+// Error Handling
+try_catch_stmt: "coba" block "tangkap" "(" VAR_NAME ")" block ["akhirnya" block]
+
+// Print Statement
+
+print_stmt: "cetak" expr
+
+// Ekspresi
+expr_stmt: expr
+
+?expr: expr_or
+
+?expr_or: expr_or "atau" expr_and   -> or_expr
+        | expr_and
+
+?expr_and: expr_and "dan" expr_not  -> and_expr
+         | expr_not
+
+?expr_not: "bukan" expr_cmp          -> not_expr
+         | expr_cmp
+
+?expr_cmp: expr_cmp COMP_OP expr_add  -> compare_expr
+         | expr_add
+
+?expr_add: expr_add ADD_OP expr_mul   -> add_expr
+         | expr_mul
+
+?expr_mul: expr_mul MUL_OP expr_atom  -> mul_expr
+         | expr_atom
+
+?expr_atom: atom
+          | "(" expr ")"
+          | expr_atom "(" [args] ")" -> call_expr
+          | expr_atom "." VAR_NAME
+          | expr_atom "[" index_expr "]"  -> indexing
+          | expr_atom "->" TYPE_CAST      -> type_cast
+
+// Type Cast / Konversi
+TYPE_CAST: "angka" | "kata"
+
+args: expr ("," expr)*
+
+// Index Expression
+?index_expr: expr                       -> single_index
+           | expr "hingga" expr         -> slice_expr
+           | expr ("dan" expr)+         -> pair_expr
+           |                            -> empty_index
+
+// Daftar (List)
+?atom: NUMBER            -> number
+     | ESCAPED_STRING    -> string
+     | "benar"           -> true
+     | "salah"           -> false
+     | "kosong"          -> null
+     | "hampa"           -> null
+     | VAR_NAME
+     | NAME              -> identifier 
+     | list_literal
+
+list_literal: "[" [expr ("," expr)*] "]"
+
+// Operator Tokens
+COMP_OP: "==" | "!=" | "<" | ">" | "<=" | ">="
+ADD_OP: "+" | "-"
+MUL_OP: "*" | "/" | "%"
+
+// Tokens
+EQUAL: "="
+VAR_NAME: /_[a-zA-Z][a-zA-Z0-9_]*/
+LOOP_VAR: /[a-zA-Z][a-zA-Z0-9_]*/  
+NAME: /[a-zA-Z][a-zA-Z0-9_]*/
+NUMBER: /\d+(\.\d+)?/
+ESCAPED_STRING: /"[^"]*"/
+
+// Ignore
+%ignore /\s+/
+%ignore /#.*/

@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tarri"
+version = "0.1.0"
+description = "Bahasa pemrograman TARRI - Teknologi Algoritmik untuk Representasi dan Rekayasa Indonesia"
+authors = [
+  { name = "Tarri Dev", email = "bahasa.tarri@gmail.com" }
+]
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.9"
+dependencies = [
+  "lark-parser>=0.12.0"
+]
+
+[project.scripts]
+tarri = "tarri.cli:main"

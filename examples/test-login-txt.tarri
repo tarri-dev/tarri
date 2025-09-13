@@ -1,0 +1,84 @@
+fungsi daftar() {
+
+    cetak "daftar disini"
+    cetak "============="
+    cetak ""
+
+    masukkan(_nama, "masukkan nama kamu :")
+    masukkan(_sandi, "masukkan sandi kamu :")
+
+
+    _id = UUID()
+    _hash_sandi = buatSandi(_sandi)
+
+    _buatAkun = simpanTxt("examples/akun.txt","
+        _akun [
+            _id     => {_id},
+            _nama   => {_nama},
+            _sandi  => {_hash_sandi}
+        ]
+    ")
+
+
+    jika(_buatAkun){
+
+        cetak ""
+        cetak "akun berhasil dibuat"
+
+        tampilkan masuk()
+
+    }lainnya{
+
+        cetak "gagal,{i}"
+    }
+
+}
+
+fungsi masuk(){
+
+    cetak ""
+    cetak "silahkan masuk dengan akun yang tadi dibuat"
+    cetak "============================================"
+
+
+    masukkan(_nama, "masukkan nama kamu :")
+    masukkan(_sandi, "masukkan sandi kamu :")
+
+    _akun = bacaTxt("examples/akun.txt")
+
+    _id_login         = _akun["_id"]
+    _nama_login       = _akun["_nama"]
+    _sandi_login      = _akun["_sandi"]
+
+    
+    jika (_nama == _nama_login dan cekSandi(_sandi, _sandi_login)) {
+
+        cetak ""
+        cetak "Login berhasil! Selamat datang {_nama_login}"
+        cetak ""
+
+        tampilkan menu()
+    
+    }lainnya{
+
+        cetak ""
+        cetak "Nama akun atau sandi salah!"
+        
+        tampilkan masuk()
+    }
+
+}
+
+
+fungsi menu(){
+
+    cetak "======================"
+    cetak "SELAMAT DATANG DI MENU"
+    cetak "======================"
+}
+
+titikawal{
+
+    tampilkan daftar()
+
+}

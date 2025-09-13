@@ -1,0 +1,7 @@
+
+        _akun [
+            _id     => 6dcd336a-ccd6-4e05-8aa4-13eacbb8e41c,
+            _nama   => dana,
+            _sandi  => BhFZzSbI$30a904e910d8830e2b50b51bf7a520cf0e5a8570760417c0d7757292c63b4ddeebcf52913ad4740059c88dc5e5c6d4c303bffe9e3dbe7644df8facb69adbea67
+        ]
+    

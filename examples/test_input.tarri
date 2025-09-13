@@ -1,0 +1,11 @@
+titikawal{
+    cetak "program sederhana version 1.1"
+}
+
+    masukkan(_nama, "halo nama kamu siapa? ")
+    masukkan(_usia, "usia kamu berapa? ")->angka()
+
+titikawal{
+    cetak ""
+    cetak "halo {_nama}, usia kamu itu {_usia} tahun"
+}
