@@ -1,0 +1,75 @@
+# fungsi sapa(_nama) {
+#     cetak "Halo,{_nama}"
+# }
+
+
+# fungsi rekomendasi(_cuaca, _waktu) {
+#     jika _cuaca == "hujan" {
+#         cetak "Bawa payung!"
+#     } ataujika _waktu == "pagi" {
+#         cetak "Saatnya sarapan"
+#     } lainnya {
+#         cetak "Nikmati harimu!"
+#     }
+# }
+
+# titikawal {
+#     tampilkan rekomendasi("panas", "pagi")
+# }
+
+# _daftar_kegiatan = ["Ngoding", "Makan", "Tidur"]
+
+# titikawal {
+#     cetak "=== Program Tarri Advanced ==="
+
+#     cetak sapa("Ketut")
+#     cetak rekomendasi("hujan", "pagi")
+
+#     cetak "Daftar kegiatan hari ini:"
+#     untuk kegiatan dalam _daftar_kegiatan {
+#         cetak "- " + kegiatan
+#     }
+
+#     cetak "Hitung mundur:"
+#     untuk i dalam [5,4,3,2,1] {
+#         cetak "..." + i
+#     }
+
+#     cetak "Program selesai dijalankan."
+# }
+
+
+
+# fungsi faktorial(_n) {
+#     jika _n <= 1 {
+#         tampilkan 1
+#     } lainnya {
+#         tampilkan n * faktorial(_n - 1)
+#     }
+# }
+
+# titikawal{
+#     cetak "faktorial dari 5 adalah " + faktorial(5)
+# }
+
+
+
+
+kelas Orang {
+    punya _nama
+    punya _usia
+
+    fungsi buat(_nama, _usia) {
+        _ini._nama = _nama
+        _ini._usia = _usia
+    }
+
+    fungsi sapa() {
+        cetak "Halo, nama saya " + _ini._nama + ", umur saya " + angka(_ini._usia)
+    }
+}
+
+titikawal {
+    _o = Orang.buat("Ketut", 27)
+    _o.sapa()
+}

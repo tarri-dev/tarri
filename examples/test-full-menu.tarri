@@ -61,7 +61,7 @@ fungsi daftar() {
     _id = UUID()
     _hash_sandi = buatSandi(_sandi)
 
-    _buatAkun = simpanTxt("examples/akun.txt","
+    _buatAkun = simpanTxt("akun.txt","
         _akun [
             _id     => {_id},
             _nama   => {_nama},
@@ -94,7 +94,7 @@ fungsi masuk(){
     masukkan(_nama, "masukkan nama kamu :")
     masukkan(_sandi, "masukkan sandi kamu :")
 
-    _akun = bacaTxt("examples/akun.txt")
+    _akun = bacaTxt("akun.txt")
 
     _id_login         = _akun["_id"]
     _nama_login       = _akun["_nama"]

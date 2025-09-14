@@ -30,10 +30,10 @@ Tujuannya dari dibuatnya Tarri adalah membuat kode terasa seperti membaca sebuah
 - `sembunyikan` → menghentikan eksekusi tanpa mengembalikan.[bisa]
 
 ### Nilai & Literal
-- `benar` → nilai boolean true.[progress]
-- `salah` → nilai boolean false.[progress]
-- `kosong` → nilai null.[progress]
-- `hampa` → nilai kosong alternatif.[progress]
+- `benar` → nilai boolean true.[bisa]
+- `salah` → nilai boolean false.[bisa]
+- `kosong` → nilai null.[bisa]
+- `hampa` → nilai kosong alternatif.[bisa]
 
 ### Operator Logika
 - `atau` → OR.[bisa]

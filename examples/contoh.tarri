@@ -88,27 +88,6 @@ fungsi rekomendasi(cuaca, waktu) {
     }
 }
 
-titikawal {
-    cetak "=== Program Tarri Advanced ==="
-
-    # panggil fungsi dan cetak hasilnya
-    cetak sapa("Ketut")
-    cetak rekomendasi(_cuaca, _waktu)
-
-    cetak "Daftar kegiatan hari ini:"
-    untuk kegiatan dalam _daftar_kegiatan {
-        cetak "- " + kegiatan
-    }
-
-    cetak "Hitung mundur:"
-    untuk i dalam [5,4,3,2,1] {
-        cetak "..." + i
-    }
-
-    cetak "Program selesai dijalankan."
-}
-
-
 _cuaca = "berawan"
 _waktu = "sore"
 
@@ -147,7 +126,7 @@ titikawal {
 _buah = ["apel", "jeruk", "semangka", "durian"]
 
 titikawal{ 
-    cetak "{_buah[1 dan 3]}" 
+    cetak "{_buah[1 hingga 3]}" 
 }
 
 titikawal{cetak"halo dunia"}
@@ -172,37 +151,51 @@ titikawal{
 }
 
 
-fungsi faktorial(n) {
-    jika n <= 1 {
-        kembalikan 1
-    } lainnya {
-        kembalikan n * faktorial(n - 1)
-    }
-}
+fungsi sapa(_nama) {
 
-titikawal{
-    cetak "faktorial dari 5 adalah " + faktorial(5)
-}
-
-
-fungsi sapa(nama) {
-
-    cetak "halo nama saya {nama}"
+    cetak "halo nama saya {_nama}"
 
     
 }
 
 titikawal{
 
-    kembalikan sapa("dana")
+    tampilkan sapa("dana")
 }
 
 
-fungsi cekGenap(n) {
-    jika n % 2 == 0 {
-        cetak "{n} adalah genap"
+titikawal {
+    cetak "uji benar/salah/kosong/hampa"
+    
+    jika benar {
+        cetak "literal benar ✅"
+    }
+
+    jika salah {
+        cetak "ini tidak boleh tampil ❌"
+    }lainnya{
+        cetak "literal salah jalan ✅"
+    }
+
+    jika kosong {
+        cetak "ini tidak boleh tampil ❌"
+    }lainnya{
+        cetak "literal kosong jalan ✅"
+    }
+
+    jika hampa {
+        cetak "ini tidak boleh tampil ❌"
+    }lainnya{
+        cetak "literal hampa jalan ✅"
+    }
+}
+
+
+fungsi cekGenap(_n) {
+    jika _n % 2 == 0 {
+        cetak "{_n} adalah genap"
     } lainnya {
-        cetak "{n} adalah ganjil"
+        cetak "{_n} adalah ganjil"
     }
 }
 

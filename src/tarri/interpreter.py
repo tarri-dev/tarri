@@ -8,6 +8,8 @@ import re
 from tarri.functions.kataAcak import kataAcak
 from tarri.functions.angkaAcak import angkaAcak
 from tarri.functions.uuid import UUID
+from tarri.functions.tipedata import tipedata
+from tarri.functions.masukkan import masukkan
 from tarri.functions.sandi import buatSandi, cekSandi
 from tarri.functions.kelolaTxt import simpanTxt, bacaTxt, perbaruiTxt, hapusTxt
 from tarri.functions.kelolaJson import simpanJson, bacaJson, perbaruiJson, hapusJson
@@ -278,6 +280,10 @@ class Interpreter:
 
         # print(f"[DEBUG call_function] {func_name} args={args}")
 
+        # fungsi masukkan()
+        if func_name == "masukkan":
+            return masukkan(self, args)
+
         # fungsi kataAcak()
         if func_name == "kataAcak":
             length = args[0] if args else 5
@@ -296,7 +302,12 @@ class Interpreter:
         if func_name == "UUID":
             return UUID()
 
-        # fungsi sandi() — gunakan args langsung, jangan evaluate_expr lagi
+        # fungsi tipedata
+        if func_name == "tipedata":
+            val = args[0]  # ambil argumen pertama
+            return tipedata(val)
+
+        # fungsi sandi()
         if func_name == "buatSandi":
             # args[0] di sini sudah berupa nilai (string/number) hasil evaluate_expr
             val = args[0] if args else ""
@@ -315,7 +326,7 @@ class Interpreter:
             # print(f"[DEBUG] result={result}")
             return result
         
-       # di Interpreter.call_function
+       # fungsi kelolaTxt()
         if func_name == "simpanTxt":
             return simpanTxt(
                 args[0],              # filename
@@ -365,83 +376,12 @@ class Interpreter:
         if func_name == "hapusJson":
             return hapusJson(args[0]) if args else None
 
-        # masukkan -- KHUSUS: argumen pertama kita simpan sebagai AST/Token,
-        # exec_call_stmt menambahkan a (bukan evaluate_expr) untuk arg0 masukkan
-        if func_name == "masukkan":
-            raw_var = args[0]
-            if isinstance(raw_var, Token):
-                var_name = raw_var.value
-            elif isinstance(raw_var, Tree) and raw_var.data == "identifier":
-                first = raw_var.children[0]
-                var_name = first.value if isinstance(first, Token) else str(first)
-            else:
-                var_name = str(raw_var)
-
-            prompt = args[1] if len(args) > 1 else ""
-            expect_type = None
-
-            # cek apakah ada type_cast (sama seperti sebelumnya)
-            if hasattr(args[0], "data") and args[0].data == "type_cast":
-                var_name_node = args[0].children[0]
-                cast_token = args[0].children[1]
-                expect_type = cast_token.value
-                var_name = var_name_node.value if isinstance(var_name_node, Token) else str(var_name_node)
-
-            value = input(prompt).strip()  # strip whitespace
-
-            # handling tipe: bila ada explicit cast
-            if expect_type == "angka":
-                try:
-                    if "." in value:
-                        value = float(value)
-                    else:
-                        value = int(value)
-                except ValueError:
-                    print(f"[tarri] input ({var_name}) hanya bisa menerima tipe data angka.")
-                    return None
-            elif expect_type == "desimal":
-                try:
-                    value = float(value)
-                except ValueError:
-                    print(f"[tarri] input ({var_name}) hanya bisa menerima tipe data desimal.")
-                    return None
-            elif expect_type == "kata":
-                value = str(value)
-            else:
-                # AUTO DETEKSI TIPE
-                if (value.startswith('"') and value.endswith('"')) or (value.startswith("'") and value.endswith("'")):
-                    # diapit tanda kutip = string
-                    value = value[1:-1]
-                else:
-                    try:
-                        if "." in value:
-                            value = float(value)  # desimal
-                        else:
-                            value = int(value)    # integer
-                    except ValueError:
-                        value = str(value)        # default string
-
-            self.context[var_name] = value
-            return None
-
-
-        if func_name == "tipedata":
-            val = args[0]  # ambil argumen
-            # Cek tipe
-            if isinstance(val, int):
-                return "angka"
-            elif isinstance(val, float):
-                return "desimal"
-            elif isinstance(val, str):
-                return "kata"
-            else:
-                return "unknown"
-
 
         if func_name not in self.functions:
             self.error(f"Fungsi '{func_name}' tidak ditemukan")
             return None
         params, body = self.functions[func_name]
+        
         if len(args) != len(params):
             self.error(f"Jumlah argumen tidak cocok untuk fungsi '{func_name}'")
             return None
@@ -450,14 +390,12 @@ class Interpreter:
         saved_return = self._return_flag
         self._return_flag = None
 
-        # bind params into a local-ish context: merge on top of saved_context
         local_ctx = saved_context.copy()
         for p, a in zip(params, args):
             local_ctx[p] = a
             if self.status:
                 print(f"[DEBUG] Argumen {p} = {a}")
 
-        # use local context for function execution
         self.context = local_ctx
 
         for stmt in body.children:
@@ -466,7 +404,6 @@ class Interpreter:
                 break
 
         result = self._return_flag
-        # restore
         self._return_flag = saved_return
         self.context = saved_context
         return result
@@ -676,12 +613,6 @@ class Interpreter:
                 args_values = []
                 if len(node.children) > 1:
                     maybe_args = node.children[1]
-                    # if isinstance(maybe_args, Tree) and maybe_args.data == "args":
-                    #     for i, a in enumerate(maybe_args.children):
-                    #         if func_name == "masukkan" and i == 0:
-                    #             args_values.append(a)  # simpan Token mentah
-                    #         else:
-                    #             args_values.append(self.evaluate_expr(a))
 
                     if isinstance(maybe_args, Tree) and maybe_args.data == "args":
                         for i, a in enumerate(maybe_args.children):
@@ -700,19 +631,6 @@ class Interpreter:
 
                 return self.call_function(func_name, args_values)
 
-
-            # elif node.data == "identifier":
-            #     name_token = node.children[0]
-            #     name = name_token.value if isinstance(name_token, Token) else str(name_token)
-            #     # lookup local param or variable first
-            #     if name in self.context:
-            #         return self.context[name]
-            #     # fallback to underscore-prefixed globals (e.g., _cuaca)
-            #     underscore = f"_{name}"
-            #     if underscore in self.context:
-            #         return self.context[underscore]
-            #     return None
-
             elif node.data == "identifier":
                 name_token = node.children[0]
                 name = name_token.value if isinstance(name_token, Token) else str(name_token)
@@ -727,56 +645,8 @@ class Interpreter:
                 if name.startswith("_") and name[1:] in self.context:
                     return self.context[name[1:]]
 
-                print(f"[DEBUG] identifier not found: {name}, ctx={self.context}")
+                # print(f"[DEBUG] identifier not found: {name}, ctx={self.context}")
                 return None
-
-            
-            # elif node.data == "indexing":
-            #     list_name = node.children[0].value
-            #     idx_node = node.children[1]  # bisa single_index, slice_expr, pair_expr, dll
-
-            #     if list_name not in self.context:
-            #         self.error(f"List '{list_name}' tidak ditemukan")
-            #         return None
-
-            #     lst = self.context[list_name]
-
-            #     # Single index: _buah[2]
-            #     if idx_node.data == "single_index":
-            #         index_node = idx_node.children[0]
-            #         idx = self.evaluate_expr(index_node)
-            #         try:
-            #             return lst[int(idx)]
-            #         except (IndexError, ValueError, TypeError):
-            #             self.error(f"Index {idx} di luar jangkauan untuk list '{list_name}'")
-            #             return None
-
-            #     # Slice: _buah[2 hingga 4]
-            #     elif idx_node.data == "slice_expr":
-            #         start = self.evaluate_expr(idx_node.children[0])
-            #         end = self.evaluate_expr(idx_node.children[1])
-            #         try:
-            #             result = lst[int(start):int(end) + 1]  # inclusive
-            #             return ", ".join(str(x) for x in result)
-            #         except Exception as e:
-            #             self.error(f"Slice gagal: {e}")
-            #             return None
-
-            #     # Pair: _buah[0 dan 1] atau lebih
-            #     elif idx_node.data == "pair_expr":
-            #         try:
-            #             # Ambil semua indeks yang disebut di pair_expr
-            #             indices = [self.evaluate_expr(ch) for ch in idx_node.children]
-            #             # Ambil elemen dari list sesuai semua indeks
-            #             result = [lst[int(i)] for i in indices]
-            #             # Kembalikan sebagai string gabungan (compact)
-            #             return ", ".join(str(x) for x in result)
-            #         except Exception as e:
-            #             self.error(f"Pair gagal: {e}")
-            #             return None
-            #     else:
-            #         self.error(f"Tidak tahu cara indexing dengan {idx_node.data}")
-            #         return None
 
             elif node.data == "indexing":
                 obj_node = node.children[0]
@@ -850,6 +720,12 @@ class Interpreter:
                     self.error(f"Tipe cast tidak dikenal: {cast_type}")
                     return value
 
+            elif node.data == "true":
+                return True
+            elif node.data == "false":
+                return False
+            elif node.data == "null":
+                return None
 
             # fallback: unknown tree type
             self.error(f"Tidak tahu cara evaluasi node jenis '{node.data}'")
@@ -924,28 +800,61 @@ class Interpreter:
         return False
         
 
-    def eval_atom(self, node):
-        t = node.type
-        v = getattr(node, "value", None)
+    # def eval_atom(self, node):
+    #     # === kalau Tree ===
+    #     if isinstance(node, Tree):
+    #         tag = node.data
 
-        if t == "NUMBER":
-            return float(v) if '.' in v else int(v)
-        elif t == "ESCAPED_STRING":
-            return v
-        elif t == "true":       # literal 'benar'
-            return True
-        elif t == "false":      # literal 'salah'
-            return False
-        elif t == "null":       # literal 'kosong' / 'hampa'
-            return None
-        elif t in ("VAR_NAME", "NAME"):
-            if v in self.env:
-                return self.env[v]
-            else:
-                raise Exception(f"Identifier '{v}' not found")
-        elif t == "list_literal":
-            return [self.eval_atom(child) for child in node.children]
-        else:
-            raise Exception(f"Unknown atom type: {t}")
+    #         if tag == "number":
+    #             v = node.children[0].value
+    #             return float(v) if "." in v else int(v)
+
+    #         elif tag == "string":
+    #             raw = node.children[0].value
+    #             return raw.strip('"').strip("'")
+
+    #         elif tag == "true":     # literal 'benar'
+    #             return True
+
+    #         elif tag == "false":    # literal 'salah'
+    #             return False
+
+    #         elif tag == "null":     # literal 'kosong/hampa'
+    #             return None
+
+    #         elif tag == "identifier":
+    #             v = node.children[0].value
+    #             if v in self.env:
+    #                 return self.env[v]
+    #             else:
+    #                 raise Exception(f"Identifier '{v}' tidak ditemukan")
+
+    #         elif tag == "list_literal":
+    #             return [self.eval_atom(child) for child in node.children]
+
+    #         else:
+    #             raise Exception(f"[tarri] Tidak tahu cara evaluasi node Tree jenis '{tag}'")
+
+    #     # === kalau Token ===
+    #     elif isinstance(node, Token):
+    #         if node.type == "NUMBER":
+    #             return float(node.value) if "." in node.value else int(node.value)
+
+    #         elif node.type == "ESCAPED_STRING":
+    #             return node.value.strip('"').strip("'")
+
+    #         elif node.type in ("VAR_NAME", "NAME"):
+    #             v = node.value
+    #             if v in self.env:
+    #                 return self.env[v]
+    #             else:
+    #                 raise Exception(f"Identifier '{v}' tidak ditemukan")
+
+    #         else:
+    #             return node.value  # fallback
+
+    #     else:
+    #         raise Exception(f"[tarri] Unknown atom node: {node}")
+
 
 

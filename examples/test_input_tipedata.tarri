@@ -1,28 +1,17 @@
-titikawal {
-    _tipe_data = masukkan(_tipe_data, "masukkan :")
+titikawal{
 
-    jika tipedata(_tipe_data) == "kata" {
-        cetak "tipe data itu adalah kata"
-    } ataujika tipedata(_tipe_data) == "angka" {
-        cetak "tipe data itu adalah angka"
-    } ataujika tipedata(_tipe_data) == "desimal" {
-        cetak "tipe data itu adalah desimal"
-    } lainnya {
-        cetak "tipe data tidak diketahui"
-    }
-}
+    masukkan(_cek,"masukkan : ")
 
 
-titikawal {
-    _data = masukkan(_data, "masukkan sesuatu: ")
-
-    jika tipedata(_data) == "angka" {
-        cetak "kamu masukkan angka {_data}"
-    } ataujika tipedata(_data) == "desimal" {
-        cetak "kamu masukkan desimal {_data}"
-    } ataujika tipedata(_data) == "kata" {
-        cetak "kamu masukkan kata '{_data}'"
-    } lainnya {
+    jika tipedata(_cek) == "angka" {
+        cetak "kamu memasukkan angka, {_cek}"
+    }ataujika tipedata(_cek) == "kata" {
+        cetak "kamu memasukkan kata, {_cek}"
+    }ataujika tipedata(_cek) == "desimal" {
+        cetak "kamu memasukkan desimal, {_cek}"
+    }ataujika tipedata(_cek) == "logika" {
+        cetak "kamu memasukkan logika, {_cek}"
+    }lainnya{
         cetak "tipe data tidak diketahui"
     }
 }
