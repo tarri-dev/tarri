@@ -20,7 +20,7 @@ fungsi daftarMenu(){
 fungsi pilihan(){
 
     cetak ""
-    masukkan(_menu, "Harap masukkan pilihan anda :")
+    masukkan(_menu, "Harap masukkan pilihan anda :")->angka
 
     jika _menu == 1{
         

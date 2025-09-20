@@ -89,27 +89,33 @@ def run_file(filename: str, status: bool = False, show_ast: bool = False):
 def main():
     args = sys.argv[1:]  # ambil argumen tanpa nama script
 
-    # Tidak ada argumen atau -b / --bantuan
-    if not args or args[0] in ("-b", "--bantuan"):
-        show_help()
-        return
-
-    # Subcommand jalankan
-    if args[0] == "jalankan":
-        if len(args) < 2:
-            print()
-            print(f"[tarri] {RED}kesalahan!{RESET}: nama file .tarri tidak diberikan")
-            print()
+    try:
+        # Tidak ada argumen atau -b / --bantuan
+        if not args or args[0] in ("-b", "--bantuan"):
+            show_help()
             return
 
-        filename = args[1]
-        status = "--status" in args
-        show_ast = "--ast" in args
-        run_file(filename, status=status, show_ast=show_ast)
-        return
+        # Subcommand jalankan
+        if args[0] in ("jalankan", "j", "mulai", ">>"):   # <-- tambahkan '>>' sebagai alias
+            if len(args) < 2:
+                print()
+                print(f"[tarri] {RED}kesalahan!{RESET}: nama file .tarri tidak diberikan")
+                print()
+                return
 
-    # Semua perintah lain → tidak dikenal
-    print(f"[tarri] perintah tidak diketahui, periksa bantuan ( -b / --bantuan )")
+            filename = args[1]
+            status = "--status" in args
+            show_ast = "--ast" in args
+            run_file(filename, status=status, show_ast=show_ast)
+            return
+
+        # Semua perintah lain → tidak dikenal
+        print(f"[tarri] perintah tidak diketahui, periksa bantuan ( -b / --bantuan )")
+
+    except KeyboardInterrupt:
+        print()
+        print(f"[tarri] {RED}Program telah dihentikan oleh pengguna.{RESET}")
+        return 0  # atau sys.exit(0)
 
 
 if __name__ == "__main__":

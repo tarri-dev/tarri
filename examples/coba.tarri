@@ -54,22 +54,42 @@
 
 
 
+# fungsi sapa(_nama, _usia) {
 
-kelas Orang {
-    punya _nama
-    punya _usia
+#     cetak "halo, nama saya {_nama}, usia saya {_usia} tahun!"
+# }
 
-    fungsi buat(_nama, _usia) {
-        _ini._nama = _nama
-        _ini._usia = _usia
-    }
 
-    fungsi sapa() {
-        cetak "Halo, nama saya " + _ini._nama + ", umur saya " + angka(_ini._usia)
-    }
-}
+# titikawal{
 
-titikawal {
-    _o = Orang.buat("Ketut", 27)
-    _o.sapa()
-}
+#     sapa("dana",32)
+# }
+
+
+
+
+# fungsi database() {
+
+#     _db_koneksi = "db/db.sqlite"
+#     _nama_db = "db.sqlite"
+
+#     _test_koneksi = tarri_db("mysql", _db_koneksi, _nama_db)
+
+#     jika _test_koneksi == "sukses" {
+
+#         cetak "koneksi ke {_nama_db} sukses"
+
+#     }lainnya {
+
+#         cetak "gagal koneksi, {i}"
+#     }
+# }
+
+# titikawal{
+
+#     database()
+
+# }
+
+
+

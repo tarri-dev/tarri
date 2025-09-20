@@ -1,0 +1,400 @@
+_bd_tipe    = "sqlite"
+_bd_alamat  = "basis_data"
+_bd_nama    = "basis_data_siswa.sqlite"
+_bd_tabel   = "tabel_siswa"
+_tabel      = BasisData()
+
+
+
+fungsi buat_bd(){
+
+    # buat database
+    _hasil = BuatBasisData(_bd_alamat, _bd_nama)
+
+    jika _hasil == "sukses" {
+
+        # cetak "{i}"
+
+        tampilkan buat_tabel()
+
+    }ataujika _hasil == "gagal" {
+
+        # cetak "{i}"
+
+        tampilkan buat_tabel()
+
+
+    }lainnya {
+
+        cetak "tidak tahu cara ekseskui BuatBasisData()"
+    }
+
+
+}
+
+
+fungsi buat_tabel() {
+
+    _tabel untuk id()
+    _tabel untuk kata("nama")
+    _tabel untuk kata("alamat")
+    _tabel untuk kata("telepon")
+    _tabel untuk pilihan("jenis_kelamin", ["laki-laki", "wanita"])
+    _tabel untuk waktu()
+
+    # buat tabel
+    _hasil = BuatTabel(_tabel)
+
+    jika _hasil == "sukses" {
+
+        # cetak "{i}"
+        tampilkan masukkan_data_siswa()
+
+    } ataujika _hasil == "gagal" {
+
+        cetak "{i}"
+
+    } lainnya {
+
+        cetak "tidak tahu cara ekseskui BuatTabel()"
+    }
+
+}
+
+
+fungsi masukkan_data_siswa(){
+
+    cetak ""
+    cetak "MASUKKAN DATA SISWA"
+    cetak ""
+
+    masukkan(_nama)
+    masukkan(_alamat)
+    masukkan(_telepon)
+
+    cetak ""
+    cetak "1. Laki-Laki"
+    cetak "2. Perempuan"
+    masukkan(_pilihan)->angka
+
+        jika _pilihan == 1 {
+
+            _jenis_kelamin = "Laki-laki"
+
+        }ataujika _pilihan == 2 {
+
+            _jenis_kelamin = "Wanita"
+
+        }lainnya {
+
+            cetak "Pilihan tidak diketahui"
+
+        }
+
+    _data_siswa = [
+        _nama,
+        _alamat,
+        _telepon,
+        _jenis_kelamin
+    ]
+
+    # simpan data ke dalam tabel database
+    # cetak _data_siswa
+
+    _hasil = simpan(_data_siswa, _tabel)
+
+    jika _hasil == "sukses" {
+
+        cetak "Data siswa berhasil di simpan."
+        cetak ""
+        tampilkan menu()
+
+    }ataujika _hasil == "gagal" {
+
+        cetak "{i}"
+        tampilkan menu()
+
+    }lainnya{
+
+        cetak "Tidak tahu cara menyimpan data ke basis data"
+    }
+
+}
+
+
+fungsi hapus_tabel() {
+
+    # fungsi hapus tabel
+    _hasil = HapusTabel(_bd_nama, _bd_tabel, _bd_alamat)
+
+    jika _hasil == "sukses" {
+
+        cetak "Tabel {_bd_tabel} berhasil dihapus!"
+
+    }ataujika  _hasil == "gagal" {
+
+        cetak "Tabel {_bd_tabel} gagal dihapus!"
+
+    }lainnya {
+
+        cetak "tidak tahu cara ekseskui HapusTabel()"
+
+    }
+
+}
+
+
+fungsi lihat_data_siswa(){
+
+    cetak ""
+    cetak "LIHAT DATA SISWA"
+    cetak ""
+
+
+    _ambil_data = ambil(_bd_alamat, _bd_nama, _bd_tabel)
+    _ambil_data = rapi("tabel")
+
+    cetak _ambil_data
+
+    tampilkan menu()
+
+}
+
+
+
+fungsi ubah_data_siswa(){
+
+    cetak ""
+    cetak "UBAH DATA SISWA "
+    cetak ""
+
+
+    _data_siswa = ambil(_bd_alamat, _bd_nama, _bd_tabel, _data_siswa)
+    _data_siswa = rapi("tabel")
+
+    cetak _data_siswa
+
+    cetak ""
+    masukkan(_id, "Masukkan ID data yang akan diubah : ")->angka
+
+    _ambil_data = ambil(_bd_alamat, _bd_nama, _bd_tabel, _data_siswa)
+    _ambil_data = dimana("id", _id)
+    _ambil_data = rapi("tabel")
+
+    jika _ambil_data == "gagal" {
+
+        cetak ""
+        cetak "ID {_id} tidak ditemukan. Periksa kembali ID yang anda masukkan!"
+
+        tampilkan menu()
+
+    }lainnya {
+
+        cetak ""
+        cetak _ambil_data
+
+        cetak ""
+        cetak "MASUKKAN DATA SISWA YANG BARU"
+
+        masukkan(_nama)
+        masukkan(_alamat)
+        masukkan(_telepon)
+
+        cetak ""
+        cetak "1. Laki-Laki"
+        cetak "2. Perempuan"
+        masukkan(_pilihan)->angka
+
+            jika _pilihan == 1 {
+
+                _jenis_kelamin = "Laki-laki"
+
+            }ataujika _pilihan == 2 {
+
+                _jenis_kelamin = "Wanita"
+
+            }lainnya {
+
+                _jenis_kelamin = ""
+                cetak "Pilihan tidak diketahui"
+
+            }
+
+        _data_siswa = [
+            _nama,
+            _alamat,
+            _telepon,
+            _jenis_kelamin
+        ]
+
+        # cetak _data_siswa
+
+       
+        _ubah_data = ubah(_bd_alamat, _bd_nama, _bd_tabel, _data_siswa)
+        _ubah_data = dimana("id", _id)
+
+        jika _ubah_data == "sukses" {
+
+            cetak "Perubahan data untuk ID {_id} telah berhasil dilakukan"
+            cetak ""
+            tampilkan menu()
+        
+        }ataujika _ubah_data == "gagal" {
+
+
+            cetak "Perubahan data untuk ID {_id} gagal dilakukan, mohon coba lagi nanti"
+            cetak ""
+            tampilkan menu()
+
+        }lainnya {
+
+            cetak "Tidak tahu cara ubah data!"
+            tampilkan menu()
+        }
+  
+    }
+
+}
+
+
+fungsi hapus_data_siswa(){
+
+    cetak ""
+    cetak "HAPUS DATA SISWA "
+    cetak ""
+
+
+    _data_siswa = ambil(_bd_alamat, _bd_nama, _bd_tabel, _data_siswa)
+    _data_siswa = rapi("tabel")
+
+    cetak _data_siswa
+
+    cetak ""
+    masukkan(_id,"Masukkan ID siswa yang akan dihapus: ")->angka
+
+    _ambil_data = ambil(_bd_alamat, _bd_nama, _bd_tabel, _data_siswa)
+    _ambil_data = dimana("id", _id)
+    _ambil_data = rapi("tabel")
+
+    jika _ambil_data == "gagal" {
+
+        cetak ""
+        cetak "Data siswa dengan ID {_id} tidak ditemukan."
+        tampilkan menu()
+
+    }lainnya {
+
+        cetak ""
+        cetak "Apakah kamu yakin untuk menghapus data siswa dengan ID {_id} ? ya/tidak"
+
+        cetak ""
+        masukkan(_konfirmasi)
+
+
+        jika _konfirmasi == "ya" {
+
+            _hapus_data = hapus(_bd_alamat, _bd_nama, _bd_tabel, _data_siswa)
+            _hapus_data = dimana("id", _id)
+
+            jika _hapus_data == "sukses" {
+
+                cetak "Data siswa dengan ID {_id} sudah di hapus."
+                tampilkan menu()
+
+            }lainnya {
+
+                cetak "Gagal menghapus data siswa. Mohon coba kembali nanti!"
+                tampilkan menu()
+            }
+
+
+        }ataujika _konfirmasi == "tidak" {
+
+            cetak "Data siswa dengan ID {_id} tidak dihapus."
+            tampilkan menu()
+
+        }lainnya {
+
+            cetak "Pilihan yang anda maasukkan tidak diketahui!"
+            tampilkan menu()
+        }
+
+    
+    }
+
+
+
+}
+
+
+fungsi menu(){
+
+    cetak ""
+    cetak ""
+    cetak "PROGRAM OLAH DATA SISWA"
+    cetak "-----------------------"
+
+    cetak ""
+    cetak "Pilih Menu :"
+    cetak "1. Memasukkan Data Siswa"
+    cetak "2. Menampilkan Data Siswa"
+    cetak "3. Ubah Data Siswa"
+    cetak "4. Hapus Data Siswa"
+    cetak "------------------------"
+    cetak "5. Hapus Tabel Siswa"
+    cetak ""
+
+
+    masukkan(_pilihan, "Silahkan masukkan pilihan anda : ")->angka
+
+    jika _pilihan == 1 {
+
+        tampilkan buat_bd()
+
+    }ataujika _pilihan == 2 {
+
+        tampilkan lihat_data_siswa()
+
+    }ataujika _pilihan == 3 {
+        
+        tampilkan ubah_data_siswa()
+
+    }ataujika _pilihan == 4 {
+
+        tampilkan hapus_data_siswa()
+    
+    }ataujika _pilihan == 5 {
+
+        cetak "Apakah kamu yakin akan menghapus tabel ini? ya | tidak"
+        masukkan(_pilihan)
+
+            jika _pilihan == "ya" {
+
+                tampilkan hapus_tabel()
+                cetak ""
+                cetak "Tabel siswa berhasil dihapus"
+
+            }ataujika _pilihan == "tidak" {
+
+                cetak "Tabel siswa tidak dihapus"
+                tampilkan menu()
+
+            }lainnya{
+
+                cetak "Pilihan yang anda masukkan tidak tersedia!"
+                tampilkan menu()
+            }
+
+    }lainnya {
+
+        cetak "[tarri] pilihan tidak ditemukan!"
+        tampilkan menu()
+    }
+
+}
+
+
+titikawal{
+
+    menu()
+}

@@ -29,6 +29,11 @@ block: "{" statement* "}"
           | print_stmt
           | expr_stmt
           | entry_point
+          | tabel_stmt
+
+tabel_stmt: VAR_NAME "untuk" method_call
+
+method_call: NAME "(" [args] ")"
 
 // Import & Modul
 import_stmt: "undang" NAME ("dari" NAME)?
@@ -40,6 +45,7 @@ const_decl: "tetap" VAR_NAME EQUAL expr
 
 // Fungsi
 func_decl: "fungsi" NAME "(" [params] ")" block
+
 params: param ("," param)*
 param: VAR_NAME | NAME
 return_stmt: "tampilkan" expr
@@ -97,7 +103,8 @@ expr_stmt: expr
           | expr_atom "(" [args] ")" -> call_expr
           | expr_atom "." VAR_NAME
           | expr_atom "[" index_expr "]"  -> indexing
-          | expr_atom "->" TYPE_CAST      -> type_cast
+          | expr_atom "->" TYPE_CAST        -> type_cast
+
 
 // Type Cast / Konversi
 TYPE_CAST: "angka" | "kata"

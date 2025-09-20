@@ -1,0 +1,277 @@
+# # informasi database 
+
+# _tipe_db    = "sqlite" #tipe db
+# _lokasi_db  = "db/test2.sqlite" #path db
+# _nama_db    = "test2.sqlite" #nama db
+# _nama_tabel = "table_siswa" #nama tabel
+# _db_proses  = db_tabel(_nama_tabel)
+
+
+# fungsi buat_db() {
+
+#     _buat_db    = tarri_db(_tipe_db, _lokasi_db, _nama_db)
+
+#     jika _buat_db == "sukses" {
+
+#         cetak "Sukses. `{_nama_db}` berhasil dibuat!"
+#         tampilkan buat_tabel()
+
+#     }lainnya {
+
+#         cetak "Koneksi ke database `{_nama_db}` gagal!"
+
+#     }
+
+# }
+
+
+# fungsi buat_tabel() {
+
+#     _db_proses untuk id()
+#     _db_proses untuk kata("nama")
+#     _db_proses untuk kata("alamat")
+#     _db_proses untuk kata("telepon")
+#     _db_proses untuk pilihan("jenis_kelamin", ["laki-laki", "wanita"])
+#     _db_proses untuk waktu()
+
+#     _buat_tabel = buatTabel(_nama_tabel, _db_proses, _lokasi_db)
+
+
+#     jika _buat_tabel == "sukses" {
+
+#         cetak "Sukses. Tabel `{_nama_tabel}` berhasil dibuat"
+#         tampilkan isi_data_siswa()
+
+
+#     }ataujika _buat_tabel == "gagal" {
+
+#         cetak "Gagal. Table `{_nama_tabel}` gagal dibuat"
+
+#     }ataujika _buat_tabel == "sudah_ada" {
+    
+#         cetak "Table `{_nama_tabel}` sudah tersedia dalam database"
+#         tampilkan isi_data_siswa()
+
+
+#     }lainnya{
+
+#         cetak "mohon periksa semua informasi di dalam kode kamu"
+#     }
+
+
+# }
+
+
+# fungsi isi_data_siswa(){
+
+#     cetak "===================="
+#     cetak "isi data siswa"
+#     cetak "===================="
+
+#     cetak ""
+#     masukkan(_nama, "masukkan nama siswa :")
+#     masukkan(_alamat, "masukkan alamat siswa :")
+#     masukkan(_telepon, "masukkan no telepon siswa :")
+   
+#     cetak ""
+#     cetak "Pilih Jenis Kelamin"
+#     cetak "1. Laki-Laki"
+#     cetak "2. Perempuan"
+#     cetak ""
+
+#     _pilihan = masukkan(_jenis_kelamin, "Pilih jenis kelamin :")->angka
+
+#     jika _pilihan == null {
+
+#         cetak "Input tidak valid! Pilih angka 1 atau 2."
+
+#         tampilkan isi_data_siswa()
+
+#     }ataujika _pilihan == 1 {
+
+#         _jenis_kelamin = "Laki-Laki"
+
+#     }ataujika _pilihan == 2 {
+
+#         _jenis_kelamin = "Perempuan"
+
+#     }lainnya{
+
+#         cetak "Pilihan {_jenis_kelamin} tidak tersedia!"
+
+#         tampilkan isi_data_siswa()
+
+#     }
+
+#     _data_siswa = [
+#         _nama,
+#         _alamat,
+#         _telepon,
+#         _jenis_kelamin
+#     ]
+
+
+#     tampilkan simpan_data(_data_siswa)
+
+# }
+
+
+# fungsi simpan_data(_data_siswa) {
+
+#     # pakai DBTabel untuk CRUD
+#     _db_proses  = crud_table(_nama_tabel, _lokasi_db)
+
+#     # simpan data
+#     _db_proses untuk simpan(_data_siswa)
+
+# }
+
+
+# titikawal{
+
+#     tampilkan buat_db()
+    
+# }
+
+
+#BD = Basis Data == Data Base
+
+_bd_tipe    = "sqlite"
+_bd_lokasi  = "db/siswa_bd.sqlite"
+_bd_nama    = "siswa_bd.sqlite"
+_bd_tabel   = "tabel_siswa"
+
+# Buat Basis Data  => BuatBasisData -> fungsi Statis dari TARRI
+
+_hasil = BuatBasisData(_bd_lokasi, _bd_nama)
+# _hasil mengembalikan 2 kondisi -> "sukses", "gagal"
+
+
+# Buat Tabel => BuatTabel() -> fungsi statis dari TARRI
+# buat dulu detail tabelnya
+
+_bd untuk id()
+_bd untuk kata("nama")
+_bd untuk kata("alamat")
+_bd untuk kata("telepon")
+_bd untuk pilihan("jenis_kelamin", ["laki-laki", "wanita"])
+_bd untuk waktu()
+
+# dst
+
+_bd = BuatTabel(_bd_nama, _bd_tabel)
+# _bd mengembalikan 2 kondisi -> "sukses", "gagal"
+
+# saat tabel sudah dibuat, baru dibuat isinya
+
+
+# Hapus Tabel => HapusTabel() -> fungsi statis dari TARRI
+
+_bd = HapusTabel (_bd_nama, _bd_tabel)
+# _bd mengembalikan 2 kondisi -> "sukses", "gagal"
+
+# hapus tabel ini langsung eksekusi tidak peduli ada isinya atau tidak
+
+
+
+
+# QUERY BD 
+
+# Query = Permintaan ke Database, jadi kita buat Permintaan Data
+
+# untuk QUERY di TARRI kita tiru gaya php laravel
+
+# ada 4 Permintaan Data di TARRI 
+
+
+
+
+# cara gunakan :
+
+_data_siswa = [
+
+    _nama   => "budi",
+    _usia   => 23,
+    _alamat => "denpasar"
+
+]
+
+# Permintaan simpan data 
+=> bd::simpan()
+
+_simpan = bd::simpan(_data_siswa)
+# _simpan mengembalikan 2 kondisi -> "sukses", "gagal"
+
+_id = 1
+
+# Permintaan ubah data 
+=> bd::ubah()
+
+_ubah = bd::ubah(_data_siswa, _id)
+# _ubah mengembalikan 2 kondisi -> "sukses", "gagal"
+
+
+
+# Permintaan ambil data 
+=> bd::ambil()
+
+# untuk ambil , ini ada 2 pembagian, 
+->semua()
+->pertama()
+
+_siswa = bd::ambil(_data_siswa)->semua()
+
+->semua() ini mengembalikan koleksi seperti ini
+
+_siswa = [
+
+    _id     => 1
+    _nama   => "budi",
+    _usia   => 23,
+    _alamat => "denpasar"
+
+],[
+
+    _id     => 2
+    _nama   => "dana",
+    _usia   => 24,
+    _alamat => "bali"
+
+]
+
+
+
+->pertama() mengembalikan 1 data saja
+
+_id = 2
+
+_siswa = bd::ambil(_data_siswa, _id)->pertama()
+
+_siswa = [
+
+    _id     => 2
+    _nama   => "dana",
+    _usia   => 24,
+    _alamat => "bali"
+
+]
+
+
+# Permintaan hapus data 
+=> bd::hapus()
+
+_id = 2
+
+_hapus = bd::hapus(_data_siswa, _id)
+
+# _hapus juga mengembalikan 2 kondisi "sukses" "gagal"
+
+
+
+
+
+
+
+
+
+

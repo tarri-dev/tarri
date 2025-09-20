@@ -12,13 +12,29 @@ def tipe_data(val):
     else:
         return "tak dikenal"
 
+# paksa tipe
+def paksa_angka(val, var_name):
+    try:
+        if "." in str(val):
+            return float(val)
+        else:
+            return int(val)
+    except ValueError:
+        print(f"[tarri] masukkan ({var_name}) hanya bisa menerima angka.")
+        return None
+
+def paksa_kata(val, var_name):
+    val_str = str(val)
+    if not val_str.replace(" ", "").isalpha():
+        print(f"[tarri] masukkan ({var_name}) hanya bisa menerima kata.")
+        return None
+    return val_str
+
+def angka_str(val, var_name):
+    """Simpan angka sebagai string literal, nol di depan tetap ada"""
+    return str(val)
 
 def masukkan(interpreter, args):
-    """
-    Fungsi masukkan() untuk bahasa Tarri.
-    interpreter : instance interpreter (buat akses context)
-    args        : argumen dari AST
-    """
     raw_var = args[0]
     if isinstance(raw_var, Token):
         var_name = raw_var.value
@@ -29,58 +45,45 @@ def masukkan(interpreter, args):
         var_name = str(raw_var)
 
     prompt = args[1] if len(args) > 1 else ""
-    expect_type = None
 
-    # cek apakah ada type_cast
-    if hasattr(args[0], "data") and args[0].data == "type_cast":
-        var_name_node = args[0].children[0]
-        cast_token = args[0].children[1]
-        expect_type = cast_token.value
-        var_name = var_name_node.value if isinstance(var_name_node, Token) else str(var_name_node)
+    # --- Tampilan minimalis tanpa underscore di awal ---
+    print(f"\nMasukkan nilai untuk '{var_name.lstrip('_')}'")
+    value = input(f"{prompt}> ").strip()
 
-    # hanya ambil input user, jangan pernah cast var_name!
-    value = input(prompt).strip()
-
-    # ==== AUTO KONVERSI (hanya untuk 'value') ====
-    if expect_type == "angka":
-        try:
-            value = int(value) if "." not in value else float(value)
-        except ValueError:
-            print(f"[tarri] input ({var_name}) hanya bisa menerima tipe data angka.")
-            return None
-
-    elif expect_type == "desimal":
-        try:
-            value = float(value)
-        except ValueError:
-            print(f"[tarri] input ({var_name}) hanya bisa menerima tipe data desimal.")
-            return None
-
-    elif expect_type == "kata":
-        value = str(value)
-
+    # --- AUTO DETEKSI TIPE ---
+    lower_val = value.lower()
+    if lower_val in ("benar", "true"):
+        value = True
+    elif lower_val in ("salah", "false"):
+        value = False
+    elif lower_val in ("kosong", "hampa", "null", "none"):
+        value = None
     else:
-        # AUTO DETEKSI TIPE dari input user
-        lower_val = value.lower()
+        value = value  # tetap string literal (angka_str default)
 
-        if lower_val in ("benar", "true"):
-            value = True
-        elif lower_val in ("salah", "false"):
-            value = False
-        elif lower_val in ("kosong", "hampa", "null", "none"):
-            value = None
-        elif value.replace(".", "", 1).isdigit():
-            try:
-                value = int(value) if "." not in value else float(value)
-            except ValueError:
-                value = str(value)
-        else:
-            value = str(value)
+    # --- Simpan ke context ---
+    interpreter.context[var_name] = angka_str(value, var_name)
 
-    # simpan hasil input user ke context
-    interpreter.context[var_name] = value
+    # --- Dukungan chaining ---
+    class _InputWrapper:
+        def __init__(self, val, name, context):
+            self.val = val
+            self.var_name = name
+            self.context = context
 
-    # optional: debug, langsung kasih tahu tipe input
-    # print(f"[tarri] ({var_name}) terdeteksi tipe: {tipe_data(value)}")
+        def angka(self):
+            val2 = paksa_angka(self.val, self.var_name)
+            self.context[self.var_name] = val2
+            return val2
 
-    return None
+        def kata(self):
+            val2 = paksa_kata(self.val, self.var_name)
+            self.context[self.var_name] = val2
+            return val2
+
+        def angka_str(self):
+            val2 = angka_str(self.val, self.var_name)
+            self.context[self.var_name] = val2
+            return val2
+
+    return _InputWrapper(value, var_name, interpreter.context)
