@@ -1,0 +1,15 @@
+# ==========================================
+# Contoh program pertama Bahasa Tarri
+# ==========================================
+
+fungsi halo() {
+    cetak("")
+    cetak("Halo! Bahasa Tarri sudah berhasil diinstall.")
+    cetak("Silahkan baca dokumentasi lengkap di halaman:")
+    cetak("👉  https://bahasatarri.com/dokumentasi")
+}
+
+titikawal {
+    
+    tampilkan halo()
+}

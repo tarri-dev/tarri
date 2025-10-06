@@ -1,7 +1,0 @@
-
-        _akun [
-            _id     => fe165af6-4ffd-4781-9f9f-2e8c6b824392,
-            _nama   => dana,
-            _sandi  => JI4ZDmkC$0c245dbd890a7f42b51076b586ff43e15f6d7ecc6657867811248df7b23977e321b48d0d70d06d55385ed018a861b6dc81d720045c7754258f53e3df28de231a
-        ]
-    

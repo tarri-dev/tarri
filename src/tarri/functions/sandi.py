@@ -10,7 +10,7 @@ def _generate_salt(length=8):
     """Buat salt acak"""
     return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
 
-def buatSandi(password, salt=None):
+def buat_sandi(password, salt=None):
     """
     Hash password dengan SHA512 + salt
     Jika salt tidak diberikan, buat baru.
@@ -21,7 +21,7 @@ def buatSandi(password, salt=None):
     hashed = hashlib.sha512((salt + str(password)).encode("utf-8")).hexdigest()
     return f"{salt}${hashed}"
 
-def cekSandi(password_plain, hash_salt):
+def cek_sandi(password_plain, hash_salt):
     """
     Cek password plain dengan hash yang ada
     """

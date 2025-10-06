@@ -1,9 +1,0 @@
-Metadata-Version: 2.4
-Name: tarri
-Version: 0.1.0
-Summary: Bahasa pemrograman TARRI - Teknologi Algoritmik untuk Representasi dan Rekayasa Indonesia
-Author-email: Tarri Dev <bahasa.tarri@gmail.com>
-License: MIT
-Requires-Python: >=3.9
-Description-Content-Type: text/markdown
-Requires-Dist: lark-parser>=0.12.0

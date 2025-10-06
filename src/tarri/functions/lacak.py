@@ -1,13 +1,21 @@
 import time
-from datetime import datetime
 
 _trace_stack = []
 _db_trace = []
 
+
 def tipe_data(val):
+    """Deteksi tipe data khas TARRI."""
+    try:
+        from tarri.session.sesi import SesiObj
+        if isinstance(val, SesiObj):
+            return "sesi"
+    except Exception:
+        pass
+
     if isinstance(val, bool):
         return "logika"
-    elif isinstance(val, int) or isinstance(val, float):
+    elif isinstance(val, (int, float)):
         return "angka"
     elif isinstance(val, str):
         return "kata"
@@ -15,36 +23,54 @@ def tipe_data(val):
         return "kosong"
     elif isinstance(val, list):
         return "list"
+    elif isinstance(val, dict):
+        return "kamus"
     else:
         return "tak dikenal"
 
-def trace_step(step_name):
-    _trace_stack.append(step_name)
 
-def trace_db(step_info):
-    _db_trace.append(step_info)
+def garis():
+    """Bikin garis pembatas horizontal."""
+    return "─" * 60
 
-def print_section(title, content_func, empty_message, bullet="•"):
-    """Helper function to print formatted sections"""
-    print(f"{title}")
-    print("-" * len(title))
-    
-    content = content_func()
-    if not content:
-        print(f"  {empty_message}")
+
+def print_box(title, lines):
+    """Tampilkan section dengan gaya kotak minimalis di terminal."""
+    print(f"┌─ {title}")
+    for line in lines:
+        print(f"│ {line}")
+    print("└" + garis())
+
+
+def format_value(v):
+    """Format nilai supaya tampil bagus di terminal."""
+    try:
+        from tarri.session.sesi import SesiObj
+        if isinstance(v, SesiObj):
+            # kalau sesi bisa dikonversi ke dict
+            if hasattr(v, "to_dict"):
+                data = v.to_dict()
+                info = [f"{k} : {val}" for k, val in data.items()]
+                formatted = "[Sesi aktif]\n" + "\n".join([" " * 14 + line for line in info])
+                return formatted
+            return "[Sesi aktif]"
+    except Exception:
+        pass
+
+    if isinstance(v, dict):
+        items = [f"{k} => {val}" for k, val in v.items()]
+        return "{ " + ", ".join(items) + " }"
+    elif isinstance(v, list):
+        return "[" + ", ".join(map(str, v)) + "]"
     else:
-        for item in content:
-            print(f"  {bullet} {item}")
-    
-    print()
+        return str(v)
+
 
 def lacak(interpreter, args):
+    """Menampilkan data yang sedang dilacak secara terstruktur."""
     start_time = time.time()
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     raw_val = args[0]
-
-    # cek apakah raw_val adalah nama variable di context
     if isinstance(raw_val, str) and raw_val in interpreter.context:
         val = interpreter.context[raw_val]
         var_name = raw_val
@@ -52,60 +78,45 @@ def lacak(interpreter, args):
         val = raw_val
         var_name = "<literal>"
 
-    # Header
     print()
-    print(f"LACAK PROSES DATA TARRI")
-    print(f"Waktu: {timestamp}")
+    print("╭────────────────────────────────────────────────────────────╮")
+    print("│                LACAK PROSES DATA TARRI                     │")
+    print("│                ======================                      │")
+    print("╰────────────────────────────────────────────────────────────╯")
     print()
-    
+
     # Nilai utama yang sedang dilacak
-    print("VARIABLE YANG DILACAK")
-    print("---------------------")
-    print(f"  Variabel: {var_name}")
-    print(f"  Nilai   : {val}")
-    print(f"  Tipe    : {tipe_data(val)}")
-    print()
+    lines = [
+        f"Variabel : {var_name}",
+        f"Nilai    : {val}",
+        f"Tipe     : {tipe_data(val)}"
+    ]
+    print_box("VARIABLE YANG DILACAK", lines)
 
     # Semua variable di context
-    def get_context_vars():
-        return [f"{k} => {v} ({tipe_data(v)})" for k, v in interpreter.context.items()]
-    
-    print_section(
-        "VARIABEL DI SCOPE", 
-        get_context_vars, 
-        "Tidak ada variable di scope"
-    )
+    context_items = interpreter.context.items()
+    if context_items:
+        context_lines = [
+            f"{k:<12} => {format_value(v)} ({tipe_data(v)})"
+            for k, v in context_items
+        ]
+    else:
+        context_lines = ["Tidak ada variabel di scope."]
+    print_box("VARIABEL DI SCOPE", context_lines)
 
     # Call stack
-    def get_call_stack():
-        return [step for step in _trace_stack]
-    
-    print_section(
-        "CALL STACK", 
-        get_call_stack, 
-        "Call stack kosong"
-    )
+    stack_lines = _trace_stack or ["(kosong)"]
+    print_box("CALL STACK", stack_lines)
 
     # Database / I/O
-    def get_db_trace():
-        return [step for step in _db_trace]
-    
-    print_section(
-        "DATABASE / I/O", 
-        get_db_trace, 
-        "Tidak ada aktivitas DB/I/O"
-    )
+    db_lines = _db_trace or ["Tidak ada aktivitas DB/I/O."]
+    print_box("DATABASE / I/O", db_lines)
 
     # Timing
-    end_time = time.time()
-    execution_time = end_time - start_time
-    
-    print("TIMING")
-    print("------")
-    print(f"  Eksekusi sampai lacak() = {execution_time:.4f}s")
-    print()
+    execution_time = time.time() - start_time
+    timing_lines = [f"Eksekusi sampai lacak() : {execution_time:.4f} detik"]
+    print_box("TIMING", timing_lines)
 
     print("Program dihentikan oleh lacak()")
     print()
-    
-    raise SystemExit("[tarri] Debugging selesai")
+    raise SystemExit("[tarri | lacak] Lacak data selesai")

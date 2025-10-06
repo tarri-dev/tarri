@@ -4,7 +4,6 @@ start: top_level_stmt*
 
 // Top-level statements yang bisa muncul di root
 ?top_level_stmt: var_decl
-               | const_decl
                | func_decl
                | class_decl
                | entry_point
@@ -17,7 +16,6 @@ entry_point: "titikawal" block
 block: "{" statement* "}"
 
 ?statement: var_decl
-          | const_decl
           | func_decl
           | class_decl
           | if_stmt
@@ -31,51 +29,89 @@ block: "{" statement* "}"
           | entry_point
           | tabel_stmt
 
-tabel_stmt: VAR_NAME "untuk" method_call
+// ========================
+// ===  TABEL & METHOD  ===
+// ========================
 
+tabel_stmt: VAR_NAME "untuk" method_call
 method_call: NAME "(" [args] ")"
 
-// Import & Modul
+// ========================
+// ===  IMPORT & MODUL  ===
+// ========================
+
 import_stmt: "undang" NAME ("dari" NAME)?
 
-// Variabel & Konstanta
-var_decl: ("biarkan" | "ingat") VAR_NAME EQUAL expr
-        | VAR_NAME EQUAL expr -> auto_var_decl
-const_decl: "tetap" VAR_NAME EQUAL expr
+// ========================
+// ===  VARIABEL & KONST ===
+// ========================
 
-// Fungsi
+var_decl: VAR_NAME (EQUAL | PLUS_EQUAL | MINUS_EQUAL) expr -> auto_var_decl
+
+// ========================
+// ===  FUNGSI  ===
+// ========================
+
 func_decl: "fungsi" NAME "(" [params] ")" block
-
 params: param ("," param)*
 param: VAR_NAME | NAME
+
 return_stmt: "tampilkan" expr
+           | "kembalikan" expr
            | "sembunyikan"
 
-// Class & OOP
+// ========================
+// ===  KELAS & OOP  ===
+// ========================
+
 class_decl: "kelas" NAME ["perluas" NAME] block
 
-// Kontrol Alur
-if_stmt: "jika" expr block ("ataujika" expr block)* ["lainnya" block]
+// ========================
+// ===  KONTROL ALUR  ===
+// ========================
 
-// Perulangan
+// mendukung gaya:
+// jika _x == 5 { ... }
+// jika(_x == 5) { ... }
+// ataujika(_x > 5) { ... }
+// lainnya { ... }
+
+if_stmt: if_branch ("ataujika" expr block | "ataujika" "(" expr ")" block)* ["lainnya" block]
+
+if_branch: ("jika" expr block | "jika" "(" expr ")" block)
+
+
+// ========================
+// ===  PERULANGAN  ===
+// ========================
+
 loop_stmt: "ulangi" block
-         | "ulangidari" LOOP_VAR EQUAL expr "hingga" expr block
+         | "ulangidari" VAR_NAME EQUAL expr "hingga" expr block
          | "selama" expr block
-         | "setiap" LOOP_VAR "dari" expr block
-         | "setiapdari" LOOP_VAR EQUAL expr "hingga" expr "dari" expr block
-         | "untuk" LOOP_VAR "dalam" expr block
+         | "setiap" VAR_NAME "dari" expr block
+         | "setiapdari" VAR_NAME EQUAL expr "hingga" expr "dari" expr block
+         | "untuk" VAR_NAME "dalam" expr block
+         | "untuk" "setiap" VAR_NAME "dalam" expr block
 
 break_stmt: "hentikan"
 continue_stmt: "lanjutkan"
 
-// Error Handling
+// ========================
+// ===  ERROR HANDLING  ===
+// ========================
+
 try_catch_stmt: "coba" block "tangkap" "(" VAR_NAME ")" block ["akhirnya" block]
 
-// Print Statement
+// ========================
+// ===  PRINT & OUTPUT  ===
+// ========================
 
 print_stmt: "cetak" expr
 
-// Ekspresi
+// ========================
+// ===  EKSPRESI UMUM  ===
+// ========================
+
 expr_stmt: expr
 
 ?expr: expr_or
@@ -98,51 +134,70 @@ expr_stmt: expr
 ?expr_mul: expr_mul MUL_OP expr_atom  -> mul_expr
          | expr_atom
 
+// Atom & Sub-ekspresi
 ?expr_atom: atom
-          | "(" expr ")"
-          | expr_atom "(" [args] ")" -> call_expr
+          | "(" expr ")"               -> grouped_expr
+          | expr_atom "(" [args] ")"   -> call_expr
           | expr_atom "." VAR_NAME
-          | expr_atom "[" index_expr "]"  -> indexing
-          | expr_atom "->" TYPE_CAST        -> type_cast
+          | expr_atom "[" index_expr "]" -> indexing
+          | expr_atom "->" TYPE_CAST     -> type_cast
 
-
-// Type Cast / Konversi
-TYPE_CAST: "angka" | "kata"
+// ========================
+// ===  ARGUMEN / INDEX  ===
+// ========================
 
 args: expr ("," expr)*
 
-// Index Expression
 ?index_expr: expr                       -> single_index
            | expr "hingga" expr         -> slice_expr
            | expr ("dan" expr)+         -> pair_expr
            |                            -> empty_index
 
-// Daftar (List)
-?atom: NUMBER            -> number
-     | ESCAPED_STRING    -> string
-     | "benar"           -> true
-     | "salah"           -> false
-     | "kosong"          -> null
-     | "hampa"           -> null
+// ========================
+// ===  LITERAL / NILAI ===
+// ========================
+
+?atom: NUMBER                 -> number
+     | ESCAPED_STRING         -> string
+     | TRIPLE_STRING          -> string
+     | SINGLE_QUOTE_STRING    -> string
+     | "Benar"                -> true
+     | "Salah"                -> false
+     | "Kosong"               -> null
+     | "Hampa"                -> null
      | VAR_NAME
-     | NAME              -> identifier 
+     | NAME                   -> identifier 
      | list_literal
+     | dict_literal
 
 list_literal: "[" [expr ("," expr)*] "]"
+dict_literal: "{" [dict_pair ("," dict_pair)*] "}"
+dict_pair: (VAR_NAME | ESCAPED_STRING | NAME) "=" expr
 
-// Operator Tokens
+// ========================
+// ===  OPERATOR & TOKEN ===
+// ========================
+
 COMP_OP: "==" | "!=" | "<" | ">" | "<=" | ">="
 ADD_OP: "+" | "-"
 MUL_OP: "*" | "/" | "%"
+PLUS_EQUAL: "+="
+MINUS_EQUAL: "-="
 
-// Tokens
 EQUAL: "="
 VAR_NAME: /_[a-zA-Z][a-zA-Z0-9_]*/
-LOOP_VAR: /[a-zA-Z][a-zA-Z0-9_]*/  
 NAME: /[a-zA-Z][a-zA-Z0-9_]*/
 NUMBER: /\d+(\.\d+)?/
 ESCAPED_STRING: /"[^"]*"/
+TRIPLE_STRING: /(\"\"\"([^\"\\]|\\.|\"(?!\"\")|\\n)*\"\"\")|('''([^'\\]|\\.|'(?!'')|\\n)*''')/
+SINGLE_QUOTE_STRING: /'[^']*'/
 
-// Ignore
+TYPE_CAST: "angka" | "kata"
+
+// ========================
+// ===  IGNORE SECTION  ===
+// ========================
+
 %ignore /\s+/
 %ignore /#.*/
+

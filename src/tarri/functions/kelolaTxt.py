@@ -104,12 +104,24 @@ def bacaTxt(filename, key=None, ctx=None, tarri_file=None):
         return None
 
 
-def perbaruiTxt(filename, content, ctx=None, tarri_file=None):
-    """Menambah (append) teks ke file relatif terhadap folder file .tarri"""
+import os
+
+def perbaruiTxt(filename, mode, content, ctx=None, tarri_file=None):
+    """
+    Memperbarui file teks relatif terhadap folder file .tarri.
+    mode:
+        - "ganti"  → menimpa isi lama (overwrite)
+        - "tambah" → menambah di akhir file (append)
+    """
     try:
         base_path = os.path.dirname(tarri_file) if tarri_file else os.getcwd()
         full_path = os.path.join(base_path, filename)
+        os.makedirs(os.path.dirname(full_path), exist_ok=True)
 
+        # Mode file
+        mode_file = "a" if str(mode).lower() == "tambah" else "w"
+
+        # Format khusus kalau content berupa dict
         if isinstance(content, dict):
             lines = []
             for k, v in content.items():
@@ -118,24 +130,26 @@ def perbaruiTxt(filename, content, ctx=None, tarri_file=None):
                 lines.append(f"{k} => {v}")
             content = "_data [\n    " + ",\n    ".join(lines) + "\n]\n"
 
-        with open(full_path, "a", encoding="utf-8") as f:
+        # Tulis file
+        with open(full_path, mode_file, encoding="utf-8") as f:
             f.write(str(content))
 
         if ctx is not None:
-            ctx["i"] = "sukses diperbarui"
+            ctx["i"] = f"sukses {mode.lower()} isi file"
         return True
-    except FileNotFoundError:
+
+    except Exception as e:
+        msg = (
+            "file atau folder tidak ditemukan"
+            if isinstance(e, FileNotFoundError)
+            else "akses ditolak"
+            if isinstance(e, PermissionError)
+            else f"terjadi kesalahan: {e}"
+        )
         if ctx is not None:
-            ctx["i"] = "gagal diperbarui: file atau folder tidak ditemukan"
+            ctx["i"] = f"gagal diperbarui: {msg}"
         return False
-    except PermissionError:
-        if ctx is not None:
-            ctx["i"] = "gagal diperbarui: akses ditolak"
-        return False
-    except Exception:
-        if ctx is not None:
-            ctx["i"] = "gagal diperbarui: terjadi kesalahan"
-        return False
+
 
 
 def hapusTxt(filename, ctx=None, tarri_file=None):

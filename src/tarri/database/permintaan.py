@@ -2,8 +2,7 @@ import sqlite3
 from tarri.database.buattabel import BasisData, get_table_name
 from tarri.database.buatbasisdata import get_db_path
 
-def simpan(data_list, bd_obj):
-
+def simpan(data_dict, bd_obj):
     try:
         db_path = get_db_path()
         nama_tabel = get_table_name()
@@ -11,16 +10,17 @@ def simpan(data_list, bd_obj):
         conn = sqlite3.connect(db_path)
         cur = conn.cursor()
 
-        # ambil nama kolom dari tabel, kecuali kolom auto
+        # Ambil nama kolom dari tabel, kecuali kolom auto
         cur.execute(f'PRAGMA table_info("{nama_tabel}")')
         kolom_info = cur.fetchall()
         kolom_nama = [row[1] for row in kolom_info if row[1] not in ("id", "dibuat", "diubah")]
 
-        if len(data_list) != len(kolom_nama):
-            raise ValueError("Jumlah elemen list tidak sesuai jumlah kolom")
+        # Validasi: pastikan semua key di data_dict adalah kolom yang sah
+        for k in data_dict.keys():
+            if k not in kolom_nama:
+                raise ValueError(f"Kolom tidak dikenal: {k}")
 
-        # **Simpan semua kolom pilihan TEXT dengan constraint LOWER menjadi lowercase**
-        # Kita anggap semua kolom TEXT dengan nama kolom di bd_obj.columns yang mengandung 'CHECK' adalah pilihan
+        # Identifikasi kolom pilihan yang harus lowercase
         kolom_choice = []
         if hasattr(bd_obj, "columns"):
             for col_def in bd_obj.columns:
@@ -28,19 +28,23 @@ def simpan(data_list, bd_obj):
                     nama_col = col_def.split()[0]
                     kolom_choice.append(nama_col)
 
-        data_prepared = []
-        for col, val in zip(kolom_nama, data_list):
-            if col in kolom_choice and isinstance(val, str):
-                data_prepared.append(val.lower())  # simpan lowercase
+        # Siapkan data
+        kolom_final = []
+        nilai_final = []
+        for k in data_dict:
+            kolom_final.append(f'"{k}"')
+            v = data_dict[k]
+            if k in kolom_choice and isinstance(v, str):
+                nilai_final.append(v.lower())
             else:
-                data_prepared.append(val)
+                nilai_final.append(v)
 
-        kolom_quoted = ", ".join([f'"{c}"' for c in kolom_nama])
-        placeholder = ", ".join(["?"] * len(data_prepared))
-        sql = f'INSERT INTO "{nama_tabel}" ({kolom_quoted}) VALUES ({placeholder})'
+        kolom_str = ", ".join(kolom_final)
+        placeholder = ", ".join(["?"] * len(nilai_final))
+        sql = f'INSERT INTO "{nama_tabel}" ({kolom_str}) VALUES ({placeholder})'
 
         try:
-            cur.execute(sql, tuple(data_prepared))
+            cur.execute(sql, tuple(nilai_final))
             conn.commit()
             return "sukses"
         except sqlite3.IntegrityError:
@@ -60,11 +64,14 @@ def simpan(data_list, bd_obj):
 
 
 
+
 # Variabel global untuk menyimpan objek aktif
 _objek_aktif = None
 
 class Ambil:
     def __init__(self, db_path, table_name):
+        self._pilih_kolom = ["*"]
+
         if not table_name:
             raise ValueError("[ERROR Ambil] table_name tidak ditemukan")
         if not db_path:
@@ -73,17 +80,48 @@ class Ambil:
         self.db_path = db_path
         self.table_name = table_name
         self._wheres = []
+        self._cache = None
+        self._limit = None
+        
+    # def pilih(self, *kolom):
+    #     self._pilih_kolom = list(kolom) if kolom else ["*"]
+    #     self._cache = None
+    #     self._render_cache = {}
+    #     return self
+    
+    def pilih(self, *kolom):
+        if kolom:
+            self._pilih_kolom = list(kolom)  # kolom spesifik
+        else:
+            self._pilih_kolom = None         # None artinya semua kolom (*)
+        self._cache = None
+        self._render_cache = {}
+        return self
+
+    
+    def batasi(self, jumlah):
+        self._limit = int(jumlah)
+        self._cache = None
+        self._render_cache = {}
+        return self
+
 
     def dimana(self, kolom, nilai):
         self._wheres.append(("AND", kolom, nilai))
+        self._cache = None
+        self._render_cache = {}
         return self
 
     def atau_dimana(self, kolom, nilai):
         self._wheres.append(("OR", kolom, nilai))
+        self._cache = None
+        self._render_cache = {}
         return self
     
     def dan_dimana(self, kolom, nilai):
         self._wheres.append(("AND", kolom, nilai))
+        self._cache = None
+        self._render_cache = {}
         return self
 
     def _build_where_clause(self):
@@ -98,25 +136,94 @@ class Ambil:
         return " WHERE " + " ".join(clauses), params
 
     def semua(self):
-        conn = sqlite3.connect(self.db_path)
+        if self._cache is not None:
+            return self._cache
+
+        conn = sqlite3.connect(self.db_path, check_same_thread=False)
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
-        sql = f'SELECT * FROM "{self.table_name}"'
+
+        # 🔧 perbaikan di sini
+        if not self._pilih_kolom or self._pilih_kolom == ["*"]:
+            kolom_sql = "*"  # ambil semua kolom
+        else:
+            # bungkus kolom dengan quote biar aman dari reserved keyword
+            kolom_sql = ", ".join(f'"{k}"' for k in self._pilih_kolom)
+
+        sql = f'SELECT {kolom_sql} FROM "{self.table_name}"'
+
         where_sql, params = self._build_where_clause()
         sql += where_sql
+        
+        # 🔧 Tambahkan ORDER BY
+        if hasattr(self, "_order_by") and self._order_by:
+            kolom, arah = self._order_by
+            sql += f' ORDER BY "{kolom}" {arah}'
+
+        if self._limit:
+            sql += f" LIMIT {self._limit}"
+
         cur.execute(sql, params)
         rows = cur.fetchall()
+
+        cur.close()
         conn.close()
-        return [dict(r) for r in rows]
+
+        # ubah Row → dict agar lebih enak diakses
+        self._cache = [dict(r) for r in rows]
+        return self._cache
+
+
+
+    # def pertama(self):
+    #     self._limit = 1
+    #     self._cache = None
+    #     self._render_cache = {}
+    #     hasil = self.semua()
+    #     return hasil[0] if hasil else None
+    
+    def pertama(self):
+        self._limit = 1
+        self._cache = None
+        self._render_cache = {}
+        hasil = self.semua()
+        self._render_cache[("json", 2)] = hasil[0]  # opsional
+        return hasil[0] if hasil else None
+
+    def urutkan(self, mode: str):
+        mapping = {
+            "awal-akhir":  ('id', 'ASC'),
+            "akhir-awal":  ('id', 'DESC'),
+            "kecil-besar": ('nilai', 'ASC'),
+            "besar-kecil": ('nilai', 'DESC'),
+        }
+
+        if mode not in mapping:
+            raise ValueError(f"Mode urutkan tidak dikenal: {mode}")
+
+        kolom, arah = mapping[mode]
+        self._order_by = (kolom, arah)
+        self._cache = None
+        self._render_cache = {}
+        return self
+
+    
     
     def rapi(self, mode="json", indent=2):
+    # Buat key cache berdasarkan mode dan indent
+        key = (mode, indent)
+
+        # Cek apakah hasil sudah ada di cache
+        if hasattr(self, "_render_cache") and key in self._render_cache:
+            return self._render_cache[key]
+
         hasil = self.semua()
         if not hasil:
             return "gagal"
 
         if mode == "json":
             import json
-            return json.dumps(hasil, indent=indent, ensure_ascii=False)
+            output = json.dumps(hasil, indent=indent, ensure_ascii=False)
 
         elif mode == "tabel":
             headers = list(hasil[0].keys())
@@ -127,16 +234,16 @@ class Ambil:
             for row in hasil:
                 line = " | ".join(str(row[h]).ljust(w) for h, w in zip(headers, col_widths))
                 lines.append(line)
-            return "\n".join(lines)
+            output = "\n".join(lines)
 
         elif mode == "csv":
             import io
             import csv
-            output = io.StringIO()
-            writer = csv.DictWriter(output, fieldnames=hasil[0].keys())
+            output_io = io.StringIO()
+            writer = csv.DictWriter(output_io, fieldnames=hasil[0].keys())
             writer.writeheader()
             writer.writerows(hasil)
-            return output.getvalue()
+            output = output_io.getvalue()
 
         elif mode == "html":
             import webbrowser
@@ -151,54 +258,57 @@ class Ambil:
                 for h in headers:
                     nilai = row[h]
                     if h == "nama":
-                        # nama jadi link ke halaman detail
                         link = nilai.lower().replace(" ", "_") + ".html"
                         baris += f'<td><a href="{link}">{nilai}</a></td>'
                     else:
                         baris += f"<td>{nilai}</td>"
                 rows_html += f"<tr>{baris}</tr>"
 
-            html_content = f"""
-        <!DOCTYPE html>
-        <html lang="id">
-        <head>
-            <meta charset="UTF-8">
-            <title>Data Siswa</title>
-            <style>
-                body {{ font-family: sans-serif; padding: 20px; }}
-                table {{ border-collapse: collapse; width: 100%; }}
-                th, td {{ border: 1px solid #ccc; padding: 8px; text-align: left; }}
-                th {{ background-color: #f2f2f2; }}
-                a {{ color: #007acc; text-decoration: none; }}
-                a:hover {{ text-decoration: underline; }}
-            </style>
-        </head>
-        <body>
-            <h2>Data Siswa</h2>
-            <table>
-                <thead><tr>{header_html}</tr></thead>
-                <tbody>{rows_html}</tbody>
-            </table>
-        </body>
-        </html>
-        """
+            output = f"""
+            <!DOCTYPE html>
+            <html lang="id">
+            <head>
+                <meta charset="UTF-8">
+                <title>Data Siswa</title>
+                <style>
+                    body {{ font-family: sans-serif; padding: 20px; }}
+                    table {{ border-collapse: collapse; width: 100%; }}
+                    th, td {{ border: 1px solid #ccc; padding: 8px; text-align: left; }}
+                    th {{ background-color: #f2f2f2; }}
+                    a {{ color: #007acc; text-decoration: none; }}
+                    a:hover {{ text-decoration: underline; }}
+                </style>
+            </head>
+            <body>
+                <h2>Data Siswa</h2>
+                <table>
+                    <thead><tr>{header_html}</tr></thead>
+                    <tbody>{rows_html}</tbody>
+                </table>
+            </body>
+            </html>
+            """
 
             try:
                 nama_file = "_ambil_data.html"
                 with open(nama_file, "w", encoding="utf-8") as f:
-                    f.write(html_content)
+                    f.write(output)
                 webbrowser.open(nama_file)
                 BLUE_UNDERLINE = "\033[34;4m"
                 RESET = "\033[0m"
-
                 path = os.path.abspath(nama_file)
-                return f"File HTML sudah dibuat. Klik di sini untuk membuka file:\n{BLUE_UNDERLINE}{path}{RESET}"
-
+                output = f"File HTML sudah dibuat. Klik di sini untuk membuka file:\n{BLUE_UNDERLINE}{path}{RESET}"
             except Exception as e:
-                return f"Gagal menyimpan HTML: {e}"
+                output = f"Gagal menyimpan HTML: {e}"
 
+        else:
+            output = f"Mode '{mode}' tidak dikenali"
 
-        return f"Mode '{mode}' tidak dikenali"
+        # Simpan ke cache
+        if not hasattr(self, "_render_cache"):
+            self._render_cache = {}
+        self._render_cache[key] = output
+        return output
 
 
 
@@ -214,7 +324,7 @@ class Ubah:
         return self._eksekusi()
 
     def _eksekusi(self):
-        if not self.data_baru:
+        if not self.data_baru or not isinstance(self.data_baru, dict):
             return "gagal"
 
         try:
@@ -224,17 +334,16 @@ class Ubah:
             # Ambil nama kolom dari tabel, kecuali kolom auto
             cur.execute(f'PRAGMA table_info("{self.table_name}")')
             kolom_info = cur.fetchall()
-            kolom_nama = [row[1] for row in kolom_info if row[1] not in ("id", "dibuat", "diubah")]
+            kolom_sah = [row[1] for row in kolom_info if row[1] not in ("id", "dibuat", "diubah")]
 
-            if len(self.data_baru) != len(kolom_nama):
-                return "gagal: jumlah data tidak cocok dengan jumlah kolom"
-
-            # Filter kolom yang akan diubah (skip jika "")
+            # Filter kolom yang akan diubah (skip jika kosong atau bukan kolom sah)
             kolom_ubah = []
             nilai_ubah = []
-            for k, v in zip(kolom_nama, self.data_baru):
+            for k, v in self.data_baru.items():
+                if k not in kolom_sah:
+                    continue  # abaikan kolom tidak sah
                 if isinstance(v, str) and v.strip() == "":
-                    continue  # abaikan kolom kosong
+                    continue  # abaikan nilai kosong
                 kolom_ubah.append(k)
                 nilai_ubah.append(v)
 
@@ -297,8 +406,7 @@ class Hapus:
 
 
 
-
-# Fungsi utama Tarri
+# Fungsi global utama Tarri
 def ambil(bd_lokasi, bd_nama, tabel_nama):
     global _objek_aktif
     _objek_aktif = Ambil(f"{bd_lokasi}/{bd_nama}", tabel_nama)
@@ -334,7 +442,6 @@ def rapi(*args):
     indent = int(args[1]) if len(args) >= 2 else 2
     return _objek_aktif.rapi(mode=mode, indent=indent)
 
-
 def dimana(kolom, nilai):
     global _objek_aktif
 
@@ -353,6 +460,33 @@ def dimana(kolom, nilai):
     else:
         return "gagal: objek aktif tidak dikenali"
 
+def batasi(jumlah):
+    global _objek_aktif
+    _objek_aktif = _objek_aktif.batasi(jumlah)
+    return _objek_aktif
+
+def pertama():
+    global _objek_aktif
+    return _objek_aktif.pertama()
 
 
+def pilih(*kolom):
+    global _objek_aktif
+    _objek_aktif = _objek_aktif.pilih(*kolom)
+    return _objek_aktif
+
+
+
+def urutkan(mode):
+    global _objek_aktif
+    pilihan_valid = ["awal-akhir", "akhir-awal", "kecil-besar", "besar-kecil"]
+
+    if mode not in pilihan_valid:
+        import sys
+        print(f"\033[91m[tarri | permintaan] kesalahan: mode urutkan '{mode}' tidak valid\033[0m", file=sys.stderr, flush=True)
+        print(f"\033[91m[tarri | permintaan] Gunakan salah satu dari: {', '.join(pilihan_valid)}\033[0m", file=sys.stderr, flush=True)
+        return _objek_aktif  # tetap kembalikan objek biar chain gak rusak
+
+    _objek_aktif = _objek_aktif.urutkan(mode)
+    return _objek_aktif
 
