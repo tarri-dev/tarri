@@ -10,14 +10,15 @@ from tarri.interpreter.core import Context
 
 from tarri.parser_global import parser
 from tarri import __version__
-from tarriweb.server import ROOT_DIR  # pastikan ini bisa di-import
 from lark import Tree, Token
 
 
+try:
+    from tarriweb.server import ROOT_DIR
+except ModuleNotFoundError:
+    ROOT_DIR = None
 
 
-
-# Warna ANSI (opsional, bisa pakai dari help.py)
 GREEN = "\033[92m"
 RED = "\033[91m"
 BLUE = "\033[94m"
@@ -34,14 +35,8 @@ parser = Lark(tarri_grammar, start="start", parser="lalr")
 def run_file(filename: str, status: bool = False, show_ast: bool = False):
     """Jalankan file .tarri"""
     start_time = time.perf_counter()
-    
-    # lama
-    # interpreter = Interpreter()
-    # interpreter.public_dir = ROOT_DIR
-    
-    # baru
-    interpreter = Context()
-    interpreter = Context(root_project=ROOT_DIR)
+    interpreter = Context(root_project=ROOT_DIR if ROOT_DIR else ".")
+
 
     try:
         if status:

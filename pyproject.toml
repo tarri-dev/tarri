@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -18,3 +18,11 @@ dependencies = [
 
 [project.scripts]
 tarri = "tarri.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.urls]
+Homepage = "https://github.com/tarri-dev/tarri"
+Source = "https://github.com/tarri-dev/tarri"
+Issues = "https://github.com/tarri-dev/tarri/issues"
