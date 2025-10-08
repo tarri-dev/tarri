@@ -1,10 +1,10 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
+requires = ["setuptools>=61.0", "wheel", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "tarri"
-version = "0.7.0"
+version = "0.7.1"  # update versi setiap release
 description = "Bahasa pemrograman TARRI - Teknologi Algoritmik untuk Representasi dan Rekayasa Indonesia"
 authors = [
   { name = "Tarri Dev", email = "bahasa.tarri@gmail.com" }
@@ -21,6 +21,14 @@ tarri = "tarri.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+# Sertakan file grammar.lark di dalam package
+[tool.setuptools.package-data]
+"tarri" = ["grammar.lark"]
+
+# Pastikan semua package data di-include
+[tool.setuptools]
+include-package-data = true
 
 [project.urls]
 Homepage = "https://github.com/tarri-dev/tarri"

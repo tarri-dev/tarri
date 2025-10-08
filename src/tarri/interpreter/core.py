@@ -1,6 +1,6 @@
 # ==============================================================================#
 # core.py - Interpreter Utama Tarri (TARRIAN)                                   #
-# Bahasa TARRI versi 0.x.x                                                      #
+# Bahasa TARRI versi 0.7.x                                                      #
 # Teknologi Algoritmik Representasi Rekayasa Indonesia                          #
 # ------------------------------------------------------------------------------#
 # Penulis : Ketut Dana                                                          #

@@ -2,6 +2,8 @@ import sys
 import os
 import time
 from lark import Lark, UnexpectedInput
+from tarri.repl.repl import tarri_repl
+
 
 from .help import show_help
 from .informasi import show_informasi
@@ -142,27 +144,81 @@ def run_file(filename: str, status: bool = False, show_ast: bool = False):
         print()
 
 
+# def main():
+#     args = sys.argv[1:]  # ambil argumen tanpa nama script
+
+#     try:
+        
+#         # Tidak ada argumen atau -b / --bantuan
+#         if not args or args[0] in ("-b", "--bantuan"):
+#             show_help()
+#             return
+        
+#         if not args or args[0] in ("-i", "--informasi"):
+#             show_informasi()
+#             return
+        
+#         # Cek versi
+#         if args[0] in ("--versi", "-v", "versi"):
+#             from tarri import __version__
+#             print(f"Tarri | {__version__}")
+#             return
+
+#         # Subcommand jalankan
+#         if args[0] in ("jalankan", "j", "mulai", "."):
+#             if len(args) < 2:
+#                 print()
+#                 print(f"[tarri | cli] {RED}kesalahan!{RESET}: nama file .tarri tidak diberikan")
+#                 print()
+#                 return
+
+#             # mode normal → jalankan file .tarri
+#             filename = args[1]
+#             status = "--status" in args
+#             show_ast = "--ast" in args
+#             run_file(filename, status=status, show_ast=show_ast)
+#             return
+
+#         # Semua perintah lain → tidak dikenal
+#         print(f"[tarri | cli] perintah tidak diketahui, periksa bantuan ( -b / --bantuan )")
+
+#     except KeyboardInterrupt:
+#         print()
+#         print(f"[tarri | cli] {RED}Program telah dihentikan oleh pengguna.{RESET}")
+#         return 0
+
 def main():
     args = sys.argv[1:]  # ambil argumen tanpa nama script
 
     try:
+        # ================================================#
+        # MODE INTERAKTIF (REPL)
+        # ================================================#
+        if not args or args[0] in ("repl", "live", "interaktif"):
+            tarri_repl()
+            return
         
-        # Tidak ada argumen atau -b / --bantuan
-        if not args or args[0] in ("-b", "--bantuan"):
+        # ================================================#
+        # BANTUAN & INFORMASI
+        # ================================================#
+        if args[0] in ("-b", "--bantuan"):
             show_help()
             return
         
-        if not args or args[0] in ("-i", "--informasi"):
+        if args[0] in ("-i", "--informasi"):
             show_informasi()
             return
         
-        # Cek versi
+        # ================================================#
+        # CEK VERSI
+        # ================================================#
         if args[0] in ("--versi", "-v", "versi"):
-            from tarri import __version__
             print(f"Tarri | {__version__}")
             return
 
-        # Subcommand jalankan
+        # ================================================#
+        # SUBCOMMAND: jalankan
+        # ================================================#
         if args[0] in ("jalankan", "j", "mulai", "."):
             if len(args) < 2:
                 print()
@@ -170,20 +226,22 @@ def main():
                 print()
                 return
 
-            # mode normal → jalankan file .tarri
             filename = args[1]
             status = "--status" in args
             show_ast = "--ast" in args
             run_file(filename, status=status, show_ast=show_ast)
             return
 
-        # Semua perintah lain → tidak dikenal
+        # ================================================#
+        # PERINTAH TIDAK DIKENAL
+        # ================================================#
         print(f"[tarri | cli] perintah tidak diketahui, periksa bantuan ( -b / --bantuan )")
 
     except KeyboardInterrupt:
         print()
         print(f"[tarri | cli] {RED}Program telah dihentikan oleh pengguna.{RESET}")
         return 0
+
 
 
 if __name__ == "__main__":

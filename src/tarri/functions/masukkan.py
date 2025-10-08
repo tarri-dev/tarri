@@ -3,7 +3,7 @@ from lark import Tree, Token
 def tipe_data(val):
     if isinstance(val, bool):
         return "logika"
-    elif isinstance(val, int) or isinstance(val, float):
+    elif isinstance(val, (int, float)):
         return "angka"
     elif isinstance(val, str):
         return "kata"
@@ -12,7 +12,7 @@ def tipe_data(val):
     else:
         return "tak dikenal"
 
-# paksa tipe
+
 def paksa_angka(val, var_name):
     try:
         if "." in str(val):
@@ -23,6 +23,7 @@ def paksa_angka(val, var_name):
         print(f"[tarri] masukkan ({var_name}) hanya bisa menerima angka.")
         return None
 
+
 def paksa_kata(val, var_name):
     val_str = str(val)
     if not val_str.replace(" ", "").isalpha():
@@ -30,27 +31,43 @@ def paksa_kata(val, var_name):
         return None
     return val_str
 
+
 def angka_str(val, var_name):
-    """Simpan angka sebagai string literal, nol di depan tetap ada"""
     return str(val)
+
 
 def masukkan(interpreter, args):
     raw_var = args[0]
-    if isinstance(raw_var, Token):
+
+    # --- Mode literal (masukkan("Nama:")) ---
+    if isinstance(raw_var, Tree) and raw_var.data == "string":
+        string_token = raw_var.children[0]
+        prompt = string_token.value.strip('"').strip("'")
+        var_name = "_masukan_terakhir"
+    # --- Mode variabel (masukkan(_nama)) ---
+    elif isinstance(raw_var, Token):
         var_name = raw_var.value
+        prompt = f"Masukkan nilai untuk '{var_name.lstrip('_')}'"
     elif isinstance(raw_var, Tree) and raw_var.data == "identifier":
         first = raw_var.children[0]
         var_name = first.value if isinstance(first, Token) else str(first)
+        prompt = f"Masukkan nilai untuk '{var_name.lstrip('_')}'"
     else:
-        var_name = str(raw_var)
+        var_name = "_masukan_terakhir"
+        prompt = str(raw_var)
 
-    prompt = args[1] if len(args) > 1 else ""
+    # --- Argumen kedua opsional ---
+    if len(args) > 1:
+        extra = args[1]
+        if isinstance(extra, Tree) and extra.data == "string":
+            prompt += " " + extra.children[0].value.strip('"').strip("'")
+        else:
+            prompt += " " + str(extra)
 
-    # --- Tampilan minimalis tanpa underscore di awal ---
-    print(f"\nMasukkan nilai untuk '{var_name.lstrip('_')}'")
-    value = input(f"{prompt}> ").strip()
+    print(f"\n{prompt}")
+    value = input("> ").strip()
 
-    # --- AUTO DETEKSI TIPE ---
+    # --- Auto deteksi tipe ---
     lower_val = value.lower()
     if lower_val in ("benar", "true"):
         value = True
@@ -58,13 +75,14 @@ def masukkan(interpreter, args):
         value = False
     elif lower_val in ("kosong", "hampa", "null", "none"):
         value = None
-    else:
-        value = value  # tetap string literal (angka_str default)
 
-    # --- Simpan ke context ---
     interpreter.context[var_name] = angka_str(value, var_name)
 
-    # --- Dukungan chaining ---
+    # --- Kalau di REPL, return langsung (tanpa wrapper) ---
+    if getattr(interpreter, "is_repl", False):
+        return value
+
+    # --- Wrapper chaining untuk pemanggilan langsung ---
     class _InputWrapper:
         def __init__(self, val, name, context):
             self.val = val
@@ -86,4 +104,18 @@ def masukkan(interpreter, args):
             self.context[self.var_name] = val2
             return val2
 
-    return _InputWrapper(value, var_name, interpreter.context)
+        def __str__(self):
+            return str(self.val)
+
+    # --- Kalau fungsi dipakai di assignment, return value saja ---
+    import inspect
+    frame = inspect.currentframe().f_back
+    line = frame.f_lineno
+    code_line = ""
+    try:
+        code_line = frame.f_code.co_filename
+    except Exception:
+        pass
+
+    # asumsi: kalau konteks assignment, interpreter akan tangani
+    return value

@@ -1,0 +1,78 @@
+Metadata-Version: 2.4
+Name: tarri
+Version: 0.7.1
+Summary: Bahasa pemrograman TARRI - Teknologi Algoritmik untuk Representasi dan Rekayasa Indonesia
+Author-email: Tarri Dev <bahasa.tarri@gmail.com>
+License: MIT
+Project-URL: Homepage, https://github.com/tarri-dev/tarri
+Project-URL: Source, https://github.com/tarri-dev/tarri
+Project-URL: Issues, https://github.com/tarri-dev/tarri/issues
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: lark-parser>=0.12.0
+Dynamic: license-file
+
+# Bahasa Pemrograman TARRI
+
+**TARRI** adalah bahasa pemrograman kebutuhan umum berbahasa Indonesia yang dirancang agar sintaks lebih natural dan mudah dipahami. Tarri menggunakan penerjemah bernama Tarrian. Tarrian dibangun menggunakan Python3 dengan Lark sebagai grammarnya.
+Tujuannya dari dibuatnya Tarri adalah membuat kode terasa seperti membaca sebuah cerita sehari-hari.
+
+---
+
+## Daftar Keyword ( Sementara )
+
+### Deklarasi & Struktur
+- `fungsi` → mendefinisikan fungsi.[bisa]
+- `titikawal` → titik masuk program.[bisa]
+
+### Kontrol Alur
+- `jika` → percabangan kondisi.[bisa]
+- `ataujika` → kondisi alternatif.[bisa]
+- `lainnya` → default kondisi.[bisa]
+- `hingga` → batas perulangan atau kondisi berhenti. [progress]
+- `selama` → perulangan dengan kondisi.[progress]
+- `setiap` → iterasi koleksi.[progress]
+- `setiapdari` → iterasi dengan indeks.[progress]
+- `untuk` → perulangan.[bisa]
+- `dalam` → anggota dari koleksi.[bisa]
+- `hentikan` → keluar dari loop.[progress]
+- `lanjutkan` → lompat ke iterasi berikutnya.[progress]
+- `coba` → blok try.[progress]
+- `tangkap` → menangani error.[progress]
+- `akhirnya` → blok yang selalu dieksekusi.[progress]
+- `tampilkan` → mengembalikan nilai dari fungsi.[bisa]
+- `sembunyikan` → menghentikan eksekusi tanpa mengembalikan.[bisa]
+
+### Nilai & Literal
+- `benar` → nilai boolean true.[bisa]
+- `salah` → nilai boolean false.[bisa]
+- `kosong` → nilai null.[bisa]
+- `hampa` → nilai kosong alternatif.[bisa]
+
+### Operator Logika
+- `atau` → OR.[bisa]
+- `dan` → AND.[bisa]
+- `bukan` → NOT.[progress]
+
+### Tipe Data
+- `angka` → konversi ke numerik.[bisa]
+- `kata` → konversi ke string.[bisa]
+
+### Fungsi Bawaan
+- `cetak` → menampilkan teks ke layar.[bisa]
+
+### Variabel
+- Variabel diawali dengan `_` (underscore), contoh: `_nama`, `_sandi`.[bisa]
+
+### Komentar
+- Menggunakan tanda pagar `#` di awal baris.[bisa]
+
+### Angka & String
+- Mendukung angka bulat dan desimal.[bisa]
+- String menggunakan tanda kutip ganda `"`.[bisa]
+
+---
+
+## Status
+TARRI masih dalam tahap pengembangan awal. Sintaks dapat berubah seiring perkembangan.
