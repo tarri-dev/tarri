@@ -107,29 +107,43 @@ def evaluate_expr(self, node):
                 raw = node.children[0].value.strip('"')
                 def replacer(match):
                     expr_code = match.group(1).strip()
+                    var_name, idx_expr = None, None
+
                     if "[" in expr_code:
                         var_name, idx_expr = expr_code.split("[", 1)
                         var_name = var_name.strip()
                         idx_expr = idx_expr.rstrip("]").strip()
 
-                        # tentukan tipe index
-                        if (idx_expr.startswith('"') and idx_expr.endswith('"')) or (idx_expr.startswith("'") and idx_expr.endswith("'")):
-                            key_token = Token("ESCAPED_STRING", idx_expr.strip("'\""))
-                        elif idx_expr.isdigit():
-                            key_token = Token("NUMBER", idx_expr)
+                        if ".." in idx_expr or "&" in idx_expr or "," in idx_expr:
+                            tokens = []
+                            # for part in re.split(r"(\b..\b|\b&\b|,)", idx_expr):
+                            for part in re.split(r"(\.\.|&|,)", idx_expr):
+                                p = part.strip()
+                                if not p:
+                                    continue
+                                if p in ("..", "&", ","):
+                                    tokens.append(Token("WORD", p))
+                                elif p.isdigit():
+                                    tokens.append(Token("NUMBER", p))
+                                else:
+                                    tokens.append(Token("VAR_NAME", p))
+                            children_nodes = tokens
+                            
+                            sub_tree = Tree("indexing", [
+                                Token("VAR_NAME", var_name),
+                                Tree("pair_expr", children_nodes)
+                            ])
                         else:
-                            key_token = Token("VAR_NAME", idx_expr)
-
-                        sub_tree = Tree("indexing", [
-                            Token("VAR_NAME", var_name),
-                            Tree("single_index", [key_token])
-                        ])
+                            key_token = Token("NUMBER", idx_expr) if idx_expr.isdigit() else Token("VAR_NAME", idx_expr)
+                            sub_tree = Tree("indexing", [
+                                Token("VAR_NAME", var_name),
+                                Tree("single_index", [key_token])
+                            ])
                     else:
                         sub_tree = Tree("identifier", [Token("VAR_NAME", expr_code)])
 
                     val = self.evaluate_expr(sub_tree)
                     return self.stringify(val, compact=True)
-
                 
                 text = re.sub(r"\{([^}]+)\}", replacer, raw)
                 return DATATYPES["kata"](text)
@@ -208,6 +222,8 @@ def evaluate_expr(self, node):
             elif node.data == "indexing":
                 obj_node = node.children[0]
                 idx_node = node.children[1]
+
+                # ambil objek
                 if isinstance(obj_node, Token):
                     obj_name = obj_node.value
                     if obj_name not in self.context:
@@ -216,6 +232,8 @@ def evaluate_expr(self, node):
                     obj = self.context[obj_name]
                 else:
                     obj = self.evaluate_expr(obj_node)
+
+                # single index
                 if idx_node.data == "single_index":
                     index_val = self.evaluate_expr(idx_node.children[0])
                     try:
@@ -226,21 +244,61 @@ def evaluate_expr(self, node):
                     except (IndexError, KeyError, TypeError):
                         self.error(f"Index {index_val} di luar jangkauan untuk {obj_name}")
                         return None
+
+                # slice_expr
                 elif idx_node.data == "slice_expr":
                     start = self.evaluate_expr(idx_node.children[0])
                     end = self.evaluate_expr(idx_node.children[1])
                     try:
-                        return obj[int(start):int(end)+1]
+                        return obj[int(start):int(end) + 1]
                     except Exception as e:
                         self.error(f"Slice gagal: {e}")
                         return None
+
                 elif idx_node.data == "pair_expr":
                     try:
-                        indices = [self.evaluate_expr(ch) for ch in idx_node.children]
-                        return [obj[int(i)] for i in indices]
+                        # Ambil semua token (bisa angka, 'dan', atau 'hingga')
+                        raw_parts = [str(self.evaluate_expr(ch)).strip() for ch in idx_node.children if ch is not None]
+
+                        indices = []
+                        i = 0
+                        while i < len(raw_parts):
+                            part = raw_parts[i]
+
+                            # Tangani "hingga"
+                            # if part.isdigit() and i + 2 < len(raw_parts) and raw_parts[i + 1] == ".." and raw_parts[i + 2].isdigit():
+                            #     start = int(part)
+                            #     end = int(raw_parts[i + 2])
+                            #     indices.extend(range(start, end + 1))
+                            #     i += 3
+                            #     continue
+                            
+                            if re.match(r"^\d+$", part) and i + 2 < len(raw_parts) and raw_parts[i + 1] == ".." and re.match(r"^\d+$", raw_parts[i + 2]):
+                                start = int(part)
+                                end = int(raw_parts[i + 2])
+                                indices.extend(range(start, end + 1))
+
+                            # Tangani angka tunggal
+                            if part.isdigit():
+                                indices.append(int(part))
+
+                            i += 1
+
+                        # Buang duplikat dan urutkan
+                        indices = sorted(set(indices))
+
+                        # Ambil hasil dari objek
+                        result = [obj[i] for i in indices if 0 <= i < len(obj)]
+
+                        # Gabungkan jadi string enak
+                        if all(isinstance(r, str) for r in result):
+                            return ", ".join(result)
+                        return result
+
                     except Exception as e:
                         self.error(f"Pair gagal: {e}")
                         return None
+
                 else:
                     self.error(f"Tidak tahu cara indexing dengan {idx_node.data}")
                     return None
@@ -273,16 +331,19 @@ def evaluate_expr(self, node):
             elif node.data == "null":
                 return None
 
-            self.error(f"Tidak tahu cara evaluasi node jenis '{node.data}'")
+            self.error(f"[tarri | evaluate_expr] Tidak tahu cara evaluasi node jenis '{node.data}'")
             return None
 
         elif isinstance(node, Token):
             if node.type == "VAR_NAME":
                 return self.context.get(node.value, None)
+            
             elif node.type == "NUMBER":
                 return DATATYPES["angka"](node.value) if node.value.isdigit() else DATATYPES["desimal"](node.value)
+
             elif node.type == "ESCAPED_STRING":
                 raw = node.value.strip('"')
+
                 def replacer(match):
                     expr_code = match.group(1).strip()
                     if "[" in expr_code:
@@ -290,25 +351,36 @@ def evaluate_expr(self, node):
                         var_name = var_name.strip()
                         idx_expr = idx_expr.rstrip("]").strip()
 
-                        # tentukan tipe index
-                        if (idx_expr.startswith('"') and idx_expr.endswith('"')) or (idx_expr.startswith("'") and idx_expr.endswith("'")):
-                            key_token = Token("ESCAPED_STRING", idx_expr.strip("'\""))
-                        elif idx_expr.isdigit():
-                            key_token = Token("NUMBER", idx_expr)
-                        else:
-                            key_token = Token("VAR_NAME", idx_expr)
+                        if ".." in idx_expr or "&" in idx_expr or "," in idx_expr:
+                            tokens = []
+                            # for part in re.split(r"(\b..\b|\b&\b|,)", idx_expr):
+                            for part in re.split(r"(\.\.|&|,)", idx_expr):
+                                p = part.strip()
+                                if not p:
+                                    continue
+                                if p in ("..", "&", ","):
+                                    tokens.append(Token("WORD", p))
+                                elif p.isdigit():
+                                    tokens.append(Token("NUMBER", p))
+                                else:
+                                    tokens.append(Token("VAR_NAME", p))
+                            children_nodes = tokens
 
-                        sub_tree = Tree("indexing", [
-                            Token("VAR_NAME", var_name),
-                            Tree("single_index", [key_token])
-                        ])
+                            sub_tree = Tree("indexing", [
+                                Token("VAR_NAME", var_name),
+                                Tree("pair_expr", children_nodes)
+                            ])
+                        else:
+                            key_token = Token("NUMBER", idx_expr) if idx_expr.isdigit() else Token("VAR_NAME", idx_expr)
+                            sub_tree = Tree("indexing", [
+                                Token("VAR_NAME", var_name),
+                                Tree("single_index", [key_token])
+                            ])
                     else:
                         sub_tree = Tree("identifier", [Token("VAR_NAME", expr_code)])
 
                     val = self.evaluate_expr(sub_tree)
                     return self.stringify(val, compact=True)
-
-                
                 
                 text = re.sub(r"\{([^}]+)\}", replacer, raw)
                 return DATATYPES["kata"](text)

@@ -16,6 +16,7 @@ from tarri.functions.tujuan import tujuan
 from tarri.functions.rute import rute
 from tarri.functions.cetak_henti import cetak_henti
 from tarri.functions.lacak import lacak
+from tarri.functions.kata_bijak import kata_bijak
 from tarri.functions.sandi import buat_sandi, cek_sandi
 from tarri.functions.kelolaTxt import simpanTxt, bacaTxt, perbaruiTxt, hapusTxt
 
@@ -280,6 +281,8 @@ def call_function(self, func_name, args):
         return matematika.floor(args[0])
     elif func_name == "ceil":
         return matematika.ceil(args[0])
+    elif func_name == "kata_bijak":
+        return kata_bijak()
 
     # =====================================================
     # Custom / Context function fallback

@@ -141,8 +141,23 @@ def tarri_repl():
                     continue
 
                 # Auto-wrap titikawal
-                if not kode.startswith("titikawal"):
+                # Deteksi input yang perlu atau tidak perlu dibungkus titikawal
+                PERLU_TITIKAWAL = True
+                AWALAN_BLOK = (
+                    "titikawal", "fungsi", "kelas", "jika", "ataujika", "lainnya",
+                    "selama", "ulangi", "ulangidari", "setiap", "setiapdari",
+                    "untuk"
+                )
+
+                for awal in AWALAN_BLOK:
+                    if kode.strip().startswith(awal):
+                        PERLU_TITIKAWAL = False
+                        break
+
+                # Jika ekspresi sederhana (misal: cetak(...), 5+6, _buah[2 hingga 4])
+                if PERLU_TITIKAWAL:
                     kode = f"titikawal {{ {kode} }}"
+
 
                 tree = parser.parse(kode)
                 hasil = ctx.run(tree)

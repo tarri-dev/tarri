@@ -1,0 +1,72 @@
+# kata_bijak.py
+import random
+
+quotes = [
+    "Code hari ini, sukses esok. Setiap baris membawa kemajuan.",
+    "Bug hanyalah guru tersembunyi, sabar dan pelajari.",
+    "Semangat belajar = kode yang terus berjalan tanpa henti.",
+    "Setiap error adalah peluang belajar, bukan alasan menyerah.",
+    "Debugging = meditasi programmer. Tenang, fokus, ulangi.",
+    "Setiap baris kode berarti kemajuan, walau kecil.",
+    "Jangan takut salah, takutlah jika tidak mencoba sama sekali.",
+    "Kode kecil hari ini, aplikasi besar esok. Sabar & konsisten.",
+    "Belajar coding = belajar kesabaran dan ketelitian.",
+    "Kreativitas muncul saat mengetik, jangan ragu bereksperimen.",
+    "Setiap commit adalah langkah menuju mastery dan skill baru.",
+    "Stack overflow bukan musuh, tapi teman dalam kesulitan.",
+    "Jangan berhenti di versi beta, iterasi terus sampai sempurna.",
+    "Kegagalan hanyalah compile error sementara, perbaiki & lanjut.",
+    "Semangat = syntax yang benar, tanpa semangat kode tak jalan.",
+    "Program hidupmu, jangan debug hidup orang lain.",
+    "Update skill, bukan hanya software. Upgrade diri selalu.",
+    "Konsistensi > Inspirasi sesaat. Habit membentuk master coder.",
+    "Dokumentasi adalah warisan coder sejati, tulis & bagi.",
+    "Error adalah tanda kamu mencoba, jangan takut mencoba lagi.",
+    "Learning curve = bukit kesuksesan, terus panjat perlahan.",
+    "Semangat belajar tak pernah deprecated, selalu relevan.",
+    "Shortcut hanya untuk keyboard, bukan jalan hidupmu.",
+    "Terus coding, terus berkembang, jangan biarkan stagnasi.",
+    "Kreatif + Konsisten = Programmer hebat yang dihormati.",
+    "Build habit, bukan hanya project. Habit lebih awet dari ide.",
+    "Jangan takut push ke repo baru, ide berkembang lewat aksi.",
+    "Refactor dirimu setiap hari, jangan hanya kode yang di-refactor.",
+    "Belajar lama, hasilnya awet. Kesabaran adalah investasi.",
+    "Debug hidup, perbaiki langkah, jangan stuck di satu error.",
+    "Problem = challenge untuk skill, jangan takut tantangan.",
+    "Semangat coding menyalakan imajinasi, jangan padamkan api.",
+    "Jangan menunda compile impianmu, run sekarang juga.",
+    "Kegagalan = versi lama sebelum sukses. Version control hidupmu.",
+    "Algorithm hidup: coba, error, perbaiki, ulangi hingga berhasil.",
+    "Setiap function punya tujuan, seperti hidup yang bermakna.",
+    "Life is code, run it wisely, jangan lupa dokumentasikan.",
+    "Persistence > Syntax sempurna. Kesabaran menang melawan error.",
+    "Hack problem, bukan prinsip. Jangan kompromi dengan moral.",
+    "Belajar terus, upgrade diri, jangan biarkan skill mati.",
+    "Kode tanpa passion = error hidup, temukan passionmu.",
+    "Comment positif di hati, bukan hanya di kode. Sebarkan energi.",
+    "Selalu test sebelum deploy keputusan, jangan asal commit.",
+    "Semangat + fokus = infinite loop produktif tanpa crash.",
+    "Setiap challenge = latihan skill baru, nikmati prosesnya.",
+    "Jangan takut merge ide baru, kolaborasi bikin kuat.",
+    "Variabel hidupmu = apa yang kamu isi, pilih yang baik.",
+    "Compile mimpi, run kenyataan, jangan hanya debug ide.",
+    "Semangat = IDE untuk hidup, jangan biarkan freeze.",
+    "Programmer sejati tak pernah berhenti belajar, upgrade diri tiap hari.",
+    "Refactor mindset = hidup lebih efisien, lebih bersih.",
+    "Bug di hidup = lesson learnt, jangan panik, perbaiki.",
+    "Setiap script kecil bisa jadi masterpiece suatu hari.",
+    "Coding bukan sekadar pekerjaan, tapi seni problem solving.",
+    "Versi beta dirimu hari ini, stable release esok.",
+    "Iterasi terus, jangan stuck di satu commit kehidupan.",
+    "Jangan takut rollback, kadang kita perlu undo keputusan.",
+    "Debug stress = tarik napas, fokus, ulangi langkah.",
+    "Function hidupmu: input = usaha, output = hasil.",
+    "Looping kesuksesan: coba → gagal → belajar → sukses."
+]
+
+
+def kata_bijak():
+    """Menampilkan satu quotes bijak programmer secara random dengan warna merah"""
+    quote = random.choice(quotes)
+    # ANSI escape code untuk warna merah: \033[31m ... \033[0m
+    print(f"\033[91m '{quote}' \033[0m")

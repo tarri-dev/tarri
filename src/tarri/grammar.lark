@@ -149,8 +149,10 @@ expr_stmt: expr
 args: expr ("," expr)*
 
 ?index_expr: expr                       -> single_index
-           | expr "hingga" expr         -> slice_expr
-           | expr ("dan" expr)+         -> pair_expr
+        //    | expr "hingga" expr         -> slice_expr
+        //    | expr ("dan" expr)+         -> pair_expr
+           | expr ("..") expr           -> slice_expr
+           | expr ("&") expr+           -> pair_expr
            |                            -> empty_index
 
 // ========================

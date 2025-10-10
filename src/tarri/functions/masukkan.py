@@ -107,15 +107,5 @@ def masukkan(interpreter, args):
         def __str__(self):
             return str(self.val)
 
-    # --- Kalau fungsi dipakai di assignment, return value saja ---
-    import inspect
-    frame = inspect.currentframe().f_back
-    line = frame.f_lineno
-    code_line = ""
-    try:
-        code_line = frame.f_code.co_filename
-    except Exception:
-        pass
-
-    # asumsi: kalau konteks assignment, interpreter akan tangani
-    return value
+    # --- Return wrapper, bukan nilai mentah ---
+    return _InputWrapper(value, var_name, interpreter.context)
