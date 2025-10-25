@@ -14,4 +14,5 @@ def exec_call_expr(self, node):
                 args.append(self.evaluate_expr(arg))
 
     result = self.exec_func_call(func_name, args)
+    # print("[DEBUG CALL EXPR]", func_name, args)
     return result

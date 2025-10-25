@@ -20,4 +20,6 @@ def exec_auto_var_decl(self, node):
     else:
         self.error(f"[tarri | interpreter | auto_var_decl] Operator assignment tidak dikenal: {op_node.value}")
 
+    # print("[DEBUG VAR DECL]", var_name, "=", value)
+    # print("[DEBUG EVAL VALUE]", value, type(value))
     return self.context[var_name]

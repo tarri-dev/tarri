@@ -2,23 +2,28 @@
 # call_function.py - Handler fungsi built-in TARRI
 # =====================================================
 
-from tarri.functions.kata_acak import kata_acak
+from tarri.functions.huruf_acak import huruf_acak
 from tarri.functions.lorem_ipsum import lorem_ipsum
 from tarri.functions.angka_acak import angka_acak
 from tarri.functions.uuid import UUID
 from tarri.functions.slug import slug
-from tarri.functions.tipedata import tipedata
+from tarri.functions.tipe_data import tipe_data
 from tarri.functions.masukkan import masukkan
+from tarri.functions.urutkan_data import urutkan_data
 from tarri.functions.cari_data import cari_data
 from tarri.functions.termasuk import termasuk
 from tarri.functions.halaman import halaman
 from tarri.functions.tujuan import tujuan
 from tarri.functions.rute import rute
 from tarri.functions.cetak_henti import cetak_henti
+from tarri.functions.cetak_detail import cetak_detail
 from tarri.functions.lacak import lacak
+from tarri.functions.lempar_pesan import lempar_pesan
 from tarri.functions.kata_bijak import kata_bijak
 from tarri.functions.sandi import buat_sandi, cek_sandi
 from tarri.functions.kelolaTxt import simpanTxt, bacaTxt, perbaruiTxt, hapusTxt
+from tarri.functions.kelolaJson import baca_json, buat_json, simpan_json
+
 
 # database
 from tarri.database.buatbasisdata import BuatBasisData
@@ -26,7 +31,7 @@ from tarri.database.buattabel import BasisData, BuatTabel, HapusTabel
 from tarri.database.permintaan import simpan, ambil, semua, rapi, dimana, atau_dimana, dan_dimana, ubah, hapus, pilih, pertama, batasi, urutkan
 
 # support
-from tarri.support import waktu, teks, matematika, waktu_proses
+from tarri.support import waktu,teks,matematika,waktu_proses,list,bilangan,lainya
 
 # sesi
 from tarri.session.sesi import sesi as sesi_py
@@ -111,6 +116,8 @@ def call_function(self, func_name, args):
         return masukkan(self, args)
     elif func_name == "cari_data":
         return cari_data(self, args)
+    elif func_name == "urutkan_data":
+        return urutkan_data(self, args)
     elif func_name == "termasuk":
         return termasuk(self, args)
     elif func_name == "rute":
@@ -119,12 +126,71 @@ def call_function(self, func_name, args):
         return tujuan(args)
     elif func_name == "halaman":
         return halaman(self, args)
-    elif func_name == "sesi":
-        return sesi_py(self, args)
     elif func_name == "cetak_henti":
         return cetak_henti(self, args)
+    elif func_name == "cetak_detail":
+        try:
+            val = args[0] if args else None
+            return cetak_detail(val)
+        except Exception as e:
+            print(f"[tarri | cetak_detail] Gagal mencetak: {e}")
+            return None
+
     elif func_name == "lacak":
         return lacak(self, args)
+    
+    elif func_name == "lempar_pesan":
+        return lempar_pesan(args)
+    
+    
+    # =====================================================
+    # Fungsi Sesi Lanjutan (file/memori)
+    # =====================================================
+    elif func_name == "sesi":
+        return sesi_py(self, args)
+    
+    elif func_name == "sesi_tipe":
+        from tarri.session.sesi import sesi_tipe
+        return sesi_tipe(args[0]) if args else sesi_tipe()
+
+    elif func_name == "sesi_lokasi":
+        from tarri.session.sesi import sesi_lokasi
+        return sesi_lokasi(args[0]) if args else sesi_lokasi()
+
+    elif func_name == "sesi_simpan":
+        from tarri.session.sesi import sesi_simpan
+        if len(args) < 2:
+            self.error("[tarri | sesi] Minimal pasangan dua argumen")
+            return None
+        return sesi_simpan(*args)
+
+    elif func_name == "sesi_ambil":
+        from tarri.session.sesi import sesi_ambil
+        if not args:
+            return sesi_ambil() 
+        elif len(args) == 1:
+            return sesi_ambil(args[0]) 
+        else:
+            return sesi_ambil(*args)
+
+    elif func_name == "sesi_semua":
+        from tarri.session.sesi import sesi_semua
+        return sesi_semua()
+
+    elif func_name == "sesi_hapus":
+        from tarri.session.sesi import sesi_hapus
+        if not args:
+            self.error("[tarri | sesi] Hapus membutuhkan satu argumen")
+            return None
+        return sesi_hapus(args[0])
+
+    elif func_name == "sesi_perbarui":
+        from tarri.session.sesi import sesi_perbarui
+        if not args:
+            self.error("[tarri | sesi] Perbarui membutuhkan minimal satu argumen")
+            return None
+        return sesi_perbarui(args[0])
+
 
     # =====================================================
     # Database Object / Blueprint
@@ -154,8 +220,8 @@ def call_function(self, func_name, args):
     # =====================================================
     # Fungsi Random / Utility
     # =====================================================
-    elif func_name == "kata_acak":
-        return kata_acak(args[0] if args else 5)
+    elif func_name == "huruf_acak":
+        return huruf_acak(args[0] if args else 5)
     elif func_name == "lorem_ipsum":
         return lorem_ipsum(args[0] if args else 5)
     elif func_name == "angka_acak":
@@ -168,8 +234,8 @@ def call_function(self, func_name, args):
         return UUID()
     elif func_name == "slug":
         return slug(args[0])
-    elif func_name == "tipedata":
-        return tipedata(args[0])
+    elif func_name == "tipe_data":
+        return tipe_data(args[0])
     elif func_name == "buat_sandi":
         return buat_sandi(str(args[0]) if args else "")
     elif func_name == "cek_sandi":
@@ -179,8 +245,9 @@ def call_function(self, func_name, args):
         return cek_sandi(args[0], args[1])
 
     # =====================================================
-    # File / Text
+    # File / Text /JSON
     # =====================================================
+    # TXT
     elif func_name == "simpanTxt":
         return simpanTxt(args[0], args[1], ctx=self.context, tarri_file=getattr(self, "current_file", None))
     elif func_name == "bacaTxt":
@@ -193,6 +260,16 @@ def call_function(self, func_name, args):
             return perbaruiTxt(args[0], args[1], args[2], ctx=self.context, tarri_file=getattr(self, "current_file", None))
     elif func_name == "hapusTxt":
         return hapusTxt(args[0], ctx=self.context, tarri_file=getattr(self, "current_file", None))
+    
+    # JSON
+    elif func_name == "buat_json":
+        return buat_json(args[0])
+
+    elif func_name == "baca_json":
+        return baca_json(args[0])
+    
+    elif func_name == "simpan_json":
+        return simpan_json(args[0], args[1], args[2])
 
     # =====================================================
     # Support Functions (waktu, teks, matematika)
@@ -213,6 +290,8 @@ def call_function(self, func_name, args):
         return teks.panjang(args[0])
     elif func_name == "awal_kapital":
         return teks.awal_kapital(args[0])
+    elif func_name == "kunci":
+        return teks.kunci(args[0])
     elif func_name == "besar":
         return teks.besar(args[0])
     elif func_name == "kecil":
@@ -261,15 +340,60 @@ def call_function(self, func_name, args):
     # =====================================================
     # Statistik
     # =====================================================
-    elif func_name == "jumlah":
-        return matematika.jumlah(args[0])
+    # elif func_name == "jumlah":
+    #     return matematika.jumlah(args[0])
     elif func_name == "median":
         return matematika.median(args[0])
     elif func_name == "variansi":
         return matematika.variansi(args[0])
     elif func_name == "std_dev":
         return matematika.std_dev(args[0])
+    
+    # =====================================================
+    # List
+    # =====================================================
+    elif func_name == "unik":
+        return list.unik(args[0])
 
+    elif func_name == "cari_index":
+        return list.cari_index(args[0], args[1])
+
+    elif func_name == "hapus_index":
+        return list.hapus_index(args[0], args[1])
+
+    elif func_name == "balik":
+        return list.balik(args[0])
+    
+    # =====================================================
+    # Bilangan
+    # =====================================================
+    elif func_name == "bilangan_prima":
+        return bilangan.bilangan_prima(args[0])
+
+    elif func_name == "bilangan_ganjil":
+        return bilangan.bilangan_ganjil(args[0])
+
+    elif func_name == "bilangan_negatif":
+        return bilangan.bilangan_negatif(args[0])
+
+    elif func_name == "bilangan_pecahan":
+        return bilangan.bilangan_pecahan(args[0])
+    
+    elif func_name == "bilangan_genap":
+        return bilangan.bilangan_genap(args[0])
+    
+    elif func_name == "bilangan_fibonacci":
+        return bilangan.bilangan_fibonacci(args[0])
+    
+    elif func_name == "cek_bilangan":
+        return bilangan.cek_bilangan(args[0])
+    
+    elif func_name == "pi":
+        digits = args[0] if args else 2
+        return bilangan.pi(digits)
+
+    
+    
     # =====================================================
     # Lainnya
     # =====================================================
@@ -283,6 +407,18 @@ def call_function(self, func_name, args):
         return matematika.ceil(args[0])
     elif func_name == "kata_bijak":
         return kata_bijak()
+    
+    
+    elif func_name == "jumlah":
+        return lainya.jumlah(self, args)
+    elif func_name == "ada":
+        return lainya.ada(self, args)
+    elif func_name == "semua":
+        return lainya.semua(self, args)
+    elif func_name == "himpunan":
+        return lainya.himpunan(self, args)
+
+    
 
     # =====================================================
     # Custom / Context function fallback

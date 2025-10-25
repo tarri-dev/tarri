@@ -36,24 +36,30 @@ from tarri.interpreter.exec_nodes.compare import compare
 from tarri.interpreter.exec_nodes.foreach_stmt import exec_foreach_stmt
 from tarri.interpreter.exec_nodes.loop_stmt import exec_loop_stmt, exec_break_stmt, exec_continue_stmt
 
-
+from lark import Tree
 
 
 class Context:
     
     def __init__(self, status=False, root_project=None):
+        # Status runtime & konfigurasi proyek
         self.status = status
-        self.functions = {}
-        self._return_flag = None
+        self.public_dir = root_project if root_project else None
+
+        # Ruang lingkup variabel & konteks eksekusi
         self.globals = {}
+        self.global_scope = self.globals
         self.context = self.globals
-        
-        self.context["sesi"] = sesi_py()  
+
+        # Fungsi dan sesi runtime
+        self.functions = {}
         self.session = {}
-        
-        self.public_dir = None
-        if root_project:
-            self.public_dir = root_project
+        self.context["sesi"] = sesi_py()
+
+        # Nilai sentinel internal
+        self._return_flag = None
+        self.NIL_VALUE = object()
+
     
     def redirect(self, path, context):
         self.context["sesi"].simpan("redirect_data", context)
@@ -94,13 +100,15 @@ class Context:
         return self._return_flag
      
     def exec_print_stmt(self, node):
-        expr_node = node.children[0]
-        value = self.evaluate_expr(expr_node)
-        
-        if isinstance(value, bool):
-            print("Benar" if value else "Salah")
-        else:
-            print(value)
+        outputs = []
+
+        for child in node.children:
+            value = self.evaluate_expr(child)
+            if isinstance(value, bool):
+                value = "Benar" if value else "Salah"
+            outputs.append(str(value) if value is not None else "")
+
+        print(" ".join(outputs), flush=True)
             
     def exec_if_stmt(self, node):
         idx = 0
@@ -150,6 +158,12 @@ class Context:
     def compare(self, op, left, right):
         from tarri.interpreter.exec_nodes.compare import compare as _compare
         return _compare(self, op, left, right) 
+    
+    def try_catch_stmt(self, items):
+        while len(items) < 4:
+            items.append(None)
+        return Tree("try_catch_stmt", items)
+
       
     def exec_node(self, node):
         tipe = node.data
@@ -230,6 +244,27 @@ class Context:
             else:
                 self._return_flag = None
             return self._return_flag
+        
+        elif tipe == "try_catch_stmt":
+            coba_block = node.children[0]
+            var_name = str(node.children[1]) if len(node.children) > 1 else None
+            tangkap_block = node.children[2] if len(node.children) > 2 else None
+            akhirnya_block = node.children[3] if len(node.children) > 3 else None
+
+            try:
+                self.exec_node(coba_block)
+            except Exception as e:
+                if tangkap_block:
+                    if var_name:
+                        msg = str(e)
+                        # Bersihkan bracket jika pesan dilempar dengan [pesan]
+                        if msg.startswith("[") and msg.endswith("]"):
+                            msg = msg[1:-1]
+                        self.context[var_name] = msg
+                    self.exec_node(tangkap_block)
+            finally:
+                if akhirnya_block:
+                    self.exec_node(akhirnya_block)
 
         else:
             print(f"[tarri | interpreter] Node tidak dikenali: {tipe}")

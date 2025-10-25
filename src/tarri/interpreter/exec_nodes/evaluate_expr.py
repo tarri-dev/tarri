@@ -208,6 +208,16 @@ def evaluate_expr(self, node):
             elif node.data == "or_expr":
                 return bool(self.evaluate_expr(node.children[0])) or bool(self.evaluate_expr(node.children[1]))
 
+            elif node.data == "in_expr":
+                kiri = self.evaluate_expr(node.children[0])
+                kanan = self.evaluate_expr(node.children[1])
+
+                try:
+                    return kiri in kanan
+                except TypeError:
+                    return False
+
+
             elif node.data == "identifier":
                 name_token = node.children[0]
                 name = name_token.value if isinstance(name_token, Token) else str(name_token)
@@ -257,43 +267,30 @@ def evaluate_expr(self, node):
 
                 elif idx_node.data == "pair_expr":
                     try:
-                        # Ambil semua token (bisa angka, 'dan', atau 'hingga')
                         raw_parts = [str(self.evaluate_expr(ch)).strip() for ch in idx_node.children if ch is not None]
 
                         indices = []
                         i = 0
                         while i < len(raw_parts):
                             part = raw_parts[i]
-
-                            # Tangani "hingga"
-                            # if part.isdigit() and i + 2 < len(raw_parts) and raw_parts[i + 1] == ".." and raw_parts[i + 2].isdigit():
-                            #     start = int(part)
-                            #     end = int(raw_parts[i + 2])
-                            #     indices.extend(range(start, end + 1))
-                            #     i += 3
-                            #     continue
                             
                             if re.match(r"^\d+$", part) and i + 2 < len(raw_parts) and raw_parts[i + 1] == ".." and re.match(r"^\d+$", raw_parts[i + 2]):
                                 start = int(part)
                                 end = int(raw_parts[i + 2])
                                 indices.extend(range(start, end + 1))
 
-                            # Tangani angka tunggal
                             if part.isdigit():
                                 indices.append(int(part))
 
                             i += 1
 
-                        # Buang duplikat dan urutkan
                         indices = sorted(set(indices))
 
-                        # Ambil hasil dari objek
                         result = [obj[i] for i in indices if 0 <= i < len(obj)]
 
-                        # Gabungkan jadi string enak
-                        if all(isinstance(r, str) for r in result):
-                            return ", ".join(result)
-                        return result
+                        if len(result) == 1:
+                            return result[0]
+                        return result    
 
                     except Exception as e:
                         self.error(f"Pair gagal: {e}")
@@ -331,13 +328,16 @@ def evaluate_expr(self, node):
             elif node.data == "null":
                 return None
 
+            
+
             self.error(f"[tarri | evaluate_expr] Tidak tahu cara evaluasi node jenis '{node.data}'")
             return None
-
+            
         elif isinstance(node, Token):
             if node.type == "VAR_NAME":
-                return self.context.get(node.value, None)
-            
+                val = self.context.get(node.value, None)
+                return val
+
             elif node.type == "NUMBER":
                 return DATATYPES["angka"](node.value) if node.value.isdigit() else DATATYPES["desimal"](node.value)
 

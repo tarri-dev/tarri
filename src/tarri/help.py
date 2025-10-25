@@ -33,12 +33,14 @@ def show_help():
 
 {BLUE}Perintah utama:{RESET}
 
-      jalankan  <namaprogram.tarri>       Jalankan file .tarri
-      --status                            Tampilkan log status eksekusi
-      --ast                               Tampilkan AST hasil parsing
-      -b / --bantuan                      Menampilkan menu bantuan
-      -i / --informasi                    Menampilkan menu informasi
-      -v / --versi / versi                Menampilkan versi bahasa tarri
+        jalankan  <namaprogram.tarri>       Jalankan file .tarri
+        log                                 Melihat log aktifitas program | pantau untuk lihat terus
+      
+        --status                            Tampilkan log status eksekusi
+        --ast                               Tampilkan AST hasil parsing
+        -b / --bantuan                      Menampilkan menu bantuan
+        -i / --informasi                    Menampilkan menu informasi
+        -v / --versi / versi                Menampilkan versi bahasa tarri
       
 {BLUE}situs      : bahasatarri.com{RESET}
 {BLUE}github     : github.com/tarri-dev{RESET}

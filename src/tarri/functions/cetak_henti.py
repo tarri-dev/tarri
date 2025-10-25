@@ -1,27 +1,7 @@
 # tarri/src/tarri/functions/cetak_henti.py
 from tarri.parser_global import parser
-import io, contextlib, html
-import subprocess
+import html
 import json
-
-# import time
-# t0 = time.time()
-# # proses render
-# t1 = time.time()
-# print(f"[tarri | cetak_henti] waktu render cetak_henti: {t1 - t0:.4f} detik")
-
-
-def get_tarri_version():
-    try:
-        result = subprocess.run(
-            ["tarri", "-v"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True
-        )
-        return result.stdout.strip()
-    except Exception:
-        return "[tarri | cetak_henti] Versi tidak ditemukan"
 
 def cetak_henti(interpreter, args):
     """
@@ -135,7 +115,7 @@ def cetak_henti(interpreter, args):
     <div class="tarri-dump-container">
         <div class="dump-header">
             <div class="dump-title">
-                Output cetak_henti() | {get_tarri_version()}
+                Hasil Cetak Henti
             </div>
             <div class="dump-type-badge">{value_type}</div>
         </div>
@@ -147,17 +127,11 @@ def cetak_henti(interpreter, args):
             </div>
             
             <div class="footer center">
-                TARRI Debug Output • Dihentikan secara manual
+                TarriWeb • Dihentikan secara manual
             </div>
         </div>
     </div>
     """
 
-    # Cetak ke stdout (yang nanti ditangkap replace_tarri_with_output)
     print(output_html)
     raise StopIteration(output_html)
-    # Hentikan eksekusi dengan exception custom
-    # raise StopIteration("[tarri | cetak_henti] eksekusi dihentikan oleh cetak_henti()")
-
-# Alias pendek
-ch = cetak_henti

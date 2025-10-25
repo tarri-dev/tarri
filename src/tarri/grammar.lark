@@ -70,12 +70,6 @@ class_decl: "kelas" NAME ["perluas" NAME] block
 // ===  KONTROL ALUR  ===
 // ========================
 
-// mendukung gaya:
-// jika _x == 5 { ... }
-// jika(_x == 5) { ... }
-// ataujika(_x > 5) { ... }
-// lainnya { ... }
-
 if_stmt: if_branch ("ataujika" expr block | "ataujika" "(" expr ")" block)* ["lainnya" block]
 
 if_branch: ("jika" expr block | "jika" "(" expr ")" block)
@@ -106,7 +100,9 @@ try_catch_stmt: "coba" block "tangkap" "(" VAR_NAME ")" block ["akhirnya" block]
 // ===  PRINT & OUTPUT  ===
 // ========================
 
-print_stmt: "cetak" expr
+// print_stmt: "cetak" expr
+print_stmt: "cetak" "(" [expr ("," expr)*] ")"
+
 
 // ========================
 // ===  EKSPRESI UMUM  ===
@@ -119,8 +115,11 @@ expr_stmt: expr
 ?expr_or: expr_or "atau" expr_and   -> or_expr
         | expr_and
 
-?expr_and: expr_and "dan" expr_not  -> and_expr
-         | expr_not
+?expr_and: expr_and "dan" expr_in   -> and_expr
+         | expr_in
+
+?expr_in: expr_in "dalam" expr_not  -> in_expr
+        | expr_not
 
 ?expr_not: "bukan" expr_cmp          -> not_expr
          | expr_cmp
@@ -189,7 +188,12 @@ MINUS_EQUAL: "-="
 EQUAL: "="
 VAR_NAME: /_[a-zA-Z][a-zA-Z0-9_]*/
 NAME: /[a-zA-Z][a-zA-Z0-9_]*/
-NUMBER: /\d+(\.\d+)?/
+// NUMBER: /\d+(\.\d+)?/
+// NUMBER: /-?\d+(\.\d+)?/
+FLOAT: /-?\d+\.\d+/
+INT:   /-?\d+/
+NUMBER: FLOAT | INT
+
 ESCAPED_STRING: /"[^"]*"/
 TRIPLE_STRING: /(\"\"\"([^\"\\]|\\.|\"(?!\"\")|\\n)*\"\"\")|('''([^'\\]|\\.|'(?!'')|\\n)*''')/
 SINGLE_QUOTE_STRING: /'[^']*'/

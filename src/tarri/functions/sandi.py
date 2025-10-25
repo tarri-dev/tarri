@@ -30,38 +30,3 @@ def cek_sandi(password_plain, hash_salt):
         return hashlib.sha512((salt + str(password_plain)).encode("utf-8")).hexdigest() == hashed
     except Exception:
         return False
-
-
-# cara menggunakan sandi()
-
-# titikawal{
-
-    
-#     _username = "dana"
-#     _sandi = buatSandi("123")
-
-#     # input dari user
-#     masukkan(_u,"Masukkan username :")
-#     masukkan(_p,"Masukkan sandi :")
-
-#     jika (_u == _username) {
-        
-#         jika (cekSandi(_p, _sandi)) {
-
-#             cetak "✅ Login berhasil, selamat datang " + _u
-
-#         } ataujika (_p == "") {
-
-#             cetak "⚠️ Sandi tidak boleh kosong!"
-
-#         } lainnya {
-
-#             cetak "❌ Sandi salah!"
-#         }
-
-#     } lainnya {
-
-#         cetak "❌ Username tidak dikenali!"
-#     }
-
-# }

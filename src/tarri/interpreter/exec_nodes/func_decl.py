@@ -14,5 +14,4 @@ def exec_func_decl(self, node):
     body = node.children[-1]
     self.functions[func_name] = (params, body)
     if self.status:
-        print(f"[tarri | interpreter | func_decl] Fungsi '{func_name}' terdaftar dengan parameter {params}")
         return None

@@ -36,3 +36,9 @@ def gabung(list_teks: list, pemisah: str = "") -> str:
 def awal_kapital(teks: str) -> str:
     """Huruf awal tiap kata kapital (capitalize)"""
     return str(teks).title()
+
+def kunci(data):
+    """Mengembalikan daftar kunci dari dict (kamus)"""
+    if isinstance(data, dict):
+        return list(data.keys())
+    raise TypeError("kunci() hanya bisa digunakan untuk tipe kamus (dict)")

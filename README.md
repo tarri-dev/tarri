@@ -7,7 +7,7 @@ Tujuan Tarri adalah membuat kode terasa seperti membaca sebuah cerita sehari-har
 
 ## Cara Install
 
-Bahasa **TARRI** saat ini berada pada versi **0.7.8**, dan masih dalam tahap pengembangan aktif.  
+Bahasa **TARRI** saat ini berada pada versi **0.7.x**, dan masih dalam tahap pengembangan aktif.  
 Untuk saat ini, Tarri **hanya tersedia melalui pemasangan via PyPI** (Python Package Index), karena penerjemahnya — **Tarrian** — dibangun menggunakan **Python**.
 
 ### Langkah Instalasi
@@ -36,7 +36,7 @@ tarri -v
 ```
 Hasilnya
 ```bash
-Tarri | 0.7.8
+Tarri | 0.7.x
 ```
 
 ### Persyaratan Sistem
@@ -116,7 +116,7 @@ Tarri mendukung mode penulisan kode langsung di terminal komputer dimana Tarri d
 
 ```bash
 Memulai Mode Interaktif Tarri...
-[TARRI | Mode Interaktif] Tarri | 0.7.8 | 10-10-2025 15:59:11
+[TARRI | Mode Interaktif] Tarri | 0.7.x | 10-10-2025 15:59:11
 Ketik 'keluar' untuk berhenti atau 'bersihkan' untuk membersihkan layar.
 bahasatarri.com | github.com/tarri-dev | instagram.com/bahasatarri
 [>>>]
@@ -125,7 +125,7 @@ bahasatarri.com | github.com/tarri-dev | instagram.com/bahasatarri
 Setelah Mode Interaktif ini terbuka, Anda bisa langsung mencoba menulis program pertama Anda.
 ```bash
 Memulai Mode Interaktif Tarri...
-[TARRI | Mode Interaktif] Tarri | 0.7.8 | 10-10-2025 15:59:11
+[TARRI | Mode Interaktif] Tarri | 0.7.x | 10-10-2025 15:59:11
 Ketik 'keluar' untuk berhenti atau 'bersihkan' untuk membersihkan layar.
 bahasatarri.com | github.com/tarri-dev | instagram.com/bahasatarri
 [>>>]cetak("Halo Indonesia!")
@@ -134,7 +134,7 @@ Halo Indonesia!
 ```
 
 
-## Daftar Keyword (Versi 0.7.8)
+## Daftar Keyword (Versi 0.7.x)
 
 ###  Variabel
 
@@ -227,7 +227,7 @@ Halo Indonesia!
 
 -   `->angka` → konversi ke numerik. [bisa]
     
--   `->kata()` → konversi ke teks. [bisa]
+-   `->kata` → konversi ke teks. [bisa]
     
 -   Mendukung:
     
@@ -314,7 +314,7 @@ Halo Indonesia!
 
 ##  Status Pengembangan
 
-Bahasa **TARRI** saat ini berada pada versi **0.7.8 (tahap pengembangan)**.  
+Bahasa **TARRI** saat ini berada pada versi **0.7.x (tahap pengembangan)**.  
 Sebagian besar sintaks inti sudah stabil, termasuk fungsi, percabangan, perulangan, dan integrasi basis data.  
 Namun beberapa fitur seperti _error handling_ (`coba`, `tangkap`, `akhirnya`) masih dalam tahap pengembangan.
 
