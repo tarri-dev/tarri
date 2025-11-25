@@ -69,4 +69,4 @@ def kata_bijak():
     """Menampilkan satu quotes bijak programmer secara random dengan warna merah"""
     quote = random.choice(quotes)
     # ANSI escape code untuk warna merah: \033[31m ... \033[0m
-    print(f"\033[91m '{quote}' \033[0m")
+    print(f"{quote}")

@@ -1,23 +1,19 @@
-from .rute import ROUTES
-
+# tarri/functions/tujuan.py
 def tujuan(name: str, *args) -> str:
-    name = name.strip()
+    """
+    Versi ringan: hanya mengembalikan path absolut atau relatif.
+    Tidak lagi bergantung pada ROUTES.
+    """
+    if not name:
+        return "#"
 
-    # Ganti {1}, {2}, dst dengan args
+    # Ganti {1}, {2}, dst dengan args (untuk dinamis)
     for i, arg in enumerate(args, start=1):
         name = name.replace(f"{{{i}}}", str(arg))
 
-    # Jika sudah ada / di awal, langsung cocokkan
+    # Jika sudah berupa path absolut
     if name.startswith("/"):
-        for method, regex, _ in ROUTES:
-            if regex.match(name):  # tidak batasi ke GET
-                return name
-        return "#"
+        return name
 
-    # Jika name adalah nama file, cari URL-nya
-    for method, regex, target in ROUTES:
-        if target.endswith("/" + name) or target.endswith("/" + name + ".tarri") or target.endswith("/" + name + ".tarri.html"):
-            for test_url in ["/" + name, "/" + name + ".tarri", "/" + name + ".tarri.html"]:
-                if regex.match(test_url):
-                    return test_url
-    return "#"
+    # Jika bukan path, anggap sebagai nama fungsi atau file
+    return f"/{name.strip()}"

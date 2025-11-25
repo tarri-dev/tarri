@@ -1,20 +1,57 @@
-import os, json, uuid
+import os, json, uuid, time, socket, platform, locale
 from pathlib import Path
+from datetime import datetime
 
 class SesiManager:
-    def __init__(self):
+    EXPIRE_SECS = 86400  # 24 jam
+
+    def __init__(self, lokasi=None, sesi_id=None, meta=None):
         self.tipe = "berkas"
-        self.lokasi = Path(os.getcwd())
+        
+        # Default folder sesi di ./sesi/
+        default_dir = Path(os.getcwd()) / "sesi"
+        self.lokasi = Path(lokasi or default_dir)
+        os.makedirs(self.lokasi, exist_ok=True)
+
+        # sesi_id unik per browser / client
+        self.sesi_id = sesi_id or str(uuid.uuid4())
+        self.file_path = self.lokasi / f"tarri_sesi_{self.sesi_id}.json"
+
         self.data = {}
-        self.file_path = self.lokasi / "tarri_sesi.json"
         self._muat()
-        # Tambahkan sesi_id otomatis jika belum ada
-        if "sesi_id" not in self.data:
-            self.data["sesi_id"] = str(uuid.uuid4())
-            self._simpan()
+
+        now = time.time()
+        meta = meta or {}
+        defaults = {
+            "sesi_id": {"value": self.sesi_id, "created": now},
+            "_ip_private": {"value": self._get_private_ip(), "created": now},
+            "_ip_public": {"value": meta.get("ip_public", "unknown"), "created": now},
+            "_browser": {"value": meta.get("browser", "unknown"), "created": now},
+            "_os": {"value": platform.system() + " " + platform.release(), "created": now},
+            "_language": {"value": locale.getdefaultlocale()[0] or "unknown", "created": now},
+            "_gmt": {"value": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"), "created": now},
+        }
+
+        for k, v in defaults.items():
+            if k not in self.data:
+                self.data[k] = v
+
+        self._simpan()
+
+
+    # -------------------------------
+    # Helper untuk ambil IP private
+    # -------------------------------
+    def _get_private_ip(self):
+        try:
+            hostname = socket.gethostname()
+            ip = socket.gethostbyname(hostname)
+            return ip
+        except Exception:
+            return "127.0.0.1"
 
     # ==============================
-    # KONFIGURASI
+    # CONFIG / API
     # ==============================
     def set_tipe(self, tipe):
         if tipe not in ["berkas", "sistem"]:
@@ -26,21 +63,17 @@ class SesiManager:
             self._muat()
         return tipe
 
-    def set_lokasi(self, path):
-        if not path:
-            path = os.getcwd()
-        self.lokasi = Path(path)
-        os.makedirs(self.lokasi, exist_ok=True)
-        self.file_path = self.lokasi / "tarri_sesi.json"
-        self._muat()
-        # pastikan sesi_id tetap ada
-        if "sesi_id" not in self.data:
-            self.data["sesi_id"] = str(uuid.uuid4())
-            self._simpan()
-        return str(self.lokasi)
+    def sesi_simpan(self, key, value):
+        return self.perbarui({key: value})
+
+    def sesi_ambil(self, key, default=None):
+        return self.ambil(key, default)
+
+    def sesi_hapus(self, key):
+        return self.hapus(key)
 
     # ==============================
-    # UTILITAS FILE
+    # FILE UTIL
     # ==============================
     def _muat(self):
         if self.tipe != "berkas":
@@ -48,7 +81,15 @@ class SesiManager:
         if self.file_path.exists():
             try:
                 with open(self.file_path, "r", encoding="utf-8") as f:
-                    self.data = json.load(f)
+                    raw_data = json.load(f)
+                    now = time.time()
+                    self.data = {}
+                    for k, v in raw_data.items():
+                        if isinstance(v, dict) and "created" in v and "value" in v:
+                            if now - v["created"] <= self.EXPIRE_SECS:
+                                self.data[k] = v
+                        else:
+                            self.data[k] = {"value": v, "created": now}
             except Exception:
                 self.data = {}
 
@@ -62,23 +103,37 @@ class SesiManager:
                     json.dumps(v)
                     safe_data[k] = v
                 except TypeError:
-                    safe_data[k] = str(v)
+                    safe_data[k] = {"value": str(v), "created": time.time()}
             with open(self.file_path, "w", encoding="utf-8") as f:
                 json.dump(safe_data, f, indent=2, ensure_ascii=False)
         except Exception as e:
-            print(f"[tarri | sesi] gagal menyimpan sesi: {e}")
+            print(f"[tarri | sesi] Gagal menyimpan sesi: {e}")
 
     # ==============================
     # AKSI SESI
     # ==============================
-
     def ambil(self, key, default=None):
         self._muat()
-        return self.data.get(self._unwrap(key), default)
+        k = self._unwrap(key)
+        if k not in self.data:
+            return default
+        item = self.data[k]
+        now = time.time()
+        if now - item.get("created", now) > self.EXPIRE_SECS:
+            self.hapus(k)
+            return default
+        return item.get("value", default)
 
     def semua(self):
         self._muat()
-        return dict(self.data)
+        now = time.time()
+        hasil = {}
+        for k, v in list(self.data.items()):
+            if now - v.get("created", now) <= self.EXPIRE_SECS:
+                hasil[k] = v.get("value")
+            else:
+                self.hapus(k)
+        return hasil
 
     def hapus(self, key):
         self._muat()
@@ -91,57 +146,73 @@ class SesiManager:
 
     def perbarui(self, data):
         self._muat()
-        cleaned = {self._unwrap(k): self._unwrap(v) for k, v in data.items()}
-        self.data.update(cleaned)
-        self._simpan()
-        return cleaned
+        now = time.time()
+        if isinstance(data, dict):
+            cleaned = {}
+            for k, v in data.items():
+                key = self._unwrap(k)
+                val = self._unwrap(v)
+                cleaned[key] = {"value": val, "created": now}
+            self.data.update(cleaned)
+            self._simpan()
+            return {k: v["value"] for k, v in cleaned.items()}
+        else:
+            self.data = {"value": self._unwrap(data), "created": now}
+            self._simpan()
+            return self.data["value"]
 
     # ==============================
-    # UTILITAS INTERNAL
+    # INTERNAL
     # ==============================
     def _unwrap(self, v):
         try:
             if hasattr(v, "nilai"):
-                v = v.nilai
-            elif hasattr(v, "value"):
-                v = v.value
-            elif hasattr(v, "to_python"):
-                v = v.to_python()
+                return self._unwrap(v.nilai)
+            if hasattr(v, "value"):
+                return self._unwrap(v.value)
+            if hasattr(v, "to_python"):
+                return self._unwrap(v.to_python())
+            if isinstance(v, list):
+                return [self._unwrap(i) for i in v]
+            if isinstance(v, dict):
+                return {str(self._unwrap(k)): self._unwrap(val) for k, val in v.items()}
+            return v
         except Exception:
-            pass
-        if not isinstance(v, (str, int, float, bool, type(None), dict, list)):
             return str(v)
-        return v
+
+# =========================
+# FUNGSI UTILITY
+# =========================
+def buat_sesi(browser_sesi_id=None, lokasi=None):
+    """Buat instance SesiManager baru untuk tiap browser/client"""
+    return SesiManager(lokasi=lokasi, sesi_id=browser_sesi_id)
 
 
-# ==============================================
-# GLOBAL + HELPER UNTUK TARRI
-# ==============================================
-_sesi = SesiManager()
-
-
-def sesi_tipe(tipe=None):
-    return _sesi.set_tipe(tipe)
-
-
-def sesi_lokasi(path=None):
-    return _sesi.set_lokasi(path)
-
+# =========================
+# API GLOBAL
+# =========================
+_sesi = SesiManager()  # fallback default
+sesi = _sesi
 
 def sesi_simpan(*args, **kwargs):
     data = {}
-    if args:
+    if len(args) == 1 and isinstance(args[0], dict):
+        data.update(args[0])
+    elif len(args) >= 2:
         if len(args) % 2 != 0:
-            raise ValueError("Argumen posisi harus genap (pasangan kunci-nilai)")
+            raise ValueError("[tarri | sesi] Minimal pasangan dua argumen")
         for i in range(0, len(args), 2):
             k = _sesi._unwrap(args[i])
             v = _sesi._unwrap(args[i + 1])
             data[k] = v
-
-    for k, v in kwargs.items():
-        data[_sesi._unwrap(k)] = _sesi._unwrap(v)
-
-    return _sesi.perbarui(data)
+    if kwargs:
+        for k, v in kwargs.items():
+            data[_sesi._unwrap(k)] = _sesi._unwrap(v)
+    if not data:
+        return {}
+    hasil = _sesi.perbarui(data)
+    _sesi._simpan()
+    return hasil
 
 def sesi_ambil(*args, default=None):
     if not args:
@@ -149,27 +220,30 @@ def sesi_ambil(*args, default=None):
     hasil = {k: _sesi.ambil(k, default) for k in args}
     if len(hasil) == 1:
         return list(hasil.values())[0]
-    return ", ".join(f"{k}: {v}" for k, v in hasil.items())
-
-def sesi_semua():
-    return _sesi.semua()
-
+    return hasil
 
 def sesi_hapus(k):
     return _sesi.hapus(k)
 
+def sesi_semua():
+    return _sesi.semua()
 
 def sesi_perbarui(data):
     return _sesi.perbarui(data)
 
+def sesi_tipe(self, tipe=None):
+    if not hasattr(self, "session"):
+        print("[tarri | sesi] Interpreter belum punya session")
+        return None
+    if tipe:
+        self.session.tipe = tipe
+    return self.session.tipe
 
-def sesi(key=None, value=None, **kwargs):
-    if key is None and not kwargs:
-        return sesi_semua()
-    if value is None and not kwargs:
-        if isinstance(key, (list, tuple)):
-            return {k: _sesi.ambil(k) for k in key}
-        return _sesi.ambil(key)
-    if kwargs:
-        return sesi_simpan(key, value, **kwargs) if key else sesi_simpan(**kwargs)
-    return sesi_simpan(key, value)
+def sesi_lokasi(self, lokasi=None):
+    if not hasattr(self, "session"):
+        print("[tarri | sesi] Interpreter belum punya session")
+        return None
+    if lokasi:
+        self.session.lokasi = Path(lokasi)
+        os.makedirs(self.session.lokasi, exist_ok=True)
+    return str(self.session.lokasi)

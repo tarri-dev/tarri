@@ -45,23 +45,23 @@ parser = Lark(tarri_grammar, start="start", parser="lalr")
 #     try:
 #         if status:
 #             print()
-#             print(f"[tarri | cli] program dimulai ... {GREEN}(sukses){RESET}")
+#             print(f"[tarri | cli] program dimulai ... (sukses)")
 
 #         if not filename.endswith(".tarri"):
 #             print()
-#             print(f"[tarri | cli] {RED}kesalahan!{RESET} ekstensi file {BLUE}{filename}{RESET} tidak dikenali {RESET}")
+#             print(f"[tarri | cli] kesalahan! ekstensi file {filename} tidak dikenali ")
 #             print()
 #             return
 
 #         if not os.path.exists(filename):
 #             if status:
-#                 print(f"[tarri | cli] membaca file {BLUE}{os.path.basename(filename)}{RESET} {RED}(gagal){RESET}")
-#             print(f"[tarri | cli] {RED}kesalahan!{RESET} file {BLUE}{filename}{RESET} tidak ditemukan")
+#                 print(f"[tarri | cli] membaca file {os.path.basename(filename)} (gagal)")
+#             print(f"[tarri | cli] kesalahan! file {filename} tidak ditemukan")
 #             print()
 #             return
 
 #         if status:
-#             print(f"[tarri | cli] membaca file {BLUE}{os.path.basename(filename)}{RESET} {GREEN}(sukses){RESET}")
+#             print(f"[tarri | cli] membaca file {os.path.basename(filename)} (sukses)")
 
 #         with open(filename, "r", encoding="utf-8") as f:
 #             source = f.read()
@@ -72,7 +72,7 @@ parser = Lark(tarri_grammar, start="start", parser="lalr")
 #         tree = parser.parse(source)
 
 #         if status:
-#             print(f"[tarri | cli] parsing selesai {GREEN}(sukses){RESET}")
+#             print(f"[tarri | cli] parsing selesai (sukses)")
         
 #         def pretty_ast(node, prefix="", is_last=True):
 #             """AST printer rapi dengan garis cabang"""
@@ -117,21 +117,21 @@ parser = Lark(tarri_grammar, start="start", parser="lalr")
 #         end_time = time.perf_counter()
 #         duration = end_time - start_time
 #         print()
-#         print(f"[tarri | cli] program selesai dijalankan {BLUE}{duration:.4f}{RESET} detik")
+#         print(f"[tarri | cli] program selesai dijalankan {duration:.4f} detik")
 
 #     except FileNotFoundError:
 #         if status:
 #             print()
-#             print(f"[tarri | cli] membaca file {BLUE}{os.path.basename(filename)}{RESET} {RED}(gagal){RESET}")
-#         print(f"[tarri | cli] {RED}kesalahan!{RESET} file {BLUE}{filename}{RESET} tidak ditemukan")
+#             print(f"[tarri | cli] membaca file {os.path.basename(filename)} (gagal)")
+#         print(f"[tarri | cli] kesalahan! file {filename} tidak ditemukan")
 #         print()
 
     
 #     except UnexpectedInput as e:
-#         print(f"[tarri | cli] proses parsing ... {RED}(gagal){RESET}")
+#         print(f"[tarri | cli] proses parsing ... (gagal)")
 #         line = getattr(e, "line", "?")
 #         column = getattr(e, "column", "?")
-#         print(f"[tarri | cli] posisi {RED}kesalahan!{RESET} : line {line}, column {column}")
+#         print(f"[tarri | cli] posisi kesalahan! : line {line}, column {column}")
 #         try:
 #             context_line = e.get_context(source, 1) 
 #             print(context_line)
@@ -161,7 +161,7 @@ parser = Lark(tarri_grammar, start="start", parser="lalr")
 #             pesan
 #         )
 
-#         print(f"[tarri | cli] {RED}kesalahan {RESET} : {pesan_id}")
+#         print(f"[tarri | cli] kesalahan  : {pesan_id}")
 #         print()
 
 
@@ -200,7 +200,7 @@ parser = Lark(tarri_grammar, start="start", parser="lalr")
 #         if args[0] in ("jalankan", "j", "mulai", "."):
 #             if len(args) < 2:
 #                 print()
-#                 print(f"[tarri | cli] {RED}kesalahan!{RESET}: nama file .tarri tidak diberikan")
+#                 print(f"[tarri | cli] kesalahan!: nama file .tarri tidak diberikan")
 #                 print()
 #                 return
 
@@ -269,7 +269,7 @@ parser = Lark(tarri_grammar, start="start", parser="lalr")
 
 #     except KeyboardInterrupt:
 #         print()
-#         print(f"[tarri | cli] {RED}Program telah dihentikan oleh pengguna.{RESET}")
+#         print(f"[tarri | cli] Program telah dihentikan oleh pengguna.")
 #         return 0
 
 
@@ -287,28 +287,30 @@ def run_file(filename: str, status: bool = False, show_ast: bool = False, cli_ar
         cli_args = []
 
     # Inject variabel global _argumen (mirip sys.argv di Python)
-    interpreter.global_scope["_argumen"] = cli_args
+    # interpreter.global_scope["_argumen"] = cli_args
+    interpreter.context["_argumen"] = cli_args
+
 
     try:
         if status:
             print()
-            print(f"[tarri | cli] program dimulai ... {GREEN}(sukses){RESET}")
+            print(f"[tarri | cli] program dimulai ... (sukses)")
 
         if not filename.endswith(".tarri"):
             print()
-            print(f"[tarri | cli] {RED}kesalahan!{RESET} ekstensi file {BLUE}{filename}{RESET} tidak dikenali {RESET}")
+            print(f"[tarri | cli] kesalahan! ekstensi file {filename} tidak dikenali ")
             print()
             return
 
         if not os.path.exists(filename):
             if status:
-                print(f"[tarri | cli] membaca file {BLUE}{os.path.basename(filename)}{RESET} {RED}(gagal){RESET}")
-            print(f"[tarri | cli] {RED}kesalahan!{RESET} file {BLUE}{filename}{RESET} tidak ditemukan")
+                print(f"[tarri | cli] membaca file {os.path.basename(filename)} (gagal)")
+            print(f"[tarri | cli] kesalahan! file {filename} tidak ditemukan")
             print()
             return
 
         if status:
-            print(f"[tarri | cli] membaca file {BLUE}{os.path.basename(filename)}{RESET} {GREEN}(sukses){RESET}")
+            print(f"[tarri | cli] membaca file {os.path.basename(filename)} (sukses)")
 
         with open(filename, "r", encoding="utf-8") as f:
             source = f.read()
@@ -319,7 +321,7 @@ def run_file(filename: str, status: bool = False, show_ast: bool = False, cli_ar
         tree = parser.parse(source)
 
         if status:
-            print(f"[tarri | cli] parsing selesai {GREEN}(sukses){RESET}")
+            print(f"[tarri | cli] parsing selesai (sukses)")
 
         # === Pretty printer AST ===
         def pretty_ast(node, prefix="", is_last=True):
@@ -347,20 +349,20 @@ def run_file(filename: str, status: bool = False, show_ast: bool = False, cli_ar
         end_time = time.perf_counter()
         duration = end_time - start_time
         print()
-        print(f"[tarri | cli] program selesai dijalankan {BLUE}{duration:.4f}{RESET} detik")
+        print(f"[tarri | cli] program selesai dijalankan {duration:.4f} detik")
 
     except FileNotFoundError:
         if status:
             print()
-            print(f"[tarri | cli] membaca file {BLUE}{os.path.basename(filename)}{RESET} {RED}(gagal){RESET}")
-        print(f"[tarri | cli] {RED}kesalahan!{RESET} file {BLUE}{filename}{RESET} tidak ditemukan")
+            print(f"[tarri | cli] membaca file {os.path.basename(filename)} (gagal)")
+        print(f"[tarri | cli] kesalahan! file {filename} tidak ditemukan")
         print()
 
     except UnexpectedInput as e:
-        print(f"[tarri | cli] proses parsing ... {RED}(gagal){RESET}")
+        print(f"[tarri | cli] proses parsing ... (gagal)")
         line = getattr(e, "line", "?")
         column = getattr(e, "column", "?")
-        print(f"[tarri | cli] posisi {RED}kesalahan!{RESET} : line {line}, column {column}")
+        print(f"[tarri | cli] posisi kesalahan! : line {line}, column {column}")
         try:
             context_line = e.get_context(source, 1)
             print(context_line)
@@ -381,7 +383,7 @@ def run_file(filename: str, status: bool = False, show_ast: bool = False, cli_ar
             "file": "berkas tidak ditemukan"
         }
         pesan_id = next((terjemahan[k] for k in terjemahan if k in pesan.lower()), pesan)
-        print(f"[tarri | cli] {RED}kesalahan {RESET} : {pesan_id}")
+        print(f"[tarri | cli] kesalahan : {pesan_id}")
         print()
 
 
@@ -423,7 +425,7 @@ def main():
         if args[0] in ("jalankan", "j", "mulai", "."):
             if len(args) < 2:
                 print()
-                print(f"[tarri | cli] {RED}kesalahan!{RESET}: nama file .tarri tidak diberikan")
+                print(f"[tarri | cli] kesalahan! : nama file .tarri tidak diberikan")
                 print()
                 return
 
@@ -497,7 +499,7 @@ def main():
 
     except KeyboardInterrupt:
         print()
-        print(f"[tarri | cli] {RED}Program telah dihentikan oleh pengguna.{RESET}")
+        print(f"[tarri | cli] Program telah dihentikan oleh pengguna.")
         return 0
 
 if __name__ == "__main__":

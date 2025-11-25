@@ -4,44 +4,59 @@ import io, contextlib
 from tarri.parser_global import parser
 
 def termasuk(interpreter, args):
+    """
+    Memasukkan file .tarri lain ke interpreter.
+    Mengembalikan 'Benar' jika file berhasil dimuat dan dijalankan,
+    'Salah' jika file tidak ditemukan atau gagal.
+    """
     if not args:
-        return
+        print("[tarri] kesalahan : nama file tidak diberikan")
+        return "Salah"
 
     filename = str(args[0]).strip().strip('"').strip("'")
 
-    # Base dir dari file utama
+    # Daftar folder yang akan dicoba
+    possible_dirs = []
     if hasattr(interpreter, "root_file") and interpreter.root_file:
-        base_dir = Path(interpreter.root_file).parent
-    else:
-        base_dir = Path.cwd()
+        possible_dirs.append(Path(interpreter.root_file).parent)
+    possible_dirs.append(Path.cwd())
 
-    file_path = (base_dir / filename).resolve()
+    file_path = None
+    for d in possible_dirs:
+        candidate = (d / filename).resolve()
+        if candidate.exists():
+            file_path = candidate
+            break
 
-    if not file_path.exists():
-        print(f"[tarri] kesalahan : file '{filename}' tidak ditemukan")
-        return
-
-    source = file_path.read_text(encoding="utf-8")
+    if not file_path:
+        print(f"[tarri] kesalahan : file '{filename}' tidak ditemukan di folder: {[str(d) for d in possible_dirs]}")
+        return "Salah"
 
     try:
+        source = file_path.read_text(encoding="utf-8")
         tree = parser.parse(source)
-        old_file = getattr(interpreter, "current_file", None)
-        interpreter.current_file = str(file_path)
+    except Exception as e:
+        print(f"[tarri] kesalahan membaca/parse file '{file_path}': {e}")
+        return "Salah"
 
-        # Pakai buffer sementara
-        buf = io.StringIO()
+    old_file = getattr(interpreter, "current_file", None)
+    interpreter.current_file = str(file_path)
+
+    buf = io.StringIO()
+    try:
         with contextlib.redirect_stdout(buf):
             interpreter.run(tree)
-
+    except Exception as e:
+        # Tampilkan buffer sebelum error
+        print(buf.getvalue(), end="")
+        print(f"[tarri] kesalahan saat mengeksekusi file '{file_path}': {e}")
+        interpreter.current_file = old_file
+        return "Salah"
+    else:
         # Cetak semua output buffer ke browser
         output = buf.getvalue()
         if output:
-            print(output, end="")  # HTML dari cetak_henti atau print lain tetap muncul
-
+            print(output, end="")
+        return "Benar"
+    finally:
         interpreter.current_file = old_file
-
-    except Exception as e:
-        # Tampilkan buffer sebelum error
-        if 'buf' in locals():
-            print(buf.getvalue(), end="")
-        print(f"[tarri] kesalahan : {e}")

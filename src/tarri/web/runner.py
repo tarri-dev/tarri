@@ -39,7 +39,7 @@ def get_tarri_version():
         )
         return result.stdout.strip()
     except Exception:
-        return "[tarri | cetak_henti] Versi tidak ditemukan"
+        return "[tarri | cetak_web] Versi tidak ditemukan"
 
 
 def inject_request(interpreter, request_data):
@@ -106,9 +106,25 @@ def run_source(source: str, request_data=None):
         }
         return html_output, ctx
 
-    except StopIteration:
+    # except StopIteration:
+    #     html_output = output_buffer.getvalue().strip()
+    #     return html_output, {}
+    
+    except StopIteration as e:
         html_output = output_buffer.getvalue().strip()
+
+        if hasattr(e, "value") and e.value is not None:
+            resp = e.value
+            try:
+                from fastapi.responses import RedirectResponse
+                if isinstance(resp, RedirectResponse):
+                    return resp, {}
+            except ImportError:
+                pass
+
+        # fallback normal kalau bukan redirect
         return html_output, {}
+
 
     except Exception as e:
         import traceback, sys

@@ -1,40 +1,49 @@
 # tarri/functions/rute.py
-
-# ROUTES = {}
-
-# def rute(url_path: str, target: str):
-#     """
-#     Daftarkan rute aplikasi.
-#     - url_path: path di browser, contoh "/register"
-#     - target: file tujuan relatif dari ROOT_PROJECT
-#     """
-#     global ROUTES   # <--- ini penting
-#     url_path = url_path.strip()
-#     target = target.strip()
-#     ROUTES[url_path] = target
-#     return ""  # supaya tidak tampil di output
-
-
 import re
 
-# ROUTES: list of (method, regex, target)
 ROUTES = []
 
-def rute(url_path: str, target: str, method="GET"):
-    """
-    Daftarkan rute aplikasi.
-    - url_path: path di browser, contoh "/register" atau "/pengguna/{id}"
-    - target: file tujuan relatif dari ROOT_PROJECT
-    - method: "GET" atau "POST"
-    """
-    url_path = url_path.strip()
-    target = target.strip()
-    method = method.upper()
+class Rute:
+    def __init__(self):
+        self._last = None
+        
+    def __call__(self, url_path, target, method="GET", fungsi=None):
+        """
+        Supaya rute(...) bisa dipanggil langsung.
+        Ini digunakan oleh loader rute.tarri.
+        """
+        regex, param_names = self._compile(url_path)
+        ROUTES.append((method.upper(), regex, target.strip(), fungsi, param_names))
+        return ""
 
-    # Ubah {param} → regex grup: "([^/]+)"
-    pattern = re.sub(r"\{[^\}]+\}", r"([^/]+)", url_path)
-    regex = re.compile(f"^{pattern}$")
+    def post(self, url_path, target):
+        regex, param_names = self._compile(url_path)
+        self._last = ("POST", regex, target.strip(), None, param_names)
+        ROUTES.append(self._last)
+        return self  # biar bisa chaining `untuk fungsi(...)`
 
-    ROUTES.append((method, regex, target))
-    return ""
+    def get(self, url_path, target):
+        regex, param_names = self._compile(url_path)
+        self._last = ("GET", regex, target.strip(), None, param_names)
+        ROUTES.append(self._last)
+        return self
 
+    def fungsi(self, nama):
+        if self._last:
+            method, regex, target, _, param_names = self._last
+            self._last = (method, regex, target, nama.strip(), param_names)
+            ROUTES[-1] = self._last
+        return self
+
+    def _compile(self, url_path):
+        """
+        Compile URL path dengan {parameter} menjadi regex,
+        dan ambil nama parameter-nya.
+        """
+        param_names = re.findall(r"\{([^\}]+)\}", url_path)
+        pattern = re.sub(r"\{[^\}]+\}", r"([^/]+)", url_path.strip())
+        regex = re.compile(f"^{pattern}$")
+        return regex, param_names
+
+# Instance tunggal
+rute = Rute()

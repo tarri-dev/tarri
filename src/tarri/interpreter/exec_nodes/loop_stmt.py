@@ -210,29 +210,73 @@ def exec_loop_stmt(self, node):
         return
 
     # ---------- CASE G: "untuk VAR dalam expr block" ----------
-    if (
-        len(children) >= 5
-        and getattr(children[0], "type", None) == "UNTUK"
-        and getattr(children[1], "type", None) == "VAR_NAME"
-        and hasattr(children[4], "data") and children[4].data == "block"
-    ):
-        var_name = get_var_name(children[1])
-        iterable = self.evaluate_expr(children[3])
-        block = children[4]
+    # if (
+    #     len(children) >= 5
+    #     and getattr(children[0], "type", None) == "UNTUK"
+    #     and getattr(children[1], "type", None) == "VAR_NAME"
+    #     and hasattr(children[4], "data") and children[4].data == "block"
+    # ):
+    #     var_name = get_var_name(children[1])
+    #     iterable = self.evaluate_expr(children[3])
+    #     block = children[4]
 
+    #     if iterable is None or not hasattr(iterable, "__iter__"):
+    #         self.error("Target 'untuk' bukan iterable")
+    #         return
+
+    #     for item in iterable:
+    #         self.context[var_name] = item
+    #         try:
+    #             self.exec_node(block)
+    #         except BreakSignal:
+    #             break
+    #         except ContinueSignal:
+    #             continue
+    #     return
+    
+    # ---------- CASE G: "untuk VAR dalam expr block" + optional kosong_block ----------
+    # ---------- CASE G: "untuk VAR dalam expr block" ----------
+    # ---------- CASE G: "untuk VAR dalam expr block" dengan dukungan kosong ----------
+    # ---------- CASE G: "untuk VAR dalam expr block" + dukungan kosong ----------
+    # ---------- CASE G: "untuk VAR dalam expr block" ----------
+    # ---------- CASE G: "untuk VAR dalam expr block (dengan optional kosong)" ----------
+    if (
+        len(children) >= 3
+        and getattr(children[0], "type", None) == "VAR_NAME"
+        and hasattr(children[2], "data") and children[2].data == "block"
+    ):
+        var_name = get_var_name(children[0])
+        iterable_node = children[1]
+        block = children[2]
+
+        iterable = self.evaluate_expr(iterable_node)
         if iterable is None or not hasattr(iterable, "__iter__"):
             self.error("Target 'untuk' bukan iterable")
             return
 
-        for item in iterable:
-            self.context[var_name] = item
-            try:
-                self.exec_node(block)
-            except BreakSignal:
-                break
-            except ContinueSignal:
-                continue
+        # ambil optional block 'kosong'
+        kosong_block = None
+        if len(children) > 3:
+            for ch in children[3:]:
+                if hasattr(ch, "data") and ch.data == "block":
+                    kosong_block = ch
+                    break
+
+        if iterable:
+            for item_node in iterable:
+                item = self.evaluate_expr(item_node) if hasattr(item_node, "__dict__") else item_node
+                self.context[var_name] = item
+                try:
+                    self.exec_node(block)
+                except BreakSignal:
+                    break
+                except ContinueSignal:
+                    continue
+        elif kosong_block:
+            self.exec_node(kosong_block)
         return
+
+
 
     # ---------- CASE H: shorthand "VAR VAR block" -> ambil iterable dari context ----------
     if (
@@ -264,6 +308,35 @@ def exec_loop_stmt(self, node):
             except ContinueSignal:
                 continue
         return
+    
+    
+    # ---------- CASE I: "untuk setiap VAR dalam expr block" ----------
+    if (
+        len(children) >= 6
+        and getattr(children[0], "type", None) == "UNTUK"
+        and getattr(children[1], "type", None) == "SETIAP"
+        and getattr(children[2], "type", None) == "VAR_NAME"
+        and getattr(children[3], "type", None) == "DALAM"
+        and hasattr(children[5], "data") and children[5].data == "block"
+    ):
+        var_name = get_var_name(children[2])
+        iterable = self.evaluate_expr(children[4])
+        block = children[5]
+
+        if iterable is None or not hasattr(iterable, "__iter__"):
+            self.error("Target 'untuk setiap' bukan iterable")
+            return
+
+        for item in iterable:
+            self.context[var_name] = item
+            try:
+                self.exec_node(block)
+            except BreakSignal:
+                break
+            except ContinueSignal:
+                continue
+        return
+
 
     # -------------------------
     # Fallback: unknown loop shape

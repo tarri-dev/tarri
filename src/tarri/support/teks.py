@@ -42,3 +42,10 @@ def kunci(data):
     if isinstance(data, dict):
         return list(data.keys())
     raise TypeError("kunci() hanya bisa digunakan untuk tipe kamus (dict)")
+
+def nilai(data):
+    """Mengembalikan daftar value dari dict (kamus)"""
+    if isinstance(data, dict):
+        return list(data.values())
+    raise TypeError("nilai() hanya bisa digunakan untuk tipe kamus (dict)")
+

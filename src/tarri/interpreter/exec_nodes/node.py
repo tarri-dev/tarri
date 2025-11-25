@@ -1,5 +1,4 @@
 from lark import Tree
-from tarri.keywords import KEYWORDS
 
 def exec_node(self, node):
     if not isinstance(node, Tree):
@@ -10,11 +9,6 @@ def exec_node(self, node):
         for child in node.children:
             self.exec_node(child)
         return None
-
-    # Keyword chaining grammar → handler dari KEYWORDS
-    if node.data in KEYWORDS:
-        handler = KEYWORDS[node.data]
-        return handler(self, node.children)
 
     # Fallback ke method exec_{tipe}
     handler_name = f"exec_{node.data}"

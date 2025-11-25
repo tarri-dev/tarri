@@ -14,8 +14,7 @@
 # Pengguna bebas memodifikasi dan meningkatkan fungsionalitas kode ini.         #
 # ==============================================================================#
 
-# Session (variabel global untuk menyimpan state)
-from tarri.session.sesi import sesi as sesi_py
+
 # Executor nodes (untuk mengeksekusi setiap tipe node AST)
 from tarri.interpreter.exec_nodes.entry_point import exec_entry_point
 from tarri.interpreter.exec_nodes.block import exec_block
@@ -35,38 +34,100 @@ from tarri.interpreter.exec_nodes.evaluate_expr import evaluate_expr
 from tarri.interpreter.exec_nodes.compare import compare
 from tarri.interpreter.exec_nodes.foreach_stmt import exec_foreach_stmt
 from tarri.interpreter.exec_nodes.loop_stmt import exec_loop_stmt, exec_break_stmt, exec_continue_stmt
+import re
+from lark import Tree, Token
+from tarri.session.sesi import SesiManager
 
-from lark import Tree
 
 
 class Context:
     
-    def __init__(self, status=False, root_project=None):
-        # Status runtime & konfigurasi proyek
+
+    def error(self, msg):
+        print(f"[tarri | interpreter] kesalahan : {msg}")
+    
+    def __init__(self, status=False, root_project=None, sesi: SesiManager = None):
         self.status = status
         self.public_dir = root_project if root_project else None
 
         # Ruang lingkup variabel & konteks eksekusi
         self.globals = {}
-        self.global_scope = self.globals
         self.context = self.globals
 
-        # Fungsi dan sesi runtime
+        # Fungsi runtime & sesi
         self.functions = {}
-        self.session = {}
-        self.context["sesi"] = sesi_py()
+        if sesi is None:
+            self.session = SesiManager()  # CLI fallback
+        else:
+            self.session = sesi
+        self.context["sesi"] = self.session
 
-        # Nilai sentinel internal
         self._return_flag = None
         self.NIL_VALUE = object()
+        
+        self.variables = {}  # tempat semua variabel disimpan
+        
+        self.in_loop = False
+        self.loop_output = []
+                    
+    def eval_arg(self, a):
+        try:
+            # --------------------------------------
+            # Node Tree
+            # --------------------------------------
+            if isinstance(a, Tree):
+                if a.data == "call_expr":
+                    return self.evaluate_expr(a)
 
-    
-    def redirect(self, path, context):
-        self.context["sesi"].simpan("redirect_data", context)
-        return f"[REDIRECT]{path}"
+                elif a.data == "string":
+                    value = str(a.children[0])
+                    return value
 
-    def error(self, msg):
-        print(f"[tarri | interpreter] kesalahan : {msg}")
+                elif a.data == "identifier":
+                    first = a.children[0]
+                    value = getattr(self, first.value, f"<tidak ada {first.value}>")
+                    return value
+
+                else:
+                    # gabungkan children
+                    values = [str(self.eval_arg(c)) for c in a.children]
+                    joined = " ".join(values)
+
+                    # coba cek slice "[i .. j]"
+                    m = re.match(r"(\w+)\[(\d+)\s*\.\.\s*(\d+)\]", joined)
+                    if m:
+                        var_name, start, end = m.groups()
+                        seq = getattr(self, var_name, [])
+                        return seq[int(start):int(end)]
+                    return joined
+
+            # --------------------------------------
+            # Token
+            # --------------------------------------
+            elif isinstance(a, Token):
+                if a.type == "VAR_NAME":
+                    value = getattr(self, a.value, f"<tidak ada {a.value}>")
+                    return value
+                else:
+                    return a.value
+
+            # --------------------------------------
+            # Literal / lainnya
+            # --------------------------------------
+            elif isinstance(a, str):
+                # tangani slice langsung di string literal
+                m = re.match(r"(\w+)\[(\d+)\s*\.\.\s*(\d+)\]", a)
+                if m:
+                    var_name, start, end = m.groups()
+                    seq = getattr(self, var_name, [])
+                    return seq[int(start):int(end)]
+                return a
+            else:
+                return a
+
+        except Exception as e:
+            print(f"[eval_arg | ERROR] Gagal memproses {a}: {e}")
+            raise
 
     def _context_as_str_dict(self):
         return {k: (str(v) if v is not None else "null") for k, v in self.context.items()}
@@ -163,8 +224,7 @@ class Context:
         while len(items) < 4:
             items.append(None)
         return Tree("try_catch_stmt", items)
-
-      
+  
     def exec_node(self, node):
         tipe = node.data
 
@@ -269,9 +329,26 @@ class Context:
         else:
             print(f"[tarri | interpreter] Node tidak dikenali: {tipe}")
             return None
-
-
+  
     def run(self, ast):
+        """
+        Jalankan AST utama:
+        - Pertama, daftarkan semua fungsi (fungsi xyz(){...})
+        - Lalu eksekusi node utama (titikawal{}, dll)
+        """
         self._return_flag = None
+
+        # 1️⃣ Daftarkan semua fungsi terlebih dahulu
+        if isinstance(ast, Tree) and ast.data == "start":
+            for node in ast.children:
+                if isinstance(node, Tree) and node.data == "func_decl":
+                    try:
+                        exec_func_decl(self, node)
+                        # print(f"[tarri | interpreter] Fungsi '{node.children[0]}' dimuat ke context.")
+                    except Exception as e:
+                        print(f"[tarri | interpreter] Gagal memuat fungsi '{node.children[0]}': {e}")
+
+        # 2️⃣ Jalankan semua node top-level (termasuk titikawal)
         self.exec_node(ast)
+
         return self._return_flag
