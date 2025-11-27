@@ -26,12 +26,33 @@ def ganti(teks: str, dari: str, ke: str) -> str:
     return str(teks).replace(dari, ke)
 
 
-def gabung(list_teks: list, pemisah: str = "") -> str:
+def gabung(data, pemisah="") -> str:
     """
-    Menggabungkan list string dengan pemisah tertentu.
-    Default: tanpa pemisah.
+    Menggabungkan data apa pun (list, tuple, scalar)
+    tetapi string diperlakukan sebagai satu item.
     """
-    return str(pemisah).join(map(str, list_teks))
+
+    def flatten(x):
+        # String dianggap satu elemen, BUKAN dipecah
+        if isinstance(x, str):
+            yield x
+
+        # dict → key saja
+        elif isinstance(x, dict):
+            for k in x.keys():
+                yield k
+
+        # iterable lain
+        elif isinstance(x, (list, tuple, set)):
+            for item in x:
+                yield from flatten(item)
+
+        # scalar (int, bool, float, None)
+        else:
+            yield x
+
+    return str(pemisah).join(str(i) for i in flatten(data))
+
 
 def awal_kapital(teks: str) -> str:
     """Huruf awal tiap kata kapital (capitalize)"""

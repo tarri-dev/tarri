@@ -1,0 +1,90 @@
+Daftar Keyword Tarri
+1. Entry Point
+
+titikawal / awal / @ → Menandai blok awal program yang dieksekusi pertama.
+
+2. Fungsi
+
+fungsi / fn → Mendefinisikan fungsi.
+
+tampilkan / tamp → Mencetak nilai / output.
+
+kembalikan / kemb → Mengembalikan nilai dari fungsi.
+
+sembunyikan / semb → Fungsi tidak mengembalikan nilai (void).
+
+3. Kelas / OOP
+
+kelas → Mendefinisikan kelas.
+
+perluas → Menandai kelas turunan (inheritance).
+
+4. Kontrol Alur – Percabangan
+
+jika / jk → Percabangan if.
+
+ataujika / ajk → Percabangan else if.
+
+lainnya / lny → Percabangan else.
+
+5. Perulangan
+
+ulangi / ulang → Loop tanpa kondisi (infinite loop).
+
+ulangidari / ulangd → Loop dengan counter dari nilai awal sampai akhir.
+
+hingga / hga → Digunakan bersama ulangidari untuk batas akhir.
+
+selama / slm → Loop berbasis kondisi (while).
+
+setiap / stp → Loop for-each pada list/string.
+
+setiapdari / stpd → Loop for-each dengan range mulai/akhir.
+
+untuk / utk → Loop fleksibel, bisa untuk index, for-each, atau slice.
+
+dalam / dlm → Digunakan bersama untuk / stp untuk iterasi.
+
+dari / dr → Digunakan untuk range awal.
+
+kosong / ksg → Digunakan untuk block kosong di loop.
+
+6. Break / Continue
+
+hentikan / henti → Keluar dari loop.
+
+lanjutkan / lanjut → Melanjutkan ke iterasi berikutnya.
+
+7. Error Handling
+
+coba / cb → Mulai blok try.
+
+tangkap / tgkp → Menangani error (catch).
+
+akhirnya / akhir → Blok finally.
+
+8. Literal / Nilai
+
+Benar → Boolean true.
+
+Salah → Boolean false.
+
+Kosong / Hampa → Nil / null.
+
+9. Type Cast
+
+angka → Cast ke number.
+
+kata → Cast ke string.
+
+10. Operator Logika
+
+bukan / bkn → NOT.
+
+dan → AND.
+
+atau / atw → OR.
+
+11. Import / Modul
+
+undang → Import modul/file.

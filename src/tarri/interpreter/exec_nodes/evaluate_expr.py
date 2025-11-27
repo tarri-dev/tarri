@@ -178,9 +178,14 @@ def evaluate_expr(self, node):
             text = re.sub(r"\{([^}]+)\}", replacer, raw)
             return DATATYPES["kata"](text)
 
+        # elif node.data == "number":
+        #     val = node.children[0].value
+        #     return DATATYPES["angka"](val) if val.isdigit() else DATATYPES["desimal"](val)
+        
         elif node.data == "number":
             val = node.children[0].value
-            return DATATYPES["angka"](val) if val.isdigit() else DATATYPES["desimal"](val)
+            return int(val) if val.isdigit() else float(val)
+
 
         elif node.data == "list_literal":
             return [self.evaluate_expr(ch) for ch in node.children]
@@ -402,8 +407,12 @@ def evaluate_expr(self, node):
             val = self.context.get(node.value, None)
             return val
 
-        elif node.type == "NUMBER":
-            return DATATYPES["angka"](node.value) if node.value.isdigit() else DATATYPES["desimal"](node.value)
+        # elif node.type == "NUMBER":
+        #     return DATATYPES["angka"](node.value) if node.value.isdigit() else DATATYPES["desimal"](node.value)
+
+
+        elif isinstance(node, Token) and node.type == "NUMBER":
+            return int(node.value) if node.value.isdigit() else float(node.value)
 
         elif node.type == "ESCAPED_STRING":
             raw = node.value.strip('"')

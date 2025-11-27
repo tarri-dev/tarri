@@ -24,6 +24,7 @@ from tarri.functions.cetak_html import cetak_html
 from tarri.functions.ctkw import ctkw
 from tarri.functions.ctkh import ctkh
 from tarri.functions.batalkan import batalkan
+from tarri.functions.tukar import tukar
 from tarri.functions.ubah_kata import ubah_kata
 from tarri.functions.kembalikan_html import kembalikan_html
 from tarri.functions.cetak_detail import cetak_detail
@@ -34,6 +35,23 @@ from tarri.functions.sandi import buat_sandi, cek_sandi
 from tarri.functions.kelolaTxt import simpanTxt, bacaTxt, perbaruiTxt, hapusTxt
 from tarri.functions.kelolaJson import baca_json, buat_json, simpan_json
 
+
+# API 
+from tarri.kelola_api.ambil_data_api import ambil_data_api
+from tarri.kelola_api.simpan_data_api import simpan_data_api
+from tarri.kelola_api.parse_json_api import parse_json_api
+from tarri.kelola_api.cek_data_api import cek_data_api
+from tarri.kelola_api.cari_data_api import cari_data_api
+from tarri.kelola_api.perbarui_data_api import perbarui_data_api
+from tarri.kelola_api.hapus_data_api import hapus_data_api
+from tarri.kelola_api.kirim_data_api import kirim_data_api
+
+
+
+
+
+
+
 # sqlite db
 from tarri.db.sqlite import sqlite, tabel_sqlite
 
@@ -41,6 +59,9 @@ from tarri.db.sqlite import sqlite, tabel_sqlite
 from tarri.db.mysql import mysql, tabel_mysql
 
 from lark import Tree, Token
+
+import builtins
+
 
 
 # support
@@ -148,7 +169,7 @@ def call_function(self, func_name, args):
     # =====================================================
     # Fungsi Input / Utility
     # =====================================================
-    if func_name == "masukkan":
+    elif func_name == "masukkan":
         return masukkan(self, args)
     
     elif func_name == "batalkan":
@@ -175,6 +196,12 @@ def call_function(self, func_name, args):
     elif func_name == "alihkan":
         return alihkan(self, args)
     
+    elif func_name == "tukar":
+        data = args[0]
+        i    = args[1]
+        j    = args[2]
+        return tukar(data, i, j)
+
     elif func_name in ["cetak", "ctk"]:
         args_eval = []
         for a in args:
@@ -189,7 +216,6 @@ def call_function(self, func_name, args):
             return cetak(*args_eval, konteks=konteks)
         else:
             return ctk(*args_eval, konteks=konteks)
-
 
     elif func_name == "cetak_web":
         return cetak_web(self, args)
@@ -371,7 +397,11 @@ def call_function(self, func_name, args):
     elif func_name == "ganti":
         return teks.ganti(args[0], args[1], args[2])
     elif func_name == "gabung":
-        return teks.gabung(args[0], args[1] if len(args) > 1 else "")
+        return teks.gabung(
+            args[0],
+            args[1] if len(args) > 1 else ""
+        )
+
 
     # =====================================================
     # Matematika
@@ -486,9 +516,61 @@ def call_function(self, func_name, args):
         return lainya.semua(self, args)
     elif func_name == "himpunan":
         return lainya.himpunan(self, args)
-
     
-    import builtins
+    # =====================================================
+    # Kelola API
+    # =====================================================
+
+    elif func_name == "ambil_data_api":
+        url = args[0] if len(args) > 0 else None
+        halaman = args[1] if len(args) > 1 else None
+        batas = args[2] if len(args) > 2 else None
+        params = args[3] if len(args) > 3 else None
+        headers = args[4] if len(args) > 4 else None
+        return ambil_data_api(url, halaman=halaman, batas=batas, params=params, headers=headers)
+    
+    elif func_name == "cari_data_api":
+        data = args[0] if len(args) > 0 else []
+        query = args[1] if len(args) > 1 else {}
+        
+        if not isinstance(query, dict):
+            query = {}
+        return cari_data_api(data, **query)
+    
+    elif func_name == "kirim_data_api":
+        url = args[0]
+        data = args[1]
+        headers = args[2] if len(args) > 2 else None
+        return kirim_data_api(url, data, headers)
+
+    elif func_name == "simpan_data_api":
+        data = args[0] if len(args) > 0 else None
+        filename = args[1] if len(args) > 1 else "data_api.json"
+        folder = args[2] if len(args) > 2 else "data"
+        return simpan_data_api(data, filename=filename, folder=folder)
+
+    elif func_name == "parse_json_api":
+        data = args[0] if len(args) > 0 else None
+        field_path = args[1] if len(args) > 1 else ""
+        return parse_json_api(data, field_path)
+
+    elif func_name == "cek_data_api":
+        if args and isinstance(args[0], str):
+            return cek_data_api(args[0])
+        return False
+    
+    elif func_name == "perbarui_data_api":
+        url = args[0]
+        data = args[1] if len(args) > 1 else {}
+        headers = args[2] if len(args) > 2 else None
+        return perbarui_data_api(url, data, headers=headers)
+
+    elif func_name == "hapus_data_api":
+        url = args[0]
+        headers = args[1] if len(args) > 1 else None
+        return hapus_data_api(url, headers=headers)
+
+
 
     if isinstance(func_name, builtins.list):
         func_name = ".".join(str(x) for x in func_name if x)

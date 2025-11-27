@@ -34,3 +34,8 @@ pip-delete-this-directory.txt
 
 # macOS
 .DS_Store
+
+__pycache__/
+*.pyc
+.DS_Store
+tarri_sessi.json
