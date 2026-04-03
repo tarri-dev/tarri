@@ -1,8 +1,23 @@
+#==============================================================================#
+# File    : tabel_stmt.py                                                      #
+# Proyek  : Bahasa TARRI versi 0.8.x                                           #
+#           Teknologi Algoritmik Representasi Rekayasa Indonesia               #
+#------------------------------------------------------------------------------#
+# Penulis : Ketut Dana                                                         #
+# Kontak  : danayasa2@gmail.com                                                #
+# Lisensi : MIT                                                                #
+# Situs   : bahasatarri.com                                                    #
+#------------------------------------------------------------------------------#
+# Deskripsi :                                                                  #
+#   Executor node untuk menerjemahkan dan mengeksekusi AST node bertipe        #
+#   'tabel_stmt' dalam penerjemah Tarri.                                       #
+#==============================================================================#
 
 # tarri/interpreter/exec_nodes/tabel_stmt.py
 # ==============================================================================#
 
 from lark import Tree
+
 
 def exec_tabel_stmt(self, node):
     target_var = node.children[0].value
@@ -23,5 +38,7 @@ def exec_tabel_stmt(self, node):
         func(*args)  # panggil method tapi jangan assign ke target
         return target  # selalu return objek asli
     else:
-        self.error(f"[tarri | interpreter | tabel_stmt] Builder tidak punya method '{method_name}'")
+        self.error(
+            f"[tarri | interpreter | tabel_stmt] Objek tidak memiliki metode '{method_name}'"
+        )
         return None

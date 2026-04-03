@@ -1,14 +1,32 @@
+#==============================================================================#
+# File    : __init__.py                                                        #
+# Proyek  : Bahasa TARRI versi 0.8.x                                           #
+#           Teknologi Algoritmik Representasi Rekayasa Indonesia               #
+#------------------------------------------------------------------------------#
+# Penulis : Ketut Dana                                                         #
+# Kontak  : danayasa2@gmail.com                                                #
+# Lisensi : MIT                                                                #
+# Situs   : bahasatarri.com                                                    #
+#------------------------------------------------------------------------------#
+# Deskripsi :                                                                  #
+#   Definisi tipe data '__init__' yang digunakan oleh mesin bahasa Tarri.      #
+#==============================================================================#
+
 # tarri/datatypes/__init__.py
 
 # 1️⃣ Definisi register harus di atas
 DATATYPES = {}
 
+
 def register(name):
     """Decorator untuk mendaftarkan tipe data baru"""
+
     def wrapper(cls):
         DATATYPES[name] = cls
         return cls
+
     return wrapper
+
 
 # 2️⃣ Baru import class
 from .angka import Angka

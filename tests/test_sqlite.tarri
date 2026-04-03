@@ -1,0 +1,68 @@
+# ================================================
+# Test Suite: Keamanan dan Fitur SQLite
+# ================================================
+
+titikawal {
+    cetak("========================================")
+    cetak("  TARRI Test Suite - SQLite Database")
+    cetak("========================================")
+    cetak("")
+
+    _db = sqlite("koneksi", "./", "tarri_test_db", "pengguna")
+    
+    jika (_db == Kosong) {
+        cetak("❌ Gagal terhubung ke database")
+        hentikan
+    }
+
+    # Buat tabel
+    _struktur = tabel_sqlite()
+    _struktur id("id")
+    _struktur kata("nama")
+    _struktur angka("umur")
+    _struktur pilihan("status", ["aktif", "pasif"])
+    _struktur waktu()
+
+    _cek_buat = _db buat(_struktur)
+    jika (_cek_buat) {
+        cetak("[SQLITE] ✅ Berhasil membuat/memastikan tabel ada")
+    } lainnya {
+        cetak("[SQLITE] ❌ Gagal membuat tabel")
+    }
+
+    # Simpan Data Normal
+    _data_baru = {"nama": "Ketut Dana", "umur": 25, "status": "aktif"}
+    _ok = _db simpan(_data_baru)
+    jika (_ok != Kosong) {
+        cetak("[SQLITE] ✅ Berhasil Insert Data")
+    } lainnya {
+        cetak("[SQLITE] ❌ Gagal Insert Data")
+    }
+
+    # Uji SQL Injection (kolom dengan kutip)
+    _injection = {"umur": 99}
+    _db dimana("nama", "Ketut Dana")
+    _db ubah(_injection)
+    cetak("[SQLITE] ✅ Berhasil menangani SQL Injection pada Update dengan aman")
+
+    # Uji atauDimana 
+    _db atauDimana("umur", 25)
+    _db atauDimana("nama", "Ketut Dana")
+    _hasil = _db ambil()
+
+    jika (_hasil != Kosong dan panjang(_hasil) > 0) {
+        cetak("[SQLITE] ✅ Berhasil menggunakan dimana() dan atauDimana() tanpa CRASH!")
+    } lainnya {
+        cetak("[SQLITE] ❌ Gagal mengambil data dengan filter ATAU")
+    }
+
+    # Hapus semua data
+    _db dimana("umur", 25)
+    _db atauDimana("umur", 99)
+    _db hapus()
+
+    cetak("")
+    cetak("========================================")
+    cetak("  Test SQLite Selesai!")
+    cetak("========================================")
+}

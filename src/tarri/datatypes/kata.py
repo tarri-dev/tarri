@@ -1,3 +1,17 @@
+#==============================================================================#
+# File    : kata.py                                                            #
+# Proyek  : Bahasa TARRI versi 0.8.x                                           #
+#           Teknologi Algoritmik Representasi Rekayasa Indonesia               #
+#------------------------------------------------------------------------------#
+# Penulis : Ketut Dana                                                         #
+# Kontak  : danayasa2@gmail.com                                                #
+# Lisensi : MIT                                                                #
+# Situs   : bahasatarri.com                                                    #
+#------------------------------------------------------------------------------#
+# Deskripsi :                                                                  #
+#   Definisi tipe data 'kata' yang digunakan oleh mesin bahasa Tarri.          #
+#==============================================================================#
+
 from tarri.datatypes import register
 
 
@@ -13,6 +27,7 @@ class Kata(str):
 
     def __mul__(self, other):
         from tarri.datatypes.angka import Angka  # lazy import
+
         if isinstance(other, (int, Angka)):
             return Kata(super().__mul__(int(other)))
         raise TypeError("[tarri] perkalian kata hanya bisa dengan angka")

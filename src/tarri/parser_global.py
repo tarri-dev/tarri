@@ -1,3 +1,17 @@
+#==============================================================================#
+# File    : parser_global.py                                                   #
+# Proyek  : Bahasa TARRI versi 0.8.x                                           #
+#           Teknologi Algoritmik Representasi Rekayasa Indonesia               #
+#------------------------------------------------------------------------------#
+# Penulis : Ketut Dana                                                         #
+# Kontak  : danayasa2@gmail.com                                                #
+# Lisensi : MIT                                                                #
+# Situs   : bahasatarri.com                                                    #
+#------------------------------------------------------------------------------#
+# Deskripsi :                                                                  #
+#   Komponen internal bahasa pemrograman Tarri.                                #
+#==============================================================================#
+
 import os
 from lark import Lark
 
@@ -10,6 +24,7 @@ from tarri.session.sesi import sesi as sesi_py
 def set_env(key, value):
     _GLOBAL_ENV[key] = value
 
+
 def get_env(key):
     return _GLOBAL_ENV.get(key)
 
@@ -21,3 +36,10 @@ with open(GRAMMAR_PATH, "r", encoding="utf-8") as f:
 
 # Parser global
 parser = Lark(tarri_grammar, start="start", parser="lalr")
+
+# ================================
+# Tambahkan versi global Tarri
+# ================================
+from tarri import __version__
+
+set_env("_versi_tarri", __version__)

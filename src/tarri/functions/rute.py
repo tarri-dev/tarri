@@ -1,12 +1,27 @@
+#==============================================================================#
+# File    : rute.py                                                            #
+# Proyek  : Bahasa TARRI versi 0.8.x                                           #
+#           Teknologi Algoritmik Representasi Rekayasa Indonesia               #
+#------------------------------------------------------------------------------#
+# Penulis : Ketut Dana                                                         #
+# Kontak  : danayasa2@gmail.com                                                #
+# Lisensi : MIT                                                                #
+# Situs   : bahasatarri.com                                                    #
+#------------------------------------------------------------------------------#
+# Deskripsi :                                                                  #
+#   Implementasi fungsi bawaan 'rute' yang tersedia dalam bahasa Tarri.        #
+#==============================================================================#
+
 # tarri/functions/rute.py
 import re
 
 ROUTES = []
 
+
 class Rute:
     def __init__(self):
         self._last = None
-        
+
     def __call__(self, url_path, target, method="GET", fungsi=None):
         """
         Supaya rute(...) bisa dipanggil langsung.
@@ -44,6 +59,7 @@ class Rute:
         pattern = re.sub(r"\{[^\}]+\}", r"([^/]+)", url_path.strip())
         regex = re.compile(f"^{pattern}$")
         return regex, param_names
+
 
 # Instance tunggal
 rute = Rute()

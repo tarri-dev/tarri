@@ -1,3 +1,18 @@
+#==============================================================================#
+# File    : kata_bijak.py                                                      #
+# Proyek  : Bahasa TARRI versi 0.8.x                                           #
+#           Teknologi Algoritmik Representasi Rekayasa Indonesia               #
+#------------------------------------------------------------------------------#
+# Penulis : Ketut Dana                                                         #
+# Kontak  : danayasa2@gmail.com                                                #
+# Lisensi : MIT                                                                #
+# Situs   : bahasatarri.com                                                    #
+#------------------------------------------------------------------------------#
+# Deskripsi :                                                                  #
+#   Implementasi fungsi bawaan 'kata_bijak' yang tersedia dalam bahasa         #
+#   Tarri.                                                                     #
+#==============================================================================#
+
 # kata_bijak.py
 import random
 
@@ -61,7 +76,7 @@ quotes = [
     "Jangan takut rollback, kadang kita perlu undo keputusan.",
     "Debug stress = tarik napas, fokus, ulangi langkah.",
     "Function hidupmu: input = usaha, output = hasil.",
-    "Looping kesuksesan: coba → gagal → belajar → sukses."
+    "Looping kesuksesan: coba → gagal → belajar → sukses.",
 ]
 
 

@@ -1,17 +1,46 @@
-from .waktu import jam,tanggal,kalender
+#==============================================================================#
+# File    : __init__.py                                                        #
+# Proyek  : Bahasa TARRI versi 0.8.x                                           #
+#           Teknologi Algoritmik Representasi Rekayasa Indonesia               #
+#------------------------------------------------------------------------------#
+# Penulis : Ketut Dana                                                         #
+# Kontak  : danayasa2@gmail.com                                                #
+# Lisensi : MIT                                                                #
+# Situs   : bahasatarri.com                                                    #
+#------------------------------------------------------------------------------#
+# Deskripsi :                                                                  #
+#   Fungsi dan utilitas pendukung '__init__' yang membantu operasi inti        #
+#   Tarri.                                                                     #
+#==============================================================================#
+
+from .waktu import jam, tanggal, kalender
 from .waktu_proses import waktu_proses
 from .teks import panjang, besar, kecil, ganti, gabung, awal_kapital, kunci
 from .matematika import (
-    acak, akar, pangkat, bulatkan,
-    maksimal, minimal, rata_rata,
-    faktorial, mod,
-    sin, cos, tan, derajat, radian, median, variansi, std_dev,
-    log, exp, floor, ceil,
+    acak,
+    akar,
+    pangkat,
+    bulatkan,
+    maksimal,
+    minimal,
+    rata_rata,
+    faktorial,
+    mod,
+    sin,
+    cos,
+    tan,
+    derajat,
+    radian,
+    median,
+    variansi,
+    std_dev,
+    log,
+    exp,
+    floor,
+    ceil,
 )
 
-from .list import (
-    unik, cari_index, hapus_index, balik
-)
+from .list import unik, cari_index, hapus_index, balik
 
 from .bilangan import (
     bilangan_ganjil,
@@ -24,43 +53,65 @@ from .bilangan import (
     pi,
 )
 
-from .lainya import (
-    
-    jumlah, himpunan, ada, semua
-)
-
+from .lainya import jumlah, himpunan, ada, semua
 
 __all__ = [
     # waktu & kalender
-    "jam", "tanggal", "kalender",
-
+    "jam",
+    "tanggal",
+    "kalender",
     # teks
-    "panjang", "besar", "kecil", "ganti", "gabung", "awal_kapital", "kunci",
-
+    "panjang",
+    "besar",
+    "kecil",
+    "ganti",
+    "gabung",
+    "awal_kapital",
+    "kunci",
     # matematika dasar
-    "acak", "akar", "pangkat", "bulatkan",
-    "maksimal", "minimal", "rata_rata",
-
+    "acak",
+    "akar",
+    "pangkat",
+    "bulatkan",
+    "maksimal",
+    "minimal",
+    "rata_rata",
     # matematika tambahan
-    "faktorial", "mod",
-
+    "faktorial",
+    "mod",
     # trigonometri
-    "sin", "cos", "tan", "derajat", "radian",
-
+    "sin",
+    "cos",
+    "tan",
+    "derajat",
+    "radian",
     # statistik
-    "median", "variansi", "std_dev",
-
+    "median",
+    "variansi",
+    "std_dev",
     # lainnya
-    "log", "exp", "floor", "ceil",
-    
+    "log",
+    "exp",
+    "floor",
+    "ceil",
     "waktu_proses",
-    
-    #list
-    "unik","cari_index","hapus_index","balik",
-    
-    #bilangan
-    "bilangan_prima", "bilangan_ganjil", "bilangan_genap", "bilangan_negatif", "bilangan_pecahan", "cek_bilangan", "bilangan_fibonacci","pi",
-    
-    #lainya
-    "jumlah", "ada", "himpunan", "semua"
+    # list
+    "unik",
+    "cari_index",
+    "hapus_index",
+    "balik",
+    # bilangan
+    "bilangan_prima",
+    "bilangan_ganjil",
+    "bilangan_genap",
+    "bilangan_negatif",
+    "bilangan_pecahan",
+    "cek_bilangan",
+    "bilangan_fibonacci",
+    "pi",
+    # lainya
+    "jumlah",
+    "ada",
+    "himpunan",
+    "semua",
 ]

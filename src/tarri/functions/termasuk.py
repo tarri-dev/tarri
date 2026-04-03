@@ -1,7 +1,23 @@
+#==============================================================================#
+# File    : termasuk.py                                                        #
+# Proyek  : Bahasa TARRI versi 0.8.x                                           #
+#           Teknologi Algoritmik Representasi Rekayasa Indonesia               #
+#------------------------------------------------------------------------------#
+# Penulis : Ketut Dana                                                         #
+# Kontak  : danayasa2@gmail.com                                                #
+# Lisensi : MIT                                                                #
+# Situs   : bahasatarri.com                                                    #
+#------------------------------------------------------------------------------#
+# Deskripsi :                                                                  #
+#   Implementasi fungsi bawaan 'termasuk' yang tersedia dalam bahasa           #
+#   Tarri.                                                                     #
+#==============================================================================#
+
 from pathlib import Path
 from lark import Tree
 import io, contextlib
 from tarri.parser_global import parser
+
 
 def termasuk(interpreter, args):
     """
@@ -29,7 +45,9 @@ def termasuk(interpreter, args):
             break
 
     if not file_path:
-        print(f"[tarri] kesalahan : file '{filename}' tidak ditemukan di folder: {[str(d) for d in possible_dirs]}")
+        print(
+            f"[tarri] kesalahan : file '{filename}' tidak ditemukan di folder: {[str(d) for d in possible_dirs]}"
+        )
         return "Salah"
 
     try:

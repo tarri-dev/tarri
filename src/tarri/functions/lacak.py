@@ -1,3 +1,17 @@
+#==============================================================================#
+# File    : lacak.py                                                           #
+# Proyek  : Bahasa TARRI versi 0.8.x                                           #
+#           Teknologi Algoritmik Representasi Rekayasa Indonesia               #
+#------------------------------------------------------------------------------#
+# Penulis : Ketut Dana                                                         #
+# Kontak  : danayasa2@gmail.com                                                #
+# Lisensi : MIT                                                                #
+# Situs   : bahasatarri.com                                                    #
+#------------------------------------------------------------------------------#
+# Deskripsi :                                                                  #
+#   Implementasi fungsi bawaan 'lacak' yang tersedia dalam bahasa Tarri.       #
+#==============================================================================#
+
 import os
 import sys
 import time
@@ -5,34 +19,40 @@ import getpass
 import platform
 import datetime
 
+
 def lacak(interpreter, args=None):
     """Pelacakan penuh Tarri — menampilkan info sistem, interpreter, dan variabel aktif."""
 
     mulai = time.time()
     waktu_mulai = datetime.datetime.now().strftime("%d %B %Y %H:%M:%S")
 
-    print("\n" + "="*75)
+    print("\n" + "=" * 75)
     print(f"LACAK PROGRAM — {waktu_mulai}")
-    print("="*75)
+    print("=" * 75)
 
     # 1. INFORMASI SISTEM
     print("\nSISTEM OPERASI")
-    print("-"*75)
+    print("-" * 75)
     try:
-        print(f"{'Nama OS':20} : {platform.system()} {platform.release()} ({platform.machine()})")
+        print(
+            f"{'Nama OS':20} : {platform.system()} {platform.release()} ({platform.machine()})"
+        )
         print(f"{'Versi Python':20} : {platform.python_version()}")
         print(f"{'Nama Pengguna':20} : {getpass.getuser()}")
         print(f"{'Folder Aktif':20} : {os.getcwd()}")
-        print(f"{'Waktu Saat Ini':20} : {datetime.datetime.now().strftime('%d %B %Y %H:%M:%S')}")
+        print(
+            f"{'Waktu Saat Ini':20} : {datetime.datetime.now().strftime('%d %B %Y %H:%M:%S')}"
+        )
     except Exception as e:
         print(f"(Gagal membaca info sistem: {e})")
 
     # 2. INFORMASI INTERPRETER TARRI
     print("\nINTERPRETER TARRI")
-    print("-"*75)
+    print("-" * 75)
     try:
         try:
             import tarri
+
             versi = getattr(tarri, "__version__", "tidak diketahui")
         except Exception:
             versi = "tidak diketahui"
@@ -57,7 +77,7 @@ def lacak(interpreter, args=None):
 
     # 3. VARIABEL AKTIF
     print("\nVARIABEL AKTIF")
-    print("-"*75)
+    print("-" * 75)
     ctx = getattr(interpreter, "context", {})
     if not ctx:
         print("Tidak ada variabel aktif saat ini.")
@@ -79,7 +99,7 @@ def lacak(interpreter, args=None):
     sesi_obj = ctx.get("sesi") if isinstance(ctx, dict) else None
     if sesi_obj:
         print("\nSESI AKTIF")
-        print("-"*75)
+        print("-" * 75)
         try:
             if isinstance(sesi_obj, dict):
                 for k, v in sesi_obj.items():
@@ -94,7 +114,7 @@ def lacak(interpreter, args=None):
 
     # 5. ARGUMEN & WAKTU
     print("\nARGUMEN & WAKTU EKSEKUSI")
-    print("-"*75)
+    print("-" * 75)
     try:
         args_str = " ".join(sys.argv)
         print(f"{'Argumen CLI':20} : {args_str}")
@@ -104,7 +124,7 @@ def lacak(interpreter, args=None):
     durasi = time.time() - mulai
     print(f"{'Durasi Pelacakan':20} : {durasi:.4f} detik")
 
-    print("="*75)
+    print("=" * 75)
     print("Pelacakan selesai.\n")
 
     raise SystemExit("[tarri | lacak] Proses pelacakan dihentikan")

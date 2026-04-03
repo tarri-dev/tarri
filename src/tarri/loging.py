@@ -1,3 +1,17 @@
+#==============================================================================#
+# File    : loging.py                                                          #
+# Proyek  : Bahasa TARRI versi 0.8.x                                           #
+#           Teknologi Algoritmik Representasi Rekayasa Indonesia               #
+#------------------------------------------------------------------------------#
+# Penulis : Ketut Dana                                                         #
+# Kontak  : danayasa2@gmail.com                                                #
+# Lisensi : MIT                                                                #
+# Situs   : bahasatarri.com                                                    #
+#------------------------------------------------------------------------------#
+# Deskripsi :                                                                  #
+#   Komponen internal bahasa pemrograman Tarri.                                #
+#==============================================================================#
+
 import os
 import sys
 import datetime
@@ -6,6 +20,7 @@ import getpass
 import platform
 from contextlib import contextmanager
 from tarri import __version__  # versi Tarri
+
 
 # -------------------------
 # Logger Tarri
@@ -37,7 +52,9 @@ class TarriLogger:
             self._write_file("INFO", f"Versi Tarri: {__version__}")
             self._write_file("INFO", f"Pengguna   : {getpass.getuser()}")
             self._write_file("INFO", f"Perangkat  : {platform.node()}")
-            self._write_file("INFO", f"OS         : {platform.system()} {platform.release()}")
+            self._write_file(
+                "INFO", f"OS         : {platform.system()} {platform.release()}"
+            )
             self._write_file("INFO", f"Python     : {platform.python_version()}")
             self._write_file("INFO", f"Waktu      : {datetime.datetime.now()}")
 
@@ -51,17 +68,28 @@ class TarriLogger:
                 f.write(line)
 
     # --------- API standar ---------
-    def info(self, message):  self._write_file("INFO", message)
-    def warn(self, message):  self._write_file("WARN", message)
-    def error(self, message): self._write_file("ERROR", message)
-    def debug(self, message): self._write_file("DEBUG", message)
-    def garis(self): self._write_file("----", "-"*40)
+    def info(self, message):
+        self._write_file("INFO", message)
+
+    def warn(self, message):
+        self._write_file("WARN", message)
+
+    def error(self, message):
+        self._write_file("ERROR", message)
+
+    def debug(self, message):
+        self._write_file("DEBUG", message)
+
+    def garis(self):
+        self._write_file("----", "-" * 40)
 
     def show_log_path(self):
         print(f"[tarri | log] Menulis ke: {self.log_file}")
 
+
 # Singleton global
 logger = TarriLogger()
+
 
 # -------------------------
 # Redirect stdout/stderr ke log
@@ -80,6 +108,7 @@ class TarriStreamRedirector:
     def flush(self):
         self.stream.flush()
 
+
 @contextmanager
 def redirect_stdout_stderr(level_stdout="INFO", level_stderr="ERROR"):
     """Redirect sementara stdout/stderr ke logger"""
@@ -93,6 +122,7 @@ def redirect_stdout_stderr(level_stdout="INFO", level_stderr="ERROR"):
         sys.stdout = original_stdout
         sys.stderr = original_stderr
 
+
 # -------------------------
 # Fungsi cetak() otomatis log
 # -------------------------
@@ -100,6 +130,7 @@ def cetak(value):
     """Cetak ke layar dan log"""
     print(value)
     logger.info(f"CETAK: {value}")
+
 
 # -------------------------
 # Fungsi utilitas log
@@ -115,6 +146,7 @@ def baca_log_terakhir(n=50):
     for line in tail:
         print(line.strip())
 
+
 def hapus_semua_log():
     """Hapus semua log dengan konfirmasi"""
     confirm = input("Hapus semua log?  ya | tidak : ").strip().lower()
@@ -126,5 +158,3 @@ def hapus_semua_log():
         if os.path.isfile(path):
             os.remove(path)
     print("[tarri | log] Semua log telah dihapus.")
-
-

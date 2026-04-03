@@ -1,13 +1,29 @@
+#==============================================================================#
+# File    : bilangan.py                                                        #
+# Proyek  : Bahasa TARRI versi 0.8.x                                           #
+#           Teknologi Algoritmik Representasi Rekayasa Indonesia               #
+#------------------------------------------------------------------------------#
+# Penulis : Ketut Dana                                                         #
+# Kontak  : danayasa2@gmail.com                                                #
+# Lisensi : MIT                                                                #
+# Situs   : bahasatarri.com                                                    #
+#------------------------------------------------------------------------------#
+# Deskripsi :                                                                  #
+#   Fungsi dan utilitas pendukung 'bilangan' yang membantu operasi inti        #
+#   Tarri.                                                                     #
+#==============================================================================#
+
 import math
 from decimal import Decimal, getcontext
-
 
 # -----------------------------
 # 🔢 Fungsi Cek Bilangan
 # -----------------------------
 
+
 def bilangan_prima(n):
     """Mengembalikan bilangan prima dari n. Bisa tunggal atau list."""
+
     def _cek(x):
         if x < 2 or x != int(x):
             return False
@@ -23,6 +39,7 @@ def bilangan_prima(n):
 
 def bilangan_ganjil(n):
     """Mengembalikan bilangan ganjil dari n. Bisa tunggal atau list."""
+
     def _cek(x):
         return x % 2 != 0 if x == int(x) else False
 
@@ -33,6 +50,7 @@ def bilangan_ganjil(n):
 
 def bilangan_genap(n):
     """Mengembalikan bilangan genap dari n. Bisa tunggal atau list."""
+
     def _cek(x):
         return x % 2 == 0 if x == int(x) else False
 
@@ -43,6 +61,7 @@ def bilangan_genap(n):
 
 def bilangan_negatif(n):
     """Mengembalikan bilangan negatif dari n. Bisa tunggal atau list. Bulat tetap int."""
+
     def _cek(x):
         return x < 0
 
@@ -56,12 +75,14 @@ def bilangan_negatif(n):
 
 def bilangan_pecahan(n):
     """Mengembalikan bilangan pecahan/desimal dari n. Bisa tunggal atau list."""
+
     def _cek(x):
         return x != int(x)
 
     if isinstance(n, list):
         return [x for x in n if _cek(x)]
     return [n] if _cek(n) else []
+
 
 def bilangan_fibonacci(n):
     """
@@ -75,6 +96,7 @@ def bilangan_fibonacci(n):
         result.append(a)
         a, b = b, a + b
     return result
+
 
 def pi(*args):
     """
@@ -91,6 +113,7 @@ def pi(*args):
     pi_val = Decimal("3.14159265358979323846264338327950288419716939937510")
     return f"{pi_val:.{digits}f}"
 
+
 # -----------------------------
 # 🔢 Fungsi Cek Semua Kategori Sekaligus
 # -----------------------------
@@ -100,6 +123,7 @@ def cek_bilangan(n):
     ganjil, genap, prima, negatif, pecahan.
     Hanya angka unik, bulat -> int, pecahan -> float
     """
+
     def uniq(lst):
         seen = set()
         result = []
@@ -115,7 +139,7 @@ def cek_bilangan(n):
         "genap": uniq(bilangan_genap(n)),
         "prima": uniq(bilangan_prima(n)),
         "negatif": uniq(bilangan_negatif(n)),
-        "pecahan": uniq(bilangan_pecahan(n))
+        "pecahan": uniq(bilangan_pecahan(n)),
     }
 
     # ubah menjadi string tanpa {}, '', urutannya tetap

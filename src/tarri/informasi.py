@@ -1,3 +1,17 @@
+#==============================================================================#
+# File    : informasi.py                                                       #
+# Proyek  : Bahasa TARRI versi 0.8.x                                           #
+#           Teknologi Algoritmik Representasi Rekayasa Indonesia               #
+#------------------------------------------------------------------------------#
+# Penulis : Ketut Dana                                                         #
+# Kontak  : danayasa2@gmail.com                                                #
+# Lisensi : MIT                                                                #
+# Situs   : bahasatarri.com                                                    #
+#------------------------------------------------------------------------------#
+# Deskripsi :                                                                  #
+#   Komponen internal bahasa pemrograman Tarri.                                #
+#==============================================================================#
+
 # tarri/help.py
 
 import subprocess
@@ -7,18 +21,17 @@ BLUE = "\033[94m"
 RED = "\033[91m"
 RESET = "\033[0m"
 
+
 def get_tarri_version():
     """Ambil versi Tarri dari command line"""
     try:
         result = subprocess.run(
-            ["tarri", "-v"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True
+            ["tarri", "-v"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
         )
         return result.stdout.strip()
     except Exception:
         return "[tarri | server] Versi tidak ditemukan"
+
 
 def show_informasi():
     print(f"""

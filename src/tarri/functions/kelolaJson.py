@@ -1,3 +1,18 @@
+#==============================================================================#
+# File    : kelolaJson.py                                                      #
+# Proyek  : Bahasa TARRI versi 0.8.x                                           #
+#           Teknologi Algoritmik Representasi Rekayasa Indonesia               #
+#------------------------------------------------------------------------------#
+# Penulis : Ketut Dana                                                         #
+# Kontak  : danayasa2@gmail.com                                                #
+# Lisensi : MIT                                                                #
+# Situs   : bahasatarri.com                                                    #
+#------------------------------------------------------------------------------#
+# Deskripsi :                                                                  #
+#   Implementasi fungsi bawaan 'kelolaJson' yang tersedia dalam bahasa         #
+#   Tarri.                                                                     #
+#==============================================================================#
+
 import os
 import json
 from typing import Any
@@ -5,6 +20,7 @@ from typing import Any
 # ==========================
 # 🔹 Fungsi JSON Tarri
 # ==========================
+
 
 def buat_json(data: Any, indent: int = 4) -> str:
     """
@@ -21,7 +37,7 @@ def baca_json(file_path: str) -> Any:
     Membaca file JSON dari folder dan mengembalikannya sebagai string JSON rapi.
     """
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, "r", encoding="utf-8") as f:
             data = json.load(f)
             # kembalikan string JSON rapi
             return json.dumps(data, indent=4, ensure_ascii=False)
@@ -30,13 +46,13 @@ def baca_json(file_path: str) -> Any:
     except json.JSONDecodeError as e:
         return f"Gagal membaca JSON: {e}"
 
-    
+
 def simpan_json(data, lokasi_file, nama_file, indent=4):
     try:
         # buat folder jika belum ada
         os.makedirs(lokasi_file, exist_ok=True)
         path = f"{lokasi_file}/{nama_file}"
-        with open(path, 'w', encoding='utf-8') as f:
+        with open(path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=indent, ensure_ascii=False)
         return f"Data berhasil disimpan di {path}"
     except Exception as e:

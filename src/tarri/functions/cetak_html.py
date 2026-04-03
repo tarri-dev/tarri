@@ -1,7 +1,23 @@
+#==============================================================================#
+# File    : cetak_html.py                                                      #
+# Proyek  : Bahasa TARRI versi 0.8.x                                           #
+#           Teknologi Algoritmik Representasi Rekayasa Indonesia               #
+#------------------------------------------------------------------------------#
+# Penulis : Ketut Dana                                                         #
+# Kontak  : danayasa2@gmail.com                                                #
+# Lisensi : MIT                                                                #
+# Situs   : bahasatarri.com                                                    #
+#------------------------------------------------------------------------------#
+# Deskripsi :                                                                  #
+#   Implementasi fungsi bawaan 'cetak_html' yang tersedia dalam bahasa         #
+#   Tarri.                                                                     #
+#==============================================================================#
+
 from tarri.parser_global import parser
 import html
 import json
 import sys
+
 
 def cetak_html(interpreter, args):
     """
@@ -21,8 +37,7 @@ def cetak_html(interpreter, args):
         # Variabel Tarri (nama diawali "_")
         if isinstance(value, str) and value.startswith("_"):
             val = interpreter.context.get(
-                value,
-                f"[tarri | cetak_HTML] variabel '{value}' tidak ditemukan"
+                value, f"[tarri | cetak_HTML] variabel '{value}' tidak ditemukan"
             )
         else:
             val = value

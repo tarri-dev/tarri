@@ -1,4 +1,4 @@
-// === Grammar TARRI Stabil — Versi Terbaru (Perbaikan) ===
+// === Grammar TARRI Stabil — Versi 2025.12.22 (Support Operator ??) ===
 
 start: top_level_stmt*
 
@@ -47,6 +47,7 @@ import_stmt: "undang" NAME ("dari" NAME)?
 // VARIABEL & KONST
 // --------------------
 var_decl: VAR_NAME (EQUAL | PLUS_EQUAL | MINUS_EQUAL) expr -> auto_var_decl
+        | VAR_NAME "[" index_expr "]" (EQUAL | PLUS_EQUAL | MINUS_EQUAL) expr -> index_assign
 
 // --------------------
 // FUNGSI
@@ -91,64 +92,50 @@ continue_stmt: ("lanjutkan"|"lanjut")
 try_catch_stmt: ("coba"|"cb") block ("tangkap"|"tgkp") "(" VAR_NAME ")" block [("akhirnya"|"akhir") block]
 
 // --------------------
-// EKSPRESI (precedence-aware)
+// EKSPRESI (Precedence-aware)
+// Hirarki dari prioritas terendah ke tertinggi
 // --------------------
 expr_stmt: expr
 
 ?expr: expr_or
 
 ?expr_or: expr_or OR_OP expr_and            -> or_expr
-        | expr_or ("atau"|"atw") expr_and   -> or_expr
+        | expr_or ("ATAU"|"atau"|"atw") expr_and  -> or_expr
         | expr_and
 
-?expr_and: expr_and AND_OP expr_not -> and_expr
-         | expr_and ("dan") expr_not -> and_expr
+?expr_and: expr_and AND_OP expr_null_coal   -> and_expr
+         | expr_and ("DAN"|"dan") expr_null_coal  -> and_expr
+         | expr_null_coal
+
+// POSISI OPERATOR ??: Menangani null-safety sebelum masuk ke logika AND/OR
+?expr_null_coal: expr_cmp ( "??" expr_cmp )* -> null_coalesce
+
+?expr_cmp: expr_cmp COMP_OP expr_not        -> compare_expr
          | expr_not
 
-?expr_not: NOT expr_not -> not_expr
-         | ("bukan"|"bkn") expr_not -> not_expr
-         | expr_cmp
-
-?expr_cmp: expr_cmp COMP_OP expr_add -> compare_expr
+?expr_not: NOT expr_not                     -> not_expr
+         | ("bukan"|"bkn") expr_not         -> not_expr
          | expr_add
 
-?expr_add: expr_add ADD_OP expr_mul -> add_expr
+?expr_add: expr_add ADD_OP expr_mul         -> add_expr
          | expr_mul
 
-?expr_mul: expr_mul MUL_OP expr_atom -> mul_expr
+?expr_mul: expr_mul MUL_OP expr_atom        -> mul_expr
          | expr_atom
 
 // --------------------
 // ATOM / EKSPRESI DASAR
 // --------------------
-// Prioritas parsing literal, variabel, dan grouped_expr dulu, baru function call
-// ?expr_atom: grouped_expr
-//           | subcall_expr
-//           | atom
-//           | attr_access
-//           | indexing
-//           | type_cast
-//           | call_expr
-
 ?expr_atom: atom
           | "(" expr ")" -> grouped_expr
           | expr_atom "(" [args] ")" -> call_expr
           | expr_atom "." VAR_NAME -> attr_access
           | expr_atom "[" index_expr "]" -> indexing
           | expr_atom "->" TYPE_CAST -> type_cast
+          | subcall_expr
 
 // Hanya untuk subcall khusus modul: sqlite koneksi(...), dll
 modul_call: NAME NAME "(" [args] ")"
-
-
-
-// grouped_expr: "(" expr ")"
-
-// call_expr: atom "(" [args] ")"
-
-// attr_access: expr_atom "." VAR_NAME
-// indexing: expr_atom "[" index_expr "]"
-// type_cast: expr_atom "->" TYPE_CAST
 
 subcall_expr: (VAR_NAME | NAME) NAME "(" [args] ")"
 

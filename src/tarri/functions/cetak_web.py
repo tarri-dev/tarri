@@ -1,7 +1,23 @@
+#==============================================================================#
+# File    : cetak_web.py                                                       #
+# Proyek  : Bahasa TARRI versi 0.8.x                                           #
+#           Teknologi Algoritmik Representasi Rekayasa Indonesia               #
+#------------------------------------------------------------------------------#
+# Penulis : Ketut Dana                                                         #
+# Kontak  : danayasa2@gmail.com                                                #
+# Lisensi : MIT                                                                #
+# Situs   : bahasatarri.com                                                    #
+#------------------------------------------------------------------------------#
+# Deskripsi :                                                                  #
+#   Implementasi fungsi bawaan 'cetak_web' yang tersedia dalam bahasa          #
+#   Tarri.                                                                     #
+#==============================================================================#
+
 # from tarri.parser_global import parser
 import html
 import json
 import sys
+
 
 def cetak_web(interpreter, args):
     if not args:
@@ -14,8 +30,7 @@ def cetak_web(interpreter, args):
         # Jika value adalah nama variabel Tarri (diawali "_")
         if isinstance(value, str) and value.startswith("_"):
             val = interpreter.context.get(
-                value,
-                f"[tarri | cetak_web] variabel '{value}' tidak ditemukan"
+                value, f"[tarri | cetak_web] variabel '{value}' tidak ditemukan"
             )
         else:
             val = value

@@ -1,4 +1,20 @@
+#==============================================================================#
+# File    : angka_acak.py                                                      #
+# Proyek  : Bahasa TARRI versi 0.8.x                                           #
+#           Teknologi Algoritmik Representasi Rekayasa Indonesia               #
+#------------------------------------------------------------------------------#
+# Penulis : Ketut Dana                                                         #
+# Kontak  : danayasa2@gmail.com                                                #
+# Lisensi : MIT                                                                #
+# Situs   : bahasatarri.com                                                    #
+#------------------------------------------------------------------------------#
+# Deskripsi :                                                                  #
+#   Implementasi fungsi bawaan 'angka_acak' yang tersedia dalam bahasa         #
+#   Tarri.                                                                     #
+#==============================================================================#
+
 import random
+
 
 def angka_acak(min_val=0, max_val=100):
     """

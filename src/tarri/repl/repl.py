@@ -24,10 +24,29 @@ parser = Lark.open(GRAMMAR_PATH, start="start", parser="lalr")
 
 # Kata kunci utama bahasa Tarri
 TARRI_KEYWORDS = [
-    "titikawal", "fungsi", "kembalikan", "jika", "ataujika", "lainnya",
-    "selama", "ulangi", "untuk", "setiap", "setiapdari", "benar", "salah",
-    "kosong", "bukan", "tampilkan", "sembunyikan", "hentikan", "lanjutkan",
-    "kelas", "cetak", "hampa", "coba"
+    "titikawal",
+    "fungsi",
+    "kembalikan",
+    "jika",
+    "ataujika",
+    "lainnya",
+    "selama",
+    "ulangi",
+    "untuk",
+    "setiap",
+    "setiapdari",
+    "benar",
+    "salah",
+    "kosong",
+    "bukan",
+    "tampilkan",
+    "sembunyikan",
+    "hentikan",
+    "lanjutkan",
+    "kelas",
+    "cetak",
+    "hampa",
+    "coba",
 ]
 
 # Perintah REPL
@@ -55,7 +74,7 @@ def setup_readline():
     if "libedit" in readline.__doc__:
         readline.parse_and_bind("bind ^I rl_complete")  # Tab = complete (libedit)
     else:
-        readline.parse_and_bind("tab: complete")        # GNU readline
+        readline.parse_and_bind("tab: complete")  # GNU readline
 
     # History file
     history_path = os.path.expanduser("~/.tarri_history")
@@ -70,25 +89,23 @@ def clear_screen():
         os.system("cls")
     else:
         os.system("clear")
-        
 
 
 def get_tarri_version():
     """Ambil versi Tarri dari command line"""
     try:
         result = subprocess.run(
-            ["tarri", "-v"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True
+            ["tarri", "-v"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
         )
         return result.stdout.strip()
     except Exception:
         return "[tarri | server] Versi tidak ditemukan"
-    
+
+
 def get_datetime():
     """Ambil tanggal dan waktu sekarang"""
     return datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+
 
 def loading(msg="Memulai Mode Interaktif Tarri"):
     for c in msg + "...":
@@ -102,7 +119,9 @@ def tarri_repl():
     waktu_mulai = get_datetime()
     loading()
     print(f"[TARRI | Mode Interaktif] {get_tarri_version()} | {waktu_mulai}")
-    print(f"Ketik {RED}'keluar'{RESET} untuk berhenti atau {RED}'bersihkan'{RESET} untuk membersihkan layar.")
+    print(
+        f"Ketik {RED}'keluar'{RESET} untuk berhenti atau {RED}'bersihkan'{RESET} untuk membersihkan layar."
+    )
     print(f"bahasatarri.com | github.com/tarri-dev | instagram.com/bahasatarri")
     print()
 
@@ -144,9 +163,18 @@ def tarri_repl():
                 # Deteksi input yang perlu atau tidak perlu dibungkus titikawal
                 PERLU_TITIKAWAL = True
                 AWALAN_BLOK = (
-                    "titikawal", "fungsi", "kelas", "jika", "ataujika", "lainnya",
-                    "selama", "ulangi", "ulangidari", "setiap", "setiapdari",
-                    "untuk"
+                    "titikawal",
+                    "fungsi",
+                    "kelas",
+                    "jika",
+                    "ataujika",
+                    "lainnya",
+                    "selama",
+                    "ulangi",
+                    "ulangidari",
+                    "setiap",
+                    "setiapdari",
+                    "untuk",
                 )
 
                 for awal in AWALAN_BLOK:
@@ -158,7 +186,6 @@ def tarri_repl():
                 if PERLU_TITIKAWAL:
                     kode = f"titikawal {{ {kode} }}"
 
-
                 tree = parser.parse(kode)
                 hasil = ctx.run(tree)
 
@@ -167,20 +194,22 @@ def tarri_repl():
 
             except UnexpectedInput as e:
                 # 🔹 Tangkap informasi kesalahan dari Lark
-                baris = getattr(e, 'line', '?')
-                kolom = getattr(e, 'column', '?')
+                baris = getattr(e, "line", "?")
+                kolom = getattr(e, "column", "?")
                 token = None
                 prev_token = None
 
-                if hasattr(e, 'token') and e.token:
+                if hasattr(e, "token") and e.token:
                     token = e.token
-                if hasattr(e, 'prev_token') and e.prev_token:
+                if hasattr(e, "prev_token") and e.prev_token:
                     prev_token = e.prev_token
 
                 simbol = token.value if token else "?"
                 sebelumnya = prev_token.value if prev_token else "?"
 
-                print(f"{RED}[tarri]{RESET} Kesalahan sintaks di baris {baris}. Periksa penulisan tanda variabel, kurung, operator, atau struktur blok kode.")
+                print(
+                    f"{RED}[tarri]{RESET} Kesalahan sintaks di baris {baris}. Periksa penulisan tanda variabel, kurung, operator, atau struktur blok kode."
+                )
                 print("")
 
                 buffer = ""

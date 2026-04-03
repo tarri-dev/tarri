@@ -1,10 +1,28 @@
+#==============================================================================#
+# File    : func_call.py                                                       #
+# Proyek  : Bahasa TARRI versi 0.8.x                                           #
+#           Teknologi Algoritmik Representasi Rekayasa Indonesia               #
+#------------------------------------------------------------------------------#
+# Penulis : Ketut Dana                                                         #
+# Kontak  : danayasa2@gmail.com                                                #
+# Lisensi : MIT                                                                #
+# Situs   : bahasatarri.com                                                    #
+#------------------------------------------------------------------------------#
+# Deskripsi :                                                                  #
+#   Executor node untuk menerjemahkan dan mengeksekusi AST node bertipe        #
+#   'func_call' dalam penerjemah Tarri.                                        #
+#==============================================================================#
+
 from collections import ChainMap
+
 
 def exec_func_call(self, func_name, args):
     if func_name not in self.functions:
-        self.error(f"[tarri | interpreter | func_call] Fungsi '{func_name}' tidak ditemukan")
+        self.error(
+            f"[tarri | interpreter | func_call] Fungsi '{func_name}' tidak ditemukan"
+        )
         return None
-    
+
     params, body = self.functions[func_name]
     local_env = {}
     for i, param in enumerate(params):
@@ -19,7 +37,11 @@ def exec_func_call(self, func_name, args):
         for stmt in body.children:
             self.exec_node(stmt)
             if self._return_flag is not None:
-                result = self._return_flag
+                # Cek apakah ini sembunyikan (void return)
+                if self._return_flag is self._VOID_RETURN:
+                    result = None
+                else:
+                    result = self._return_flag
                 break
         return result
     finally:

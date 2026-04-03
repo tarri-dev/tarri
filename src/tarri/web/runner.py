@@ -1,3 +1,18 @@
+#==============================================================================#
+# File    : runner.py                                                          #
+# Proyek  : Bahasa TARRI versi 0.8.x                                           #
+#           Teknologi Algoritmik Representasi Rekayasa Indonesia               #
+#------------------------------------------------------------------------------#
+# Penulis : Ketut Dana                                                         #
+# Kontak  : danayasa2@gmail.com                                                #
+# Lisensi : MIT                                                                #
+# Situs   : bahasatarri.com                                                    #
+#------------------------------------------------------------------------------#
+# Deskripsi :                                                                  #
+#   Komponen integrasi web dan server untuk menjalankan modul Tarri            #
+#   melalui HTTP.                                                              #
+#==============================================================================#
+
 from tarri.parser_global import parser
 from urllib.parse import parse_qs
 from io import StringIO
@@ -9,6 +24,7 @@ import html
 
 class BuiltinFunction:
     """Wrapper supaya fungsi Python bisa dipanggil oleh interpreter."""
+
     def __init__(self, func):
         self.func = func
 
@@ -32,10 +48,7 @@ base_builtins = {
 def get_tarri_version():
     try:
         result = subprocess.run(
-            ["tarri", "-v"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True
+            ["tarri", "-v"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
         )
         return result.stdout.strip()
     except Exception:
@@ -44,6 +57,7 @@ def get_tarri_version():
 
 def inject_request(interpreter, request_data):
     """Tambahkan fungsi get(), post(), request() ke interpreter"""
+
     def _get(key=None, default=""):
         if key is None:
             return request_data["_GET"]
@@ -77,7 +91,7 @@ def run_source(source: str, request_data=None):
     - context : dict variabel global
     """
     # ⬅️ Lazy import → putus circular import
-    # from tarri.interpreter import Interpreter  
+    # from tarri.interpreter import Interpreter
     from tarri.interpreter.core import Context
 
     interpreter = Context()
@@ -99,17 +113,13 @@ def run_source(source: str, request_data=None):
 
         html_output = output_buffer.getvalue().strip()
 
-        ctx = {
-            k: v
-            for k, v in interpreter.globals.items()
-            if not callable(v)
-        }
+        ctx = {k: v for k, v in interpreter.globals.items() if not callable(v)}
         return html_output, ctx
 
     # except StopIteration:
     #     html_output = output_buffer.getvalue().strip()
     #     return html_output, {}
-    
+
     except StopIteration as e:
         html_output = output_buffer.getvalue().strip()
 
@@ -117,6 +127,7 @@ def run_source(source: str, request_data=None):
             resp = e.value
             try:
                 from fastapi.responses import RedirectResponse
+
                 if isinstance(resp, RedirectResponse):
                     return resp, {}
             except ImportError:
@@ -124,7 +135,6 @@ def run_source(source: str, request_data=None):
 
         # fallback normal kalau bukan redirect
         return html_output, {}
-
 
     except Exception as e:
         import traceback, sys
@@ -134,19 +144,19 @@ def run_source(source: str, request_data=None):
         formatted_traceback = "".join(tb_list)
 
         error_translations = {
-            'SyntaxError': 'Kesalahan Sintaks',
-            'NameError': 'Kesalahan Nama',
-            'TypeError': 'Kesalahan Tipe Data',
-            'ValueError': 'Kesalahan Nilai',
-            'IndexError': 'Kesalahan Indeks',
-            'KeyError': 'Kesalahan Kunci',
-            'ZeroDivisionError': 'Kesalahan Pembagian dengan Nol',
-            'ImportError': 'Kesalahan Import',
-            'AttributeError': 'Kesalahan Atribut',
-            'RuntimeError': 'Kesalahan Runtime',
-            'Exception': 'Kesalahan Umum',
-            'UnexpectedToken' : 'Token atau Kata Kunci Tidak Diketahui',
-            'UnexpectedCharacters' : 'Karakter tidak diketahui'
+            "SyntaxError": "Kesalahan Sintaks",
+            "NameError": "Kesalahan Nama",
+            "TypeError": "Kesalahan Tipe Data",
+            "ValueError": "Kesalahan Nilai",
+            "IndexError": "Kesalahan Indeks",
+            "KeyError": "Kesalahan Kunci",
+            "ZeroDivisionError": "Kesalahan Pembagian dengan Nol",
+            "ImportError": "Kesalahan Import",
+            "AttributeError": "Kesalahan Atribut",
+            "RuntimeError": "Kesalahan Runtime",
+            "Exception": "Kesalahan Umum",
+            "UnexpectedToken": "Token atau Kata Kunci Tidak Diketahui",
+            "UnexpectedCharacters": "Karakter tidak diketahui",
         }
 
         error_type = type(e).__name__
@@ -256,19 +266,19 @@ def run_source(source: str, request_data=None):
         """
 
         help_suggestions = {
-            'SyntaxError': 'Periksa kembali sintaks kode Kamu. Pastikan semua tKamu kurung, titik koma, dan tKamu baca lainnya digunakan dengan benar.',
-            'NameError': 'Variabel atau fungsi yang Kamu coba gunakan belum didefinisikan. Periksa ejaan atau pastikan Kamu telah mendefinisikannya.',
-            'TypeError': 'Kamu mungkin mencoba melakukan operasi pada tipe data yang tidak sesuai. Periksa tipe data variabel yang digunakan.',
-            'IndexError': 'Indeks yang Kamu coba akses tidak ada dalam koleksi. Pastikan indeks berada dalam rentang yang valid.',
-            'KeyError': 'Kunci yang Kamu coba akses tidak ada dalam dictionary. Periksa ejaan atau pastikan kunci tersebut telah ditambahkan.',
-            'ZeroDivisionError': 'Tidak dapat melakukan pembagian dengan nol. Tambahkan pengecekan untuk memastikan pembagi tidak nol.',
-            'ImportError': 'Modul atau library yang Kamu coba impor tidak dapat ditemukan. Pastikan nama modul benar dan telah terinstall.',
-            'AttributeError': 'Objek tidak memiliki atribut atau metode yang Kamu coba akses. Periksa dokumentasi untuk atribut yang tersedia.',
-            'UnexpectedToken' : 'Kata kunci atau perintah yang Kamu masukkan tidak diketahui. Atau mungkin lupa menggunakan titikawal{}?',
-            'UnexpectedCharacters' : 'Kamu memasukkan karakter yang tidak diketahui. Mungkin ada salah tanda baca.',
-            'default': 'Periksa dokumentasi untuk informasi lebih lanjut tentang kesalahan ini.'
+            "SyntaxError": "Periksa kembali sintaks kode Kamu. Pastikan semua tKamu kurung, titik koma, dan tKamu baca lainnya digunakan dengan benar.",
+            "NameError": "Variabel atau fungsi yang Kamu coba gunakan belum didefinisikan. Periksa ejaan atau pastikan Kamu telah mendefinisikannya.",
+            "TypeError": "Kamu mungkin mencoba melakukan operasi pada tipe data yang tidak sesuai. Periksa tipe data variabel yang digunakan.",
+            "IndexError": "Indeks yang Kamu coba akses tidak ada dalam koleksi. Pastikan indeks berada dalam rentang yang valid.",
+            "KeyError": "Kunci yang Kamu coba akses tidak ada dalam dictionary. Periksa ejaan atau pastikan kunci tersebut telah ditambahkan.",
+            "ZeroDivisionError": "Tidak dapat melakukan pembagian dengan nol. Tambahkan pengecekan untuk memastikan pembagi tidak nol.",
+            "ImportError": "Modul atau library yang Kamu coba impor tidak dapat ditemukan. Pastikan nama modul benar dan telah terinstall.",
+            "AttributeError": "Objek tidak memiliki atribut atau metode yang Kamu coba akses. Periksa dokumentasi untuk atribut yang tersedia.",
+            "UnexpectedToken": "Kata kunci atau perintah yang Kamu masukkan tidak diketahui. Atau mungkin lupa menggunakan titikawal{}?",
+            "UnexpectedCharacters": "Kamu memasukkan karakter yang tidak diketahui. Mungkin ada salah tanda baca.",
+            "default": "Periksa dokumentasi untuk informasi lebih lanjut tentang kesalahan ini.",
         }
-        help_message = help_suggestions.get(error_type, help_suggestions['default'])
+        help_message = help_suggestions.get(error_type, help_suggestions["default"])
 
         error_html = f"""
         <div class="tarri-error-container">
@@ -313,6 +323,5 @@ def build_context(environ):
     return {
         "_GET": data if method == "GET" else {},
         "_POST": data if method == "POST" else {},
-        "_REQUEST": data
+        "_REQUEST": data,
     }
-

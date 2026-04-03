@@ -1,3 +1,17 @@
+#==============================================================================#
+# File    : desimal.py                                                         #
+# Proyek  : Bahasa TARRI versi 0.8.x                                           #
+#           Teknologi Algoritmik Representasi Rekayasa Indonesia               #
+#------------------------------------------------------------------------------#
+# Penulis : Ketut Dana                                                         #
+# Kontak  : danayasa2@gmail.com                                                #
+# Lisensi : MIT                                                                #
+# Situs   : bahasatarri.com                                                    #
+#------------------------------------------------------------------------------#
+# Deskripsi :                                                                  #
+#   Definisi tipe data 'desimal' yang digunakan oleh mesin bahasa Tarri.       #
+#==============================================================================#
+
 from tarri.datatypes import register
 
 

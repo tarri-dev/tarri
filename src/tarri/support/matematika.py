@@ -1,3 +1,18 @@
+#==============================================================================#
+# File    : matematika.py                                                      #
+# Proyek  : Bahasa TARRI versi 0.8.x                                           #
+#           Teknologi Algoritmik Representasi Rekayasa Indonesia               #
+#------------------------------------------------------------------------------#
+# Penulis : Ketut Dana                                                         #
+# Kontak  : danayasa2@gmail.com                                                #
+# Lisensi : MIT                                                                #
+# Situs   : bahasatarri.com                                                    #
+#------------------------------------------------------------------------------#
+# Deskripsi :                                                                  #
+#   Fungsi dan utilitas pendukung 'matematika' yang membantu operasi inti      #
+#   Tarri.                                                                     #
+#==============================================================================#
+
 import random
 import math
 import statistics

@@ -1,3 +1,18 @@
+#==============================================================================#
+# File    : cli.py                                                             #
+# Proyek  : Bahasa TARRI versi 0.8.x                                           #
+#           Teknologi Algoritmik Representasi Rekayasa Indonesia               #
+#------------------------------------------------------------------------------#
+# Penulis : Ketut Dana                                                         #
+# Kontak  : danayasa2@gmail.com                                                #
+# Lisensi : MIT                                                                #
+# Situs   : bahasatarri.com                                                    #
+#------------------------------------------------------------------------------#
+# Deskripsi :                                                                  #
+#   Antarmuka Baris Perintah (CLI) utama Tarri: menangani argumen terminal     #
+#   dan menjalankan file .tarri.                                               #
+#==============================================================================#
+
 import sys
 import os
 import time
@@ -14,8 +29,7 @@ from tarri.parser_global import parser
 from tarri import __version__
 from lark import Tree, Token
 from tarri.loging import logger
-
-
+from tarri.errors import TarriRuntimeError
 
 try:
     from tarriweb.server import ROOT_DIR
@@ -35,7 +49,10 @@ with open(GRAMMAR_PATH, "r", encoding="utf-8") as f:
 
 parser = Lark(tarri_grammar, start="start", parser="lalr")
 
-def run_file(filename: str, status: bool = False, show_ast: bool = False, cli_args=None):
+
+def run_file(
+    filename: str, status: bool = False, show_ast: bool = False, cli_args=None
+):
     """Jalankan file .tarri dengan dukungan argumen CLI (_argumen)."""
     start_time = time.perf_counter()
     interpreter = Context(root_project=ROOT_DIR if ROOT_DIR else ".")
@@ -46,7 +63,6 @@ def run_file(filename: str, status: bool = False, show_ast: bool = False, cli_ar
     # Inject variabel global _argumen (mirip sys.argv di Python)
     # interpreter.global_scope["_argumen"] = cli_args
     interpreter.context["_argumen"] = cli_args
-
 
     try:
         if status:
@@ -61,7 +77,9 @@ def run_file(filename: str, status: bool = False, show_ast: bool = False, cli_ar
 
         if not os.path.exists(filename):
             if status:
-                print(f"[tarri | cli] membaca file {os.path.basename(filename)} (gagal)")
+                print(
+                    f"[tarri | cli] membaca file {os.path.basename(filename)} (gagal)"
+                )
             print(f"[tarri | cli] kesalahan! file {filename} tidak ditemukan")
             print()
             return
@@ -89,7 +107,7 @@ def run_file(filename: str, status: bool = False, show_ast: bool = False, cli_ar
                 lines.append(prefix + connector + label)
                 child_prefix = prefix + ("    " if is_last else "│   ")
                 for i, child in enumerate(node.children):
-                    last = (i == len(node.children) - 1)
+                    last = i == len(node.children) - 1
                     lines.append(pretty_ast(child, child_prefix, last))
             elif isinstance(node, Token):
                 lines.append(prefix + connector + f"{node.type}: {node.value}")
@@ -116,10 +134,10 @@ def run_file(filename: str, status: bool = False, show_ast: bool = False, cli_ar
         print()
 
     except UnexpectedInput as e:
-        print(f"[tarri | cli] proses parsing program ... (gagal)")
-        line = getattr(e, "line", "?")
-        column = getattr(e, "column", "?")
-        print(f"[tarri | cli] posisi kesalahan : line {line}, column {column}")
+        print(f"[tarri | cli] proses penguraian program ... (gagal)")
+        baris = getattr(e, "line", "?")
+        kolom = getattr(e, "column", "?")
+        print(f"[tarri | cli] posisi kesalahan : baris {baris}, kolom {kolom}")
         try:
             context_line = e.get_context(source, 1)
             print(context_line)
@@ -127,22 +145,32 @@ def run_file(filename: str, status: bool = False, show_ast: bool = False, cli_ar
             print("    ^")
         print()
 
+    except TarriRuntimeError as e:
+        raise e  # Re-raise TarriRuntimeError to be handled by the interpreter's try-catch
     except Exception as e:
         print()
         pesan = str(e)
         terjemahan = {
-            "list index out of range": "indeks daftar melebihi batas atau tidak dikenal",
+            "list index out of range": "indeks daftar melebihi batas",
             "division by zero": "pembagian dengan nol tidak diizinkan",
             "name": "variabel tidak dikenal",
             "syntax": "kesalahan penulisan kode (sintaks)",
             "type": "kesalahan tipe data",
             "value": "nilai tidak valid",
-            "file": "berkas tidak ditemukan"
+            "file": "berkas tidak ditemukan",
+            "key": "kunci tidak ditemukan di kamus",
+            "attribute": "atribut tidak ditemukan pada objek",
+            "index": "indeks di luar batas",
+            "zero": "pembagian dengan nol",
+            "recursion": "rekursi terlalu dalam — kemungkinan rekursi tak terbatas",
+            "unicode": "kesalahan karakter — teks tidak bisa dibaca",
+            "memory": "kehabisan memori",
         }
-        pesan_id = next((terjemahan[k] for k in terjemahan if k in pesan.lower()), pesan)
+        pesan_id = next(
+            (terjemahan[k] for k in terjemahan if k in pesan.lower()), pesan
+        )
         print(f"[tarri | cli] kesalahan : {pesan_id}")
         print()
-
 
 
 def main():
@@ -157,18 +185,18 @@ def main():
             # Hanya aktifkan file logging, REPL tetap normal
             tarri_repl()
             return
-        
+
         # ================================================#
         # BANTUAN & INFORMASI
         # ================================================#
         if args[0] in ("-b", "--bantuan"):
             show_help()
             return
-        
+
         if args[0] in ("-i", "--informasi"):
             show_informasi()
             return
-        
+
         # ================================================#
         # CEK VERSI
         # ================================================#
@@ -194,8 +222,6 @@ def main():
             run_file(filename, status=status, show_ast=show_ast, cli_args=extra_args)
             return
 
-
-        
         # ===============================
         # Lihat log
         # ===============================
@@ -208,7 +234,11 @@ def main():
                 # Subcommand hapus
                 if len(args) > 1 and args[1] == "hapus":
                     print()
-                    konfirmasi = input("[tarri | cli] Hapus semua log? (ya/tidak): ").strip().lower()
+                    konfirmasi = (
+                        input("[tarri | cli] Hapus semua log? (ya/tidak): ")
+                        .strip()
+                        .lower()
+                    )
                     if konfirmasi == "ya":
                         log_dir = os.path.expanduser("~/.tarri/logs")
                         if os.path.exists(log_dir):
@@ -252,12 +282,15 @@ def main():
         # ================================================#
         # PERINTAH TIDAK DIKENAL
         # ================================================#
-        print(f"[tarri | cli] perintah tidak diketahui, periksa bantuan ( -b / --bantuan )")
+        print(
+            f"[tarri | cli] perintah tidak diketahui, periksa bantuan ( -b / --bantuan )"
+        )
 
     except KeyboardInterrupt:
         print()
         print(f"[tarri | cli] Program telah dihentikan oleh pengguna.")
         return 0
+
 
 if __name__ == "__main__":
     main()

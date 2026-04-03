@@ -1,14 +1,24 @@
-from fastapi.responses import RedirectResponse
+#==============================================================================#
+# File    : alihkan.py                                                         #
+# Proyek  : Bahasa TARRI versi 0.8.x                                           #
+#           Teknologi Algoritmik Representasi Rekayasa Indonesia               #
+#------------------------------------------------------------------------------#
+# Penulis : Ketut Dana                                                         #
+# Kontak  : danayasa2@gmail.com                                                #
+# Lisensi : MIT                                                                #
+# Situs   : bahasatarri.com                                                    #
+#------------------------------------------------------------------------------#
+# Deskripsi :                                                                  #
+#   Implementasi fungsi bawaan 'alihkan' yang tersedia dalam bahasa Tarri.     #
+#==============================================================================#
+
+try:
+    from fastapi.responses import RedirectResponse
+except ImportError:
+    RedirectResponse = None
+
 
 def alihkan(interpreter, target, data=None, status_code: int = 302):
-    """
-    Fungsi redirect (alihkan) versi Tarri Web.
-    
-    Contoh:
-        alihkan(interpreter, "/login")
-        alihkan(interpreter, "/", {"_pesan": "Registrasi berhasil"})
-        alihkan(interpreter, ["/dashboard", {"_info": "Selamat datang!"}])
-    """
 
     # === Normalisasi target ===
     if isinstance(target, (list, tuple)):

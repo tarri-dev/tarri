@@ -1,18 +1,37 @@
+#==============================================================================#
+# File    : halaman.py                                                         #
+# Proyek  : Bahasa TARRI versi 0.8.x                                           #
+#           Teknologi Algoritmik Representasi Rekayasa Indonesia               #
+#------------------------------------------------------------------------------#
+# Penulis : Ketut Dana                                                         #
+# Kontak  : danayasa2@gmail.com                                                #
+# Lisensi : MIT                                                                #
+# Situs   : bahasatarri.com                                                    #
+#------------------------------------------------------------------------------#
+# Deskripsi :                                                                  #
+#   Implementasi fungsi bawaan 'halaman' yang tersedia dalam bahasa Tarri.     #
+#==============================================================================#
+
 from pathlib import Path
 import re
 import datetime
 from tarri.parser_global import parser
 from tarri.functions.tujuan import tujuan
 from tarri.functions.rute import ROUTES
-from fastapi.responses import RedirectResponse, HTMLResponse
+
+try:
+    from fastapi.responses import RedirectResponse, HTMLResponse
+except ImportError:
+    RedirectResponse = None
+    HTMLResponse = None
 from tarri.functions.alihkan import alihkan
 import io
 import contextlib
 import subprocess
 
-
 _DOUBLE_PATTERN = re.compile(r"{{([^{}]+)}}")
-_RAW_PATTERN   = re.compile(r"{!!([^{}]+)!!}")  # pattern untuk raw HTML
+_RAW_PATTERN = re.compile(r"{!!([^{}]+)!!}")  # pattern untuk raw HTML
+
 
 def render_html(html, context):
     def repl(match):
@@ -24,14 +43,16 @@ def render_html(html, context):
         # ===============================
         if "(" in expr and expr.endswith(")"):
             func_name = expr.split("(")[0].strip()
-            args_raw = expr[len(func_name)+1:-1].strip()  # ambil isi dalam ()
+            args_raw = expr[len(func_name) + 1 : -1].strip()  # ambil isi dalam ()
             args = []
 
             if args_raw:
                 # anggap argumen string ("" atau '') atau angka
                 for a in args_raw.split(","):
                     a = a.strip()
-                    if (a.startswith('"') and a.endswith('"')) or (a.startswith("'") and a.endswith("'")):
+                    if (a.startswith('"') and a.endswith('"')) or (
+                        a.startswith("'") and a.endswith("'")
+                    ):
                         args.append(a[1:-1])
                     else:
                         try:
@@ -83,12 +104,14 @@ def render_html(html, context):
         # logika sama seperti repl tapi tidak mengubah string → raw
         if "(" in expr and expr.endswith(")"):
             func_name = expr.split("(")[0].strip()
-            args_raw = expr[len(func_name)+1:-1].strip()
+            args_raw = expr[len(func_name) + 1 : -1].strip()
             args = []
             if args_raw:
                 for a in args_raw.split(","):
                     a = a.strip()
-                    if (a.startswith('"') and a.endswith('"')) or (a.startswith("'") and a.endswith("'")):
+                    if (a.startswith('"') and a.endswith('"')) or (
+                        a.startswith("'") and a.endswith("'")
+                    ):
                         args.append(a[1:-1])
                     else:
                         try:
@@ -132,18 +155,17 @@ def render_html(html, context):
     html = _DOUBLE_PATTERN.sub(repl, html)
     return html
 
+
 def get_tarri_version():
     try:
         result = subprocess.run(
-            ["tarri", "-v"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True
+            ["tarri", "-v"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
         )
         return result.stdout.strip()
     except Exception:
         return "[tarri | server] Versi tidak ditemukan"
-    
+
+
 def render_error_page(code=404, message="Halaman tidak ditemukan", path="/"):
     return f"""
     <html><head><meta charset="utf-8"><title>Error {code} • TarriWeb</title></head>
@@ -153,6 +175,7 @@ def render_error_page(code=404, message="Halaman tidak ditemukan", path="/"):
     </body></html>
     """
 
+
 def halaman(interpreter, args, fungsi=None):
     """
     Eksekusi halaman:
@@ -161,13 +184,15 @@ def halaman(interpreter, args, fungsi=None):
     - POST → jalankan fungsi target jika ada
     """
     if not args:
-        return HTMLResponse("<p style='color:red;'>[halaman] ERROR: Tidak ada argumen yang diberikan</p>", status_code=400)
-    
+        return HTMLResponse(
+            "<p style='color:red;'>[halaman] ERROR: Tidak ada argumen yang diberikan</p>",
+            status_code=400,
+        )
 
     raw_path = str(args[0])
     file_path = Path(raw_path).resolve()
     context = {}
-    
+
     if len(args) > 1:
         payload = args[1]
         if isinstance(payload, dict):
@@ -175,14 +200,13 @@ def halaman(interpreter, args, fungsi=None):
             clean_payload = {}
             for k, v in payload.items():
                 if hasattr(v, "read"):  # file-like
-                    clean_payload[k] = v.read().decode('utf-8')
+                    clean_payload[k] = v.read().decode("utf-8")
                 else:
                     clean_payload[k] = v
             context = clean_payload
         else:
             context = {"_data": payload}
 
-    
     default_context = {
         "_url": str(file_path),
         "_method": context.get("_method", "GET"),
@@ -195,15 +219,12 @@ def halaman(interpreter, args, fungsi=None):
 
     context = {**default_context, **context}
     interpreter.context.update(context)
-    
+
     if not file_path.exists():
         html = render_error_page(
-            404,
-            f"File <b>{file_path.name}</b> tidak ditemukan!",
-            str(file_path)
+            404, f"File <b>{file_path.name}</b> tidak ditemukan!", str(file_path)
         )
         return HTMLResponse(html, status_code=404)
-
 
     source = file_path.read_text(encoding="utf-8")
 
@@ -215,7 +236,7 @@ def halaman(interpreter, args, fungsi=None):
             if context["_method"].upper() == "POST":
                 return HTMLResponse(f"<p>{e}</p>", status_code=500)
             context["_halaman_error"] = f"<p>{e}</p>"
-        rendered_html = "" 
+        rendered_html = ""
     else:
         tarri_block_pattern = re.compile(r"<tarri>(.*?)</tarri>", re.DOTALL)
         blocks = tarri_block_pattern.findall(source)
@@ -225,19 +246,18 @@ def halaman(interpreter, args, fungsi=None):
                 interpreter.run(tree)
             except Exception as e:
                 import traceback
+
                 err_msg = str(e) or traceback.format_exc()
                 if context["_method"].upper() == "POST":
                     return HTMLResponse(f"<p>{err_msg}</p>", status_code=500)
                 context["_halaman_error"] = f"<p>{err_msg}</p>"
-
 
         context.update(interpreter.context)
         source = tarri_block_pattern.sub("", source)
         if "_halaman_error" in context and context["_method"].upper() == "GET":
             source = context["_halaman_error"] + source
         rendered_html = render_html(source, context)
-    
-    
+
     # if context["_method"].upper() == "POST" and fungsi:
     #     if fungsi in interpreter.functions:
     #         result = interpreter.call_function(fungsi, [])
@@ -256,7 +276,7 @@ def halaman(interpreter, args, fungsi=None):
                 result = interpreter.call_function(fungsi, [])
 
             if isinstance(result, HTMLResponse):
-                return result 
+                return result
             buf = io.StringIO()
             with contextlib.redirect_stdout(buf):
                 if result is not None:
@@ -356,4 +376,5 @@ def halaman(interpreter, args, fungsi=None):
             """
             return HTMLResponse(output_html, status_code=500)
 
-    return HTMLResponse(rendered_html)
+    # return HTMLResponse(rendered_html)
+    raise StopIteration(rendered_html)

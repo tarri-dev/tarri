@@ -1,3 +1,18 @@
+#==============================================================================#
+# File    : lainya.py                                                          #
+# Proyek  : Bahasa TARRI versi 0.8.x                                           #
+#           Teknologi Algoritmik Representasi Rekayasa Indonesia               #
+#------------------------------------------------------------------------------#
+# Penulis : Ketut Dana                                                         #
+# Kontak  : danayasa2@gmail.com                                                #
+# Lisensi : MIT                                                                #
+# Situs   : bahasatarri.com                                                    #
+#------------------------------------------------------------------------------#
+# Deskripsi :                                                                  #
+#   Fungsi dan utilitas pendukung 'lainya' yang membantu operasi inti          #
+#   Tarri.                                                                     #
+#==============================================================================#
+
 """
 Fungsi dasar Tarri versi Bahasa Indonesia.
 Berbasis interpreter, tapi tidak semua fungsi butuh akses interpreter.

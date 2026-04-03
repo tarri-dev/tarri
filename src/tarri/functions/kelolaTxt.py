@@ -1,4 +1,20 @@
+#==============================================================================#
+# File    : kelolaTxt.py                                                       #
+# Proyek  : Bahasa TARRI versi 0.8.x                                           #
+#           Teknologi Algoritmik Representasi Rekayasa Indonesia               #
+#------------------------------------------------------------------------------#
+# Penulis : Ketut Dana                                                         #
+# Kontak  : danayasa2@gmail.com                                                #
+# Lisensi : MIT                                                                #
+# Situs   : bahasatarri.com                                                    #
+#------------------------------------------------------------------------------#
+# Deskripsi :                                                                  #
+#   Implementasi fungsi bawaan 'kelolaTxt' yang tersedia dalam bahasa          #
+#   Tarri.                                                                     #
+#==============================================================================#
+
 import os
+
 
 # ================= TXT =================
 def simpanTxt(filename, content, ctx=None, tarri_file=None):
@@ -44,7 +60,7 @@ def parse_txt_arrow_format(content, block_name=""):
     start_idx = content.find(f"{block_name} [")
     end_idx = content.rfind("]")
     if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
-        block = content[start_idx + len(f"{block_name} ["):end_idx]
+        block = content[start_idx + len(f"{block_name} [") : end_idx]
         lines = block.splitlines()
         for line in lines:
             line = line.strip().rstrip(",")
@@ -53,7 +69,9 @@ def parse_txt_arrow_format(content, block_name=""):
                 k = k.strip()
                 v = v.strip()
                 # Hilangkan tanda kutip jika ada
-                if (v.startswith('"') and v.endswith('"')) or (v.startswith("'") and v.endswith("'")):
+                if (v.startswith('"') and v.endswith('"')) or (
+                    v.startswith("'") and v.endswith("'")
+                ):
                     v = v[1:-1]
                 else:
                     # Coba cast ke int
@@ -67,8 +85,6 @@ def parse_txt_arrow_format(content, block_name=""):
                 data_dict[k] = v
         return data_dict if data_dict else None
     return None
-
-
 
 
 def bacaTxt(filename, key=None, ctx=None, tarri_file=None):
@@ -106,6 +122,7 @@ def bacaTxt(filename, key=None, ctx=None, tarri_file=None):
 
 import os
 
+
 def perbaruiTxt(filename, mode, content, ctx=None, tarri_file=None):
     """
     Memperbarui file teks relatif terhadap folder file .tarri.
@@ -142,14 +159,15 @@ def perbaruiTxt(filename, mode, content, ctx=None, tarri_file=None):
         msg = (
             "file atau folder tidak ditemukan"
             if isinstance(e, FileNotFoundError)
-            else "akses ditolak"
-            if isinstance(e, PermissionError)
-            else f"terjadi kesalahan: {e}"
+            else (
+                "akses ditolak"
+                if isinstance(e, PermissionError)
+                else f"terjadi kesalahan: {e}"
+            )
         )
         if ctx is not None:
             ctx["i"] = f"gagal diperbarui: {msg}"
         return False
-
 
 
 def hapusTxt(filename, ctx=None, tarri_file=None):
@@ -179,7 +197,7 @@ def hapusTxt(filename, ctx=None, tarri_file=None):
 
 # titikawal{
 #     _hasil = simpanTxt("/root/tes.txt", "coba")
-    
+
 #     jika(_hasil) {
 #         cetak "sukses, {i}"
 #     } lainnya {
@@ -212,7 +230,7 @@ def hapusTxt(filename, ctx=None, tarri_file=None):
 # _id = angkaAcak(10,100)
 
 # titikawal{
-    
+
 #     simpanTxt("examples/akun.txt","
 #         _akun [
 #             _id     => {_id},
@@ -229,7 +247,7 @@ def hapusTxt(filename, ctx=None, tarri_file=None):
 
 
 #     cetak _id "|" _nama "|" _sandi
-    
+
 # }
 
 

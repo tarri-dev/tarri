@@ -1,3 +1,18 @@
+#==============================================================================#
+# File    : masukkan.py                                                        #
+# Proyek  : Bahasa TARRI versi 0.8.x                                           #
+#           Teknologi Algoritmik Representasi Rekayasa Indonesia               #
+#------------------------------------------------------------------------------#
+# Penulis : Ketut Dana                                                         #
+# Kontak  : danayasa2@gmail.com                                                #
+# Lisensi : MIT                                                                #
+# Situs   : bahasatarri.com                                                    #
+#------------------------------------------------------------------------------#
+# Deskripsi :                                                                  #
+#   Implementasi fungsi bawaan 'masukkan' yang tersedia dalam bahasa           #
+#   Tarri.                                                                     #
+#==============================================================================#
+
 # from lark import Tree, Token
 
 # def tipe_data(val):
@@ -113,6 +128,7 @@
 
 from lark import Tree, Token
 
+
 # ----------------------------
 # Utility tipe data
 # ----------------------------
@@ -128,6 +144,7 @@ def tipe_data(val):
     else:
         return "tak dikenal"
 
+
 def paksa_angka(val, var_name):
     try:
         if "." in str(val):
@@ -138,15 +155,15 @@ def paksa_angka(val, var_name):
         print(f"[tarri] masukkan ({var_name}) hanya bisa menerima angka.")
         return None
 
+
 def paksa_kata(val, var_name):
-    val_str = str(val)
-    if not val_str.replace(" ", "").isalpha():
-        print(f"[tarri] masukkan ({var_name}) hanya bisa menerima kata.")
-        return None
-    return val_str
+    """Konversi nilai apapun menjadi kata (string)."""
+    return str(val)
+
 
 def angka_str(val, var_name):
     return str(val)
+
 
 # ----------------------------
 # Fungsi masukkan fleksibel

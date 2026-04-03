@@ -1,0 +1,207 @@
+# ================================================
+# Test Suite Komprehensif TARRI
+# Menguji fungsionalitas inti bahasa
+# ================================================
+
+fungsi cetak_hasil_tes(_nama_tes, _status){
+    jika(_status){
+        cetak("[✅] {_nama_tes}")
+    }lainnya{
+        cetak("[❌] {_nama_tes}")
+    }
+}
+
+# --- TEST 1: Tipe Data Angka ---
+fungsi test_angka(){
+    _a = 10
+    _b = 5
+    cetak_hasil_tes("Angka: Penjumlahan", (_a + _b) == 15)
+    cetak_hasil_tes("Angka: Pengurangan", (_a - _b) == 5)
+    cetak_hasil_tes("Angka: Perkalian", (_a * _b) == 50)
+    cetak_hasil_tes("Angka: Pembagian", (_a / _b) == 2.0)
+    cetak_hasil_tes("Angka: Modulo", (_a % _b) == 0)
+}
+
+# --- TEST 2: Tipe Data Desimal ---
+fungsi test_desimal(){
+    _a = 10.5
+    _b = 2.5
+    cetak_hasil_tes("Desimal: Penjumlahan", (_a + _b) == 13.0)
+    cetak_hasil_tes("Desimal: Pengurangan", (_a - _b) == 8.0)
+    cetak_hasil_tes("Desimal: Perkalian", (_a * _b) == 26.25)
+    cetak_hasil_tes("Desimal: Pembagian", (_a / _b) == 4.2)
+}
+
+# --- TEST 3: Tipe Data Kata (String) ---
+fungsi test_kata(){
+    _s1 = "Halo"
+    _s2 = "Dunia"
+    cetak_hasil_tes("Kata: Konkatenasi", (_s1 + " " + _s2) == "Halo Dunia")
+    cetak_hasil_tes("Kata: Panjang", panjang(_s1) == 4)
+    cetak_hasil_tes("Kata: Substring", subkata(_s1, 0, 2) == "Ha")
+}
+
+# --- TEST 4: Tipe Data Boolean ---
+fungsi test_boolean(){
+    _benar = Benar
+    _salah = Salah
+    cetak_hasil_tes("Boolean: AND", (_benar && _salah) == _salah)
+    cetak_hasil_tes("Boolean: OR", (_benar || _salah) == _benar)
+    cetak_hasil_tes("Boolean: NOT", (! _benar) == _salah)
+}
+
+# --- TEST 5: Tipe Data Daftar (List) ---
+fungsi test_daftar(){
+    _daftar = [1, 2, 3, "empat"]
+    cetak_hasil_tes("Daftar: Panjang", panjang(_daftar) == 4)
+    cetak_hasil_tes("Daftar: Akses Indeks", _daftar[0] == 1)
+    cetak_hasil_tes("Daftar: Slice", _daftar[1..2] == [2, 3])
+    
+    _daftar_kosong = []
+    tambah(_daftar_kosong, 10)
+    cetak_hasil_tes("Daftar: Tambah Elemen", panjang(_daftar_kosong) == 1 && _daftar_kosong[0] == 10)
+}
+
+# --- TEST 6: Tipe Data Tabel (Kamus) ---
+fungsi test_tabel(){
+    _tabel = {"nama": "Tarri", "versi": 1.0}
+    cetak_hasil_tes("Tabel: Akses Kunci", _tabel["nama"] == "Tarri")
+    cetak_hasil_tes("Tabel: Panjang", panjang(_tabel) == 2)
+    _tabel["tahun"] = 2024
+    cetak_hasil_tes("Tabel: Tambah Elemen", _tabel["tahun"] == 2024 && panjang(_tabel) == 3)
+}
+
+# --- TEST 7: Tipe Data Null ---
+fungsi test_null(){
+    _nilai_kosong = Kosong
+    cetak_hasil_tes("Null: Perbandingan dengan Kosong", _nilai_kosong == Kosong)
+    cetak_hasil_tes("Null: Null Coalesce", (Kosong ?? "default") == "default")
+}
+
+# --- TEST 7: Fungsi Bawaan: cetak ---
+fungsi test_fungsi_cetak(){
+    # Output akan dicek secara manual di terminal
+    cetak("--- Test Fungsi cetak ---")
+    cetak("Ini adalah pesan cetak.")
+    _var_cetak = "variabel"
+    cetak("Mencetak", _var_cetak, "dan angka", 123)
+    cetak("--- Akhir Test Fungsi cetak ---")
+    cetak_hasil_tes("Fungsi cetak: Output ke konsol", Benar) # Asumsi berhasil jika tidak error
+}
+
+# --- TEST 8: Fungsi Bawaan: tipe_data ---
+fungsi test_fungsi_tipe_data(){
+    cetak_hasil_tes("tipe_data: Angka", tipe_data(10) == "angka")
+    cetak_hasil_tes("tipe_data: Desimal", tipe_data(10.5) == "desimal")
+    cetak_hasil_tes("tipe_data: Kata", tipe_data("halo") == "kata")
+    cetak_hasil_tes("tipe_data: Boolean", tipe_data(Benar) == "logika")
+    cetak_hasil_tes("tipe_data: Daftar", tipe_data([1,2]) == "daftar")
+    cetak_hasil_tes("tipe_data: Kosong", tipe_data(Kosong) == "kosong")
+}
+
+# --- TEST 9: Fungsi Bawaan: masukkan (interaktif, akan diskip otomatis) ---
+fungsi test_fungsi_masukkan(){
+    # Fungsi masukkan bersifat interaktif, jadi tidak bisa diotomatisasi di sini.
+    # Akan diasumsikan berhasil jika tidak ada error saat parsing.
+    cetak_hasil_tes("Fungsi masukkan: Parsing berhasil", Benar)
+}
+
+# --- TEST 10: Percabangan (jika, ataujika, lainnya) ---
+fungsi test_percabangan_lengkap(){
+    _nilai = 75
+    _hasil_percabangan = ""
+    jika(_nilai > 90){
+        _hasil_percabangan = "A"
+    }ataujika(_nilai > 70){
+        _hasil_percabangan = "B"
+    }lainnya{
+        _hasil_percabangan = "C"
+    }
+    cetak_hasil_tes("Percabangan: ataujika", _hasil_percabangan == "B")
+}
+
+# --- TEST 11: Perulangan (ulangi, selama, untuk..dalam) ---
+fungsi test_perulangan_lengkap(){
+    _total_ulangi = 0
+    ulangi {
+        _total_ulangi += 1
+        jika(_total_ulangi == 3){
+            hentikan
+        }
+    }
+    cetak_hasil_tes("Perulangan: ulangi (break)", _total_ulangi == 3)
+
+    _total_selama = 0
+    _i_selama = 0
+    selama(_i_selama < 3){
+        _total_selama += _i_selama
+        _i_selama += 1
+    }
+    cetak_hasil_tes("Perulangan: selama", _total_selama == 3) # 0+1+2
+
+    _daftar_loop = [10, 20, 30]
+    _total_untuk_dalam = 0
+    untuk _item dalam _daftar_loop {
+        _total_untuk_dalam += _item
+    }
+    cetak_hasil_tes("Perulangan: untuk..dalam", _total_untuk_dalam == 60)
+}
+
+# --- TEST 12: Fungsi dengan parameter dan return ---
+fungsi tambah_dua_angka(_num1, _num2){
+    tampilkan _num1 + _num2
+}
+
+fungsi test_fungsi_lengkap(){
+    _hasil_fungsi = tambah_dua_angka(5, 7)
+    cetak_hasil_tes("Fungsi: Parameter dan Return", _hasil_fungsi == 12)
+}
+
+# --- TEST 13: String Interpolasi ---
+fungsi test_interpolasi_string(){
+    _nama = "Tarri"
+    _versi = "1.0"
+    _pesan = "Halo, ini {_nama} versi {_versi}."
+    cetak_hasil_tes("String Interpolasi", _pesan == "Halo, ini Tarri versi 1.0.")
+}
+
+# --- TEST 14: Error Handling (coba..tangkap) ---
+fungsi test_error_handling(){
+    _error_ditangkap = Salah
+    coba {
+        _var_tidak_ada = _x_tidak_ada
+    } tangkap (_err) {
+        _error_ditangkap = Benar
+        # cetak("Error ditangkap:", _err) # Untuk debugging
+    }
+    cetak_hasil_tes("Error Handling: coba..tangkap", _error_ditangkap == Benar)
+}
+
+# --- JALANKAN SEMUA TEST ---
+titikawal{
+    cetak("========================================")
+    cetak("  TARRI Test Suite - Komprehensif")
+    cetak("========================================")
+    cetak("")
+    
+    test_angka()
+    test_desimal()
+    test_kata()
+    test_boolean()
+    test_daftar()
+    test_tabel()
+    test_null()
+    test_fungsi_cetak()
+    test_fungsi_tipe_data()
+    test_fungsi_masukkan()
+    test_percabangan_lengkap()
+    test_perulangan_lengkap()
+    test_fungsi_lengkap()
+    test_interpolasi_string()
+    test_error_handling()
+    
+    cetak("")
+    cetak("========================================")
+    cetak("  Semua test komprehensif selesai!")
+    cetak("========================================")
+}

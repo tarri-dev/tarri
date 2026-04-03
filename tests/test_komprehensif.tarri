@@ -1,0 +1,120 @@
+# ================================================
+# Test Suite Komprehensif TARRI (Tingkat Lanjut)
+# Menguji Skalabilitas dan Stabilitas Bahasa
+# ================================================
+
+# --- TEST 1: Rekursi Fungsi ---
+fungsi hitung_faktorial(_n) {
+    jika (_n <= 1) {
+        tampilkan 1
+    } lainnya {
+        tampilkan _n * hitung_faktorial(_n - 1)
+    }
+}
+
+fungsi test_rekursi() {
+    _hasil = hitung_faktorial(5) # 5 * 4 * 3 * 2 * 1 = 120
+    jika (_hasil == 120) {
+        cetak("[REKURSI] ✅ Fungsi Rekursi bekerja dengan sempurna")
+    } lainnya {
+        cetak("[REKURSI] ❌ Fungsi Rekursi Gagal! Hasil: {_hasil}")
+    }
+}
+
+# --- TEST 2: Operasi Matematika Bawaan Level Lanjut ---
+fungsi test_matematika_lanjut() {
+    _akr = akar(144)
+    _md  = mod(20, 3)
+    _pkt = pangkat(2, 5)
+    _mdn = median([1, 3, 3, 6, 7, 8, 9])
+    
+    jika (_akr == 12 dan _md == 2 dan _pkt == 32 dan _mdn == 6) {
+        cetak("[MATEMATIKA] ✅ akar(), mod(), pangkat(), median() LULUS")
+    } lainnya {
+        cetak("[MATEMATIKA] ❌ Fungsi matematika tingkat tinggi gagal hitung")
+    }
+}
+
+# --- TEST 3: Pengecekan Bilangan Internal ---
+fungsi test_tipe_bilangan() {
+    _apakah_prima = bilangan_prima(17) # Seharusnya True
+    _apakah_bukan = bilangan_prima(20) # Seharusnya False
+    _apakah_ganjil = bilangan_ganjil(9) # True
+    _apakah_genap = bilangan_genap(42) # True
+
+    jika (_apakah_prima dan bukan _apakah_bukan dan _apakah_ganjil dan _apakah_genap) {
+        cetak("[BILANGAN] ✅ Operasi identifikasi prima/ganjil/genap LULUS")
+    } lainnya {
+        cetak("[BILANGAN] ❌ Pendeteksian sifat bilangan tidak tepat")
+    }
+}
+
+# --- TEST 4: Manipulasi String & Dictionary Lanjut ---
+fungsi test_string_dict() {
+    _kalimat = "  belajar TARRI  "
+    _bersih = ganti("belajar TARRI", "TARRI", "pemrograman")
+    _kapital = awal_kapital("tarri")
+    _panjang = panjang("tes")
+
+    _kamus = {"bahasa": "Tarri", "versi": 1.0}
+    _keys = kunci(_kamus)
+    _vals = nilai(_kamus)
+
+    jika (_kapital == "Tarri" dan _panjang == 3 dan panjang(_keys) > 0) {
+        cetak("[TEKS/KAMUS] ✅ ganti(), awal_kapital(), kunci(), nilai() LULUS")
+    } lainnya {
+        cetak("[TEKS/KAMUS] ❌ Ada kesalahan format string atau ekstraksi kunci dictionary")
+    }
+}
+
+# --- TEST 5: Iterasi dan Manipulasi List (Array) ---
+fungsi test_list_array() {
+    _kasar = [1, 2, 2, 3, "a", "a"]
+    _bersih = unik(_kasar)
+    _terbalik = balik([1, 2, 3])
+    
+    _index2 = cari_index(_terbalik, 2) # Angka 2 ada di indeks 1 pada array [3, 2, 1]
+
+    jika (panjang(_bersih) == 4 dan _index2 == 1) {
+        cetak("[LIST] ✅ unik(), balik(), dan cari_index() LULUS")
+    } lainnya {
+        cetak("[LIST] ❌ Pengolahan Array/List Gagal. unik={panjang(_bersih)}, idx={_index2}")
+    }
+}
+
+# --- TEST 6: Scoping Variables (Isolasi antar Blok) ---
+fungsi isolasi_scope(_nilai) {
+    _a = 999
+    tampilkan _nilai
+}
+
+fungsi test_isolasi() {
+    _a = 5
+    _b = isolasi_scope(10)
+    
+    jika (_a == 5) {
+         cetak("[SCOPE] ✅ Variabel lokal terlindungi (Tidak tertimpa oleh scope anak)")
+    } lainnya {
+         cetak("[SCOPE] ❌ Variabel bocor/tertimpa (Scoping Bug!) _a menjadi : {_a}")
+    }
+}
+
+# --- JALANKAN SEMUA TEST ---
+titikawal {
+    cetak("============================================")
+    cetak(" 🔥 TARRI TEST SUITE: KOMPREHENSIF (VMAX) 🔥")
+    cetak("============================================")
+    cetak("")
+    
+    tampilkan test_rekursi()
+    tampilkan test_matematika_lanjut()
+    tampilkan test_tipe_bilangan()
+    tampilkan test_string_dict()
+    tampilkan test_list_array()
+    tampilkan test_isolasi()
+    
+    cetak("")
+    cetak("============================================")
+    cetak("  Selesai tanpa hambatan!")
+    cetak("============================================")
+}

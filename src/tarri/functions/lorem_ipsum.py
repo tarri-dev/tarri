@@ -1,3 +1,18 @@
+#==============================================================================#
+# File    : lorem_ipsum.py                                                     #
+# Proyek  : Bahasa TARRI versi 0.8.x                                           #
+#           Teknologi Algoritmik Representasi Rekayasa Indonesia               #
+#------------------------------------------------------------------------------#
+# Penulis : Ketut Dana                                                         #
+# Kontak  : danayasa2@gmail.com                                                #
+# Lisensi : MIT                                                                #
+# Situs   : bahasatarri.com                                                    #
+#------------------------------------------------------------------------------#
+# Deskripsi :                                                                  #
+#   Implementasi fungsi bawaan 'lorem_ipsum' yang tersedia dalam bahasa        #
+#   Tarri.                                                                     #
+#==============================================================================#
+
 import random
 
 _LOREM_WORDS = (
@@ -8,10 +23,11 @@ _LOREM_WORDS = (
     "culpa qui officia deserunt mollit anim id est laborum"
 ).split()
 
+
 def lorem_ipsum(jumlah=20):
     """Menghasilkan string Lorem Ipsum acak sepanjang jumlah kata."""
     try:
         jumlah = int(jumlah)
     except ValueError:
         jumlah = 20
-    return ' '.join(random.choices(_LOREM_WORDS, k=jumlah))
+    return " ".join(random.choices(_LOREM_WORDS, k=jumlah))

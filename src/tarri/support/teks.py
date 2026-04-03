@@ -1,3 +1,26 @@
+#==============================================================================#
+# File    : teks.py                                                            #
+# Proyek  : Bahasa TARRI versi 0.8.x                                           #
+#           Teknologi Algoritmik Representasi Rekayasa Indonesia               #
+#------------------------------------------------------------------------------#
+# Penulis : Ketut Dana                                                         #
+# Kontak  : danayasa2@gmail.com                                                #
+# Lisensi : MIT                                                                #
+# Situs   : bahasatarri.com                                                    #
+#------------------------------------------------------------------------------#
+# Deskripsi :                                                                  #
+#   Fungsi dan utilitas pendukung 'teks' yang membantu operasi inti Tarri.     #
+#==============================================================================#
+
+def subkata(teks: str, mulai: int, akhir: int = None) -> str:
+    """
+    Mengambil bagian dari string (substring).
+    """
+    if akhir is None:
+        return str(teks)[mulai:]
+    return str(teks)[mulai:akhir]
+
+
 def panjang(teks: str) -> int:
     """
     Menghitung panjang string.
@@ -20,10 +43,9 @@ def kecil(teks: str) -> str:
 
 
 def ganti(teks: str, dari: str, ke: str) -> str:
-    """
-    Mengganti substring 'dari' dengan 'ke' dalam teks.
-    """
-    return str(teks).replace(dari, ke)
+    if not dari:  # None atau ""
+        return teks
+    return str(teks).replace(str(dari), str(ke))
 
 
 def gabung(data, pemisah="") -> str:
@@ -58,15 +80,16 @@ def awal_kapital(teks: str) -> str:
     """Huruf awal tiap kata kapital (capitalize)"""
     return str(teks).title()
 
+
 def kunci(data):
     """Mengembalikan daftar kunci dari dict (kamus)"""
     if isinstance(data, dict):
         return list(data.keys())
     raise TypeError("kunci() hanya bisa digunakan untuk tipe kamus (dict)")
 
+
 def nilai(data):
     """Mengembalikan daftar value dari dict (kamus)"""
     if isinstance(data, dict):
         return list(data.values())
     raise TypeError("nilai() hanya bisa digunakan untuk tipe kamus (dict)")
-

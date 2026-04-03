@@ -2,40 +2,39 @@
 __pycache__/
 *.py[cod]
 *$py.class
+*.pyc
+
+# Database
+*.sqlite
+*.db
 
 # Virtual environment
 venv/
 env/
 ENV/
 
-# Distribution / packaging
+# Distribution / packaging / Installer
 dist/
 build/
 *.egg-info/
 .eggs/
+*.spec
+run_tarri.py
+tarri_sessi.json
 
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
 
-# Pytest cache
+# Pytest & MyPy cache
 .pytest_cache/
-
-# MyPy cache
 .mypy_cache/
 
-# IDE / editor
+# IDE / editor / OS
 .vscode/
 .idea/
 *.swp
 *.swo
 *.sublime-project
 *.sublime-workspace
-
-# macOS
 .DS_Store
-
-__pycache__/
-*.pyc
-.DS_Store
-tarri_sessi.json

@@ -1,11 +1,31 @@
+#==============================================================================#
+# File    : call_stmt.py                                                       #
+# Proyek  : Bahasa TARRI versi 0.8.x                                           #
+#           Teknologi Algoritmik Representasi Rekayasa Indonesia               #
+#------------------------------------------------------------------------------#
+# Penulis : Ketut Dana                                                         #
+# Kontak  : danayasa2@gmail.com                                                #
+# Lisensi : MIT                                                                #
+# Situs   : bahasatarri.com                                                    #
+#------------------------------------------------------------------------------#
+# Deskripsi :                                                                  #
+#   Executor node untuk menerjemahkan dan mengeksekusi AST node bertipe        #
+#   'call_stmt' dalam penerjemah Tarri.                                        #
+#==============================================================================#
+
 from lark import Tree, Token
+
 
 def exec_call_stmt(self, node):
     func_node = node.children[0]
     func_name = None
     if isinstance(func_node, Token):
         func_name = func_node.value
-    elif isinstance(func_node, Tree) and func_node.data == "identifier" and func_node.children:
+    elif (
+        isinstance(func_node, Tree)
+        and func_node.data == "identifier"
+        and func_node.children
+    ):
         first = func_node.children[0]
         func_name = first.value if isinstance(first, Token) else str(first)
     else:

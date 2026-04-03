@@ -1,28 +1,44 @@
+#==============================================================================#
+# File    : batalkan.py                                                        #
+# Proyek  : Bahasa TARRI versi 0.8.x                                           #
+#           Teknologi Algoritmik Representasi Rekayasa Indonesia               #
+#------------------------------------------------------------------------------#
+# Penulis : Ketut Dana                                                         #
+# Kontak  : danayasa2@gmail.com                                                #
+# Lisensi : MIT                                                                #
+# Situs   : bahasatarri.com                                                    #
+#------------------------------------------------------------------------------#
+# Deskripsi :                                                                  #
+#   Implementasi fungsi bawaan 'batalkan' yang tersedia dalam bahasa           #
+#   Tarri.                                                                     #
+#==============================================================================#
+
 # batalkan.py
 # Implementasi fungsi batalkan() seperti Laravel abort(),
 # lengkap dengan HTML bawaan untuk semua kode error umum.
 
 import subprocess
 
+
 class BatalkanError(Exception):
     """Exception khusus untuk menangani error batalkan()."""
+
     def __init__(self, kode, pesan, html):
         self.kode = kode
         self.pesan = pesan
         self.html = html
         super().__init__(pesan)
-        
+
+
 def get_tarri_version():
     try:
         result = subprocess.run(
-            ["tarri", "-v"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True
+            ["tarri", "-v"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
         )
         return result.stdout.strip()
     except Exception:
         return "[tarriweb | server] Versi tidak ditemukan"
+
 
 # Template HTML bawaan untuk semua error
 def _buat_html_default(kode, pesan):
@@ -51,7 +67,7 @@ DESKRIPSI_DEFAULT = {
     501: "Fitur belum diimplementasikan.",
     502: "Bad Gateway.",
     503: "Layanan tidak tersedia.",
-    504: "Gateway timeout."
+    504: "Gateway timeout.",
 }
 
 

@@ -1,4 +1,20 @@
+#==============================================================================#
+# File    : node.py                                                            #
+# Proyek  : Bahasa TARRI versi 0.8.x                                           #
+#           Teknologi Algoritmik Representasi Rekayasa Indonesia               #
+#------------------------------------------------------------------------------#
+# Penulis : Ketut Dana                                                         #
+# Kontak  : danayasa2@gmail.com                                                #
+# Lisensi : MIT                                                                #
+# Situs   : bahasatarri.com                                                    #
+#------------------------------------------------------------------------------#
+# Deskripsi :                                                                  #
+#   Executor node untuk menerjemahkan dan mengeksekusi AST node bertipe        #
+#   'node' dalam penerjemah Tarri.                                             #
+#==============================================================================#
+
 from lark import Tree
+
 
 def exec_node(self, node):
     if not isinstance(node, Tree):
@@ -21,5 +37,7 @@ def exec_node(self, node):
     if node.data == "method_call_expr":
         return self.evaluate_expr(node)
 
-    self.error(f"[tarri | exec_node]Tidak tahu cara eksekusi {node.data}")
+    self.error(
+        f"[tarri | exec_node] Tidak tahu cara mengeksekusi node jenis: {node.data}"
+    )
     return None

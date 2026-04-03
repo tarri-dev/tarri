@@ -1,5 +1,28 @@
+#==============================================================================#
+# File    : list.py                                                            #
+# Proyek  : Bahasa TARRI versi 0.8.x                                           #
+#           Teknologi Algoritmik Representasi Rekayasa Indonesia               #
+#------------------------------------------------------------------------------#
+# Penulis : Ketut Dana                                                         #
+# Kontak  : danayasa2@gmail.com                                                #
+# Lisensi : MIT                                                                #
+# Situs   : bahasatarri.com                                                    #
+#------------------------------------------------------------------------------#
+# Deskripsi :                                                                  #
+#   Fungsi dan utilitas pendukung 'list' yang membantu operasi inti Tarri.     #
+#==============================================================================#
+
 # 📚 Modul Array/List untuk Tarri
 from typing import Any, List
+
+
+def tambah(daftar: List[Any], item: Any):
+    """
+    Menambahkan item ke akhir daftar.
+    """
+    daftar.append(item)
+    return daftar
+
 
 def unik(daftar: List[Any]) -> List[Any]:
     """
@@ -28,11 +51,11 @@ def cari_index(daftar: List[Any], value: Any) -> int:
 def hapus_index(daftar: List[Any], index: int) -> List[Any]:
     """
     Menghapus elemen dari daftar berdasarkan index.
-    Mengembalikan daftar baru tanpa mengubah daftar asli.
+    Mengubah (mutate) daftar asli secara langsung.
     """
     if 0 <= index < len(daftar):
-        return daftar[:index] + daftar[index+1:]
-    return daftar.copy()  # index di luar jangkauan, kembalikan salinan
+        daftar.pop(index)
+    return daftar
 
 
 def balik(daftar: List[Any]) -> List[Any]:
@@ -40,4 +63,3 @@ def balik(daftar: List[Any]) -> List[Any]:
     Membalik urutan elemen dalam daftar.
     """
     return daftar[::-1]
-

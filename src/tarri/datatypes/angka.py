@@ -1,3 +1,17 @@
+#==============================================================================#
+# File    : angka.py                                                           #
+# Proyek  : Bahasa TARRI versi 0.8.x                                           #
+#           Teknologi Algoritmik Representasi Rekayasa Indonesia               #
+#------------------------------------------------------------------------------#
+# Penulis : Ketut Dana                                                         #
+# Kontak  : danayasa2@gmail.com                                                #
+# Lisensi : MIT                                                                #
+# Situs   : bahasatarri.com                                                    #
+#------------------------------------------------------------------------------#
+# Deskripsi :                                                                  #
+#   Definisi tipe data 'angka' yang digunakan oleh mesin bahasa Tarri.         #
+#==============================================================================#
+
 from tarri.datatypes import register
 from tarri.datatypes.desimal import Desimal
 
@@ -11,6 +25,7 @@ class Angka(int):
 
     def __add__(self, other):
         from tarri.datatypes.kata import Kata  # lazy import
+
         if isinstance(other, (int, float, Angka, Desimal)):
             if isinstance(other, float) or isinstance(other, Desimal):
                 return Desimal(float(self) + float(other))
@@ -28,6 +43,7 @@ class Angka(int):
 
     def __mul__(self, other):
         from tarri.datatypes.kata import Kata  # lazy import
+
         if isinstance(other, (int, float, Angka, Desimal)):
             if isinstance(other, float) or isinstance(other, Desimal):
                 return Desimal(float(self) * float(other))

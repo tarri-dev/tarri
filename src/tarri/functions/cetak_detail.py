@@ -1,3 +1,18 @@
+#==============================================================================#
+# File    : cetak_detail.py                                                    #
+# Proyek  : Bahasa TARRI versi 0.8.x                                           #
+#           Teknologi Algoritmik Representasi Rekayasa Indonesia               #
+#------------------------------------------------------------------------------#
+# Penulis : Ketut Dana                                                         #
+# Kontak  : danayasa2@gmail.com                                                #
+# Lisensi : MIT                                                                #
+# Situs   : bahasatarri.com                                                    #
+#------------------------------------------------------------------------------#
+# Deskripsi :                                                                  #
+#   Implementasi fungsi bawaan 'cetak_detail' yang tersedia dalam bahasa       #
+#   Tarri.                                                                     #
+#==============================================================================#
+
 import os
 import sys
 import datetime
@@ -28,6 +43,7 @@ TIPE_INDONESIA = {
     "GeneratorType": "pembangkit (generator)",
 }
 
+
 def cetak_detail(nilai):
     """Menampilkan detail komprehensif dari objek yang dicetak, dalam Bahasa Indonesia."""
 
@@ -38,7 +54,11 @@ def cetak_detail(nilai):
     tipe_id = TIPE_INDONESIA.get(tipe_nama, tipe_nama)
     modul = getattr(tipe, "__module__", "builtin")
     identitas = hex(id(nilai))
-    hash_objek = hash(nilai) if isinstance(nilai, (str, int, float, bool, tuple)) else "tidak dapat dihitung"
+    hash_objek = (
+        hash(nilai)
+        if isinstance(nilai, (str, int, float, bool, tuple))
+        else "tidak dapat dihitung"
+    )
     panjang = len(teks)
     ukuran = len(teks.encode("utf-8"))
     encoding = sys.getdefaultencoding()
@@ -76,19 +96,23 @@ def cetak_detail(nilai):
     python_ver = platform.python_version()
 
     # Cetak laporan
-    print("\n" + "="*75)
+    print("\n" + "=" * 75)
     print(f"DETAIL OBJEK CETAK — {waktu}")
-    print("-"*75)
+    print("-" * 75)
     print(f"Jenis data       : {tipe_id} {subtipe}")
     print(f"Modul asal       : {modul} {'(bawaan)' if is_builtin else '(kustom)'}")
-    print(f"Panjang teks     : {panjang} huruf | Ukuran: {ukuran} byte | Enkoding: {encoding}")
+    print(
+        f"Panjang teks     : {panjang} huruf | Ukuran: {ukuran} byte | Enkoding: {encoding}"
+    )
     print(f"Identitas objek  : {identitas} | Nilai hash: {hash_objek}")
-    print(f"Dapat dipanggil  : {is_callable} | Dapat diulang: {is_iterable} | Pembangkit: {is_generator}")
+    print(
+        f"Dapat dipanggil  : {is_callable} | Dapat diulang: {is_iterable} | Pembangkit: {is_generator}"
+    )
     print(f"Jumlah atribut   : {jumlah_attr}")
-    print("-"*75)
+    print("-" * 75)
     print(f"Sistem operasi   : {os_info} {versi_os}")
     print(f"Versi Python     : {python_ver}")
     print(f"Pengguna aktif   : {pengguna}")
-    print("-"*75)
+    print("-" * 75)
     print(f"Cuplikan isi     : {isi_preview}")
-    print("="*75 + "\n")
+    print("=" * 75 + "\n")

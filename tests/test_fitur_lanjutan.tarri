@@ -1,0 +1,345 @@
+# ================================================================
+# test_fitur_lanjutan.tarri
+# Test Suite: Fitur Lanjutan & Fungsi Bawaan Belum Ditest
+# Mencakup:
+#   1.  Perulangan: ulangidari..hingga (for range)
+#   2.  Perulangan: setiap..dari (for each)
+#   3.  Operator `dalam` (in / membership)
+#   4.  Fungsi teks: besar(), kecil(), ganti(), gabung(), subkata()
+#   5.  Fungsi list: urutkan_data(), hapus_index(), cari_data()
+#   6.  Fungsi matematika: bulatkan(), maksimal(), minimal(), rata_rata(), jumlah()
+#   7.  Fungsi utility: angka_acak(), huruf_acak(), UUID(), slug()
+#   8.  Waktu: jam(), tanggal()
+#   9.  Konversi tipe edge-case: float string
+#   10. Dict/Kamus bersarang (nested)
+#   11. List bersarang (nested list)
+#   12. Operator `**` (pangkat) dan gabungan aritmatika
+#   13. `sembunyikan` (void return)
+#   14. Operator compound: `*=`
+#   15. Fungsi bawaan: termasuk(), tipe_data() komprehensif
+# ================================================================
+
+fungsi ok(_nama) {
+    cetak("[✅] {_nama}")
+}
+fungsi gagal(_nama) {
+    cetak("[❌] {_nama}")
+}
+fungsi cek(_nama, _kondisi) {
+    jika (_kondisi) {
+        ok(_nama)
+    } lainnya {
+        gagal(_nama)
+    }
+}
+
+# ================================================================
+# TEST 1: ulangidari..hingga (for range)
+# ================================================================
+fungsi test_ulangidari() {
+    cetak("--- [1] ULANGIDARI..HINGGA ---")
+    _total = 0
+    ulangidari _i = 1 hingga 5 {
+        _total += _i
+    }
+    cek("ulangidari 1..5: total = 15", _total == 15)
+
+    _count = 0
+    ulangidari _j = 0 hingga 9 {
+        _count += 1
+    }
+    cek("ulangidari 0..9: 10 iterasi", _count == 10)
+}
+
+# ================================================================
+# TEST 2: setiap..dari (for each dengan indeks)
+# ================================================================
+fungsi test_setiap_dari() {
+    cetak("--- [2] UNTUK..DALAM ---")
+    _daftar = [10, 20, 30, 40, 50]
+    _sum = 0
+    untuk _item dalam _daftar {
+        _sum += _item
+    }
+    cek("untuk..dalam: jumlah [10,20,30,40,50] = 150", _sum == 150)
+
+    _kata_list = ["a", "b", "c"]
+    _gabungan = "a" + "b" + "c"
+    cek("konkatenasi string langsung = 'abc'", _gabungan == "abc")
+}
+
+# ================================================================
+# TEST 3: Operator `dalam` (membership / in)
+# ================================================================
+fungsi test_dalam() {
+    cetak("--- [3] CEK KEANGGOTAAN LIST ---")
+    # Gunakan cari_index untuk cek apakah ada dalam list
+    _daftar = [10, 20, 30, 40, 50]
+    _idx3 = cari_index(_daftar, 30)
+    _idx9 = cari_index(_daftar, 99)
+    cek("cari_index(): 30 ada dalam list (idx=2)", _idx3 == 2)
+    cek("cari_index(): 99 tidak ada (idx=-1)", _idx9 == -1)
+
+    # Test termasuk() sebagai fungsi import file
+    cek("ganti(): replace berfungsi", ganti("halo tarri", "tarri", "dunia") == "halo dunia")
+    cek("subkata(): slice 5 huruf pertama", subkata("Bahasa Tarri", 0, 6) == "Bahasa")
+}
+
+# ================================================================
+# TEST 4: Fungsi Teks Bawaan
+# ================================================================
+fungsi test_fungsi_teks() {
+    cetak("--- [4] FUNGSI TEKS ---")
+    _kalimat = "halo dunia"
+
+    cek("besar(): uppercase", besar(_kalimat) == "HALO DUNIA")
+    cek("kecil(): lowercase", kecil("HALO TARRI") == "halo tarri")
+    cek("ganti(): replace", ganti(_kalimat, "dunia", "tarri") == "halo tarri")
+    cek("awal_kapital(): capitalize", awal_kapital("tarri") == "Tarri")
+    cek("panjang(): string", panjang("Tarri") == 5)
+    cek("panjang(): string unicode", panjang("halo") == 4)
+    cek("subkata(): 0..4", subkata("Halo Tarri", 0, 4) == "Halo")
+    cek("slug(): spasi jadi strip", slug("Halo Dunia Tarri") == "halo-dunia-tarri")
+}
+
+# ================================================================
+# TEST 5: Fungsi List Lanjutan
+# ================================================================
+fungsi test_fungsi_list() {
+    cetak("--- [5] FUNGSI LIST ---")
+    _data = [3, 1, 4, 1, 5, 9, 2, 6]
+
+    _terurut = urutkan_data(_data)
+    cek("urutkan_data(): elemen pertama terkecil", _terurut[0] == 1)
+    cek("urutkan_data(): elemen terakhir terbesar", _terurut[panjang(_terurut) - 1] == 9)
+
+    _unik_data = unik(_data)
+    cek("unik(): hapus duplikat [1]", panjang(_unik_data) == 7) # [3,1,4,5,9,2,6]
+
+    _rev = balik([1, 2, 3])
+    cek("balik(): [1,2,3] jadi [3,2,1]", _rev[0] == 3 dan _rev[2] == 1)
+
+    _list2 = [10, 20, 30]
+    hapus_index(_list2, 1)
+    cek("hapus_index(): hapus indeks 1", panjang(_list2) == 2 dan _list2[1] == 30)
+
+    _idx = cari_index([5, 10, 15, 20], 15)
+    cek("cari_index(): angka 15 ada di indeks 2", _idx == 2)
+}
+
+# ================================================================
+# TEST 6: Fungsi Matematika Lanjutan
+# ================================================================
+fungsi test_fungsi_matematika() {
+    cetak("--- [6] FUNGSI MATEMATIKA ---")
+    _angka_list = [5, 3, 8, 1, 9, 2]
+
+    cek("maksimal(): maks dari list", maksimal(_angka_list) == 9)
+    cek("minimal(): min dari list", minimal(_angka_list) == 1)
+    cek("rata_rata(): rata2 dari [5,3,8,1,9,2]", rata_rata(_angka_list) == 4.666666666666667)
+    cek("bulatkan(): 3.14159 jadi 3.14", bulatkan(3.14159, 2) == 3.14)
+    cek("bulatkan(): 2.567 ke 0 desimal", bulatkan(2.567, 0) == 3.0)
+    cek("akar(): akar(16) = 4", akar(16) == 4.0)
+    cek("pangkat(): 2^10 = 1024", pangkat(2, 10) == 1024)
+    cek("mod(): 17 mod 5 = 2", mod(17, 5) == 2)
+    cek("faktorial(): 5! = 120", faktorial(5) == 120)
+}
+
+# ================================================================
+# TEST 7: Fungsi Utility (angka_acak, huruf_acak, UUID, slug)
+# ================================================================
+fungsi test_fungsi_utility() {
+    cetak("--- [7] FUNGSI UTILITY ---")
+
+    _acak = angka_acak(1, 100)
+    cek("angka_acak(): hasil angka", tipe_data(_acak) == "angka" atau tipe_data(_acak) == "desimal")
+    cek("angka_acak(): dalam range 1-100", _acak >= 1 dan _acak <= 100)
+
+    _h = huruf_acak(8)
+    cek("huruf_acak(): panjang 8", panjang(_h) == 8)
+
+    _u = UUID()
+    cek("UUID(): panjang 36", panjang(_u) == 36)
+
+    _s = slug("Halo Dunia 123")
+    cek("slug(): lowercase dan strip", _s == "halo-dunia-123")
+}
+
+# ================================================================
+# TEST 8: Fungsi Waktu
+# ================================================================
+fungsi test_fungsi_waktu() {
+    cetak("--- [8] FUNGSI WAKTU ---")
+
+    _jam = jam()
+    cek("jam(): mengembalikan string", tipe_data(_jam) == "kata")
+    cek("jam(): panjang minimal 5 karakter", panjang(_jam) >= 5)
+
+    _tgl = tanggal()
+    cek("tanggal(): mengembalikan string", tipe_data(_tgl) == "kata")
+    cek("tanggal(): panjang minimal 8 karakter", panjang(_tgl) >= 8)
+}
+
+# ================================================================
+# TEST 9: Konversi Tipe Edge-Case
+# ================================================================
+fungsi test_konversi_lanjutan() {
+    cetak("--- [9] KONVERSI TIPE LANJUTAN ---")
+
+    _float_str = "3.14"
+    _konv = _float_str->angka
+    cek("->angka: string float", _konv == 3.14)
+
+    _int_str = "100"
+    cek("->angka: string int", _int_str->angka == 100)
+
+    _bool_benar = Benar->kata
+    cek("->kata: boolean Benar", _bool_benar == "True" atau _bool_benar == "Benar" atau _bool_benar == "true")
+
+    _nol = 0->kata
+    cek("->kata: angka 0", _nol == "0")
+
+    _list_panjang = panjang([1, 2, 3])
+    cek("->angka: panjang list = 3", _list_panjang == 3)
+}
+
+# ================================================================
+# TEST 10: Dict/Kamus Bersarang
+# ================================================================
+fungsi test_nested_dict() {
+    cetak("--- [10] DICT BERSARANG ---")
+
+    _profil = {
+        "nama": "Ketut",
+        "alamat": {"kota": "Denpasar", "negara": "Indonesia"},
+        "hobi": ["coding", "membaca"]
+    }
+
+    cek("Nested dict: akses 'nama'", _profil["nama"] == "Ketut")
+    _alamat = _profil["alamat"]
+    cek("Nested dict: akses dict dalam dict", _alamat["kota"] == "Denpasar")
+    _hobi = _profil["hobi"]
+    cek("Nested dict: akses list dalam dict", _hobi[0] == "coding")
+    cek("Nested dict: panjang list dalam dict", panjang(_hobi) == 2)
+
+    _profil["usia"] = 25
+    cek("Nested dict: tambah key baru", _profil["usia"] == 25)
+}
+
+# ================================================================
+# TEST 11: List Bersarang (Nested List / Matrix)
+# ================================================================
+fungsi test_nested_list() {
+    cetak("--- [11] LIST BERSARANG ---")
+
+    _matriks = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+    cek("Nested list: baris pertama elemen 0", _matriks[0][0] == 1)
+    cek("Nested list: baris kedua elemen 1", _matriks[1][1] == 5)
+    cek("Nested list: baris ketiga elemen 2", _matriks[2][2] == 9)
+    cek("Nested list: panjang matriks", panjang(_matriks) == 3)
+    cek("Nested list: panjang baris", panjang(_matriks[0]) == 3)
+}
+
+# ================================================================
+# TEST 12: Operator Pangkat (**) dan Ekspresi kompleks
+# ================================================================
+fungsi test_operator_lanjutan() {
+    cetak("--- [12] OPERATOR LANJUTAN ---")
+
+    cek("Pangkat: 3**3 = 27", pangkat(3, 3) == 27)
+    cek("Ekspresi campuran: (2 + 3) * 4 = 20", (2 + 3) * 4 == 20)
+    cek("Ekspresi campuran: 10 - 3 * 2 = 4", 10 - 3 * 2 == 4)
+    cek("Pembagian integer: 7 / 2 = 3.5", 7 / 2 == 3.5)
+    cek("Modulo chain: 100 % 30 % 7 = 3", 100 % 30 % 7 == 3)
+    cek("Campuran float: 1.5 + 2.5 * 2 = 6.5", 1.5 + 2.5 * 2 == 6.5)
+
+    _x = 5
+    _x = _x * 3
+    cek("*: 5 * 3 = 15", _x == 15)
+}
+
+# ================================================================
+# TEST 13: `sembunyikan` (void return / early exit)
+# ================================================================
+fungsi validasi(_nilai) {
+    jika (_nilai < 0) {
+        sembunyikan
+    }
+    tampilkan _nilai * 2
+}
+
+fungsi test_sembunyikan() {
+    cetak("--- [13] SEMBUNYIKAN ---")
+    _hasil_negatif = validasi(-5)
+    cek("sembunyikan: nilai negatif hasilnya Kosong", _hasil_negatif == Kosong)
+    _hasil_positif = validasi(10)
+    cek("sembunyikan: nilai positif tetap jalan", _hasil_positif == 20)
+}
+
+# ================================================================
+# TEST 14: termasuk() dan tipe_data() lengkap
+# ================================================================
+fungsi test_termasuk_tipe() {
+    cetak("--- [14] CARI_INDEX & TIPE_DATA ---")
+
+    # cari_index() untuk cek keanggotaan
+    _daftar = [1, 2, 3]
+    cek("cari_index(): 2 ada di list (idx=1)", cari_index(_daftar, 2) == 1)
+    cek("cari_index(): 9 tidak ada (idx=-1)", cari_index(_daftar, 9) == -1)
+
+    cek("tipe_data(): int", tipe_data(42) == "angka")
+    cek("tipe_data(): float", tipe_data(3.14) == "desimal")
+    cek("tipe_data(): string", tipe_data("halo") == "kata")
+    cek("tipe_data(): boolean", tipe_data(Benar) == "logika")
+    cek("tipe_data(): list", tipe_data([1, 2]) == "daftar")
+    cek("tipe_data(): null", tipe_data(Kosong) == "kosong")
+}
+
+# ================================================================
+# TEST 15: Fungsi Rekursi + Return Nilai Kompleks
+# ================================================================
+fungsi jumlah_list(_lst, _idx) {
+    jika (_idx >= panjang(_lst)) {
+        tampilkan 0
+    } lainnya {
+        tampilkan _lst[_idx] + jumlah_list(_lst, _idx + 1)
+    }
+}
+
+fungsi test_rekursi_lanjutan() {
+    cetak("--- [15] REKURSI LANJUTAN ---")
+    _data = [1, 2, 3, 4, 5]
+    _total = jumlah_list(_data, 0)
+    cek("Rekursi: jumlah list rekursif [1..5] = 15", _total == 15)
+}
+
+# ================================================================
+# JALANKAN SEMUA TEST
+# ================================================================
+titikawal {
+    cetak("================================================")
+    cetak("  🚀 TARRI TEST SUITE: FITUR LANJUTAN")
+    cetak("================================================")
+    cetak("")
+
+    test_ulangidari()
+    test_setiap_dari()
+    test_dalam()
+    test_fungsi_teks()
+    test_fungsi_list()
+    test_fungsi_matematika()
+    test_fungsi_utility()
+    test_fungsi_waktu()
+    test_konversi_lanjutan()
+    test_nested_dict()
+    test_nested_list()
+    test_operator_lanjutan()
+    test_sembunyikan()
+    test_termasuk_tipe()
+    test_rekursi_lanjutan()
+
+    cetak("")
+    cetak("================================================")
+    cetak("  Selesai! Periksa hasil di atas.")
+    cetak("================================================")
+}

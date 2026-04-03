@@ -1,0 +1,130 @@
+{
+  "Titik Awal (Entry Point)": {
+    "prefix": ["titikawal", "awal", "@"],
+    "body": [
+      "titikawal {",
+      "\t$0",
+      "}"
+    ],
+    "description": "Blok utama program TARRI"
+  },
+  "Fungsi Baru": {
+    "prefix": ["fungsi", "fn"],
+    "body": [
+      "fungsi ${1:nama_fungsi}(${2:_arg1}) {",
+      "\t$0",
+      "}"
+    ],
+    "description": "Mendeklarasikan fungsi baru"
+  },
+  "Pernyataan Jika (If)": {
+    "prefix": ["jika", "jk"],
+    "body": [
+      "jika (${1:kondisi}) {",
+      "\t$0",
+      "}"
+    ],
+    "description": "Blok kondisi Jika"
+  },
+  "Jika - Atau Jika - Lainnya (If-Elif-Else)": {
+    "prefix": ["jika-lengkap", "jk-l"],
+    "body": [
+      "jika (${1:kondisi_1}) {",
+      "\t$2",
+      "} ataujika (${3:kondisi_2}) {",
+      "\t$4",
+      "} lainnya {",
+      "\t$0",
+      "}"
+    ],
+    "description": "Blok Jika Kondisional Lengkap"
+  },
+  "Perulangan (Loop Range)": {
+    "prefix": ["ulangidari", "ulangd"],
+    "body": [
+      "ulangidari ${1:_i} = ${2:1} hingga ${3:10} {",
+      "\t$0",
+      "}"
+    ],
+    "description": "Perulangan dari X hingga Y"
+  },
+  "Perulangan (Selama While)": {
+    "prefix": ["selama", "slm"],
+    "body": [
+      "selama (${1:kondisi}) {",
+      "\t$0",
+      "}"
+    ],
+    "description": "Perulangan bersyarat (While)"
+  },
+  "Perulangan (Ulangi Infinite)": {
+    "prefix": ["ulangi", "ulang"],
+    "body": [
+      "ulangi {",
+      "\t$0",
+      "}"
+    ],
+    "description": "Perulangan tanpa henti (Infinite Loop)"
+  },
+  "Perulangan (Untuk Data Dalam)": {
+    "prefix": ["untuk", "utk"],
+    "body": [
+      "untuk ${1:_item} dalam ${2:_data} {",
+      "\t$0",
+      "}"
+    ],
+    "description": "Perulangan iterasi List (For-Each)"
+  },
+  "Error Handling (Coba-Tangkap)": {
+    "prefix": ["coba", "cb"],
+    "body": [
+      "coba {",
+      "\t$1",
+      "} tangkap (${2:_error}) {",
+      "\t$0",
+      "}"
+    ],
+    "description": "Menangani kesalahan program"
+  },
+  "Deklarasi Kelas (OOP)": {
+    "prefix": ["kelas", "class"],
+    "body": [
+      "kelas ${1:NamaKelas} {",
+      "\t$0",
+      "}"
+    ],
+    "description": "Membuat kelas baru (OOP)"
+  },
+  "Fungsi Cetak": {
+    "prefix": ["cetak", "ctk", "cetak_web", "ctkw", "cetak_html", "ctkh"],
+    "body": [
+      "cetak(\"${1:pesan}\")"
+    ],
+    "description": "Mencetak teks ke terminal/browser/html"
+  },
+  "Fungsi Tampilkan (Return)": {
+    "prefix": ["tampilkan", "tamp", "kembalikan", "kemb"],
+    "body": [
+      "tampilkan ${1:variabel}"
+    ],
+    "description": "Mengembalikan nilai fungsi"
+  },
+  "Inisiasi Koneksi SQLite": {
+    "prefix": "sqlite-koneksi",
+    "body": [
+      "_db = sqlite(\"koneksi\", \"${1:./}\", \"${2:nama_db}\", \"${3:nama_tabel}\")"
+    ],
+    "description": "Koneksi ke database SQLite lokal"
+  },
+  "Buat Tabel SQLite": {
+    "prefix": "tabel_sqlite",
+    "body": [
+      "_struktur = tabel_sqlite()",
+      "_struktur id(\"id\")",
+      "_struktur kata(\"${1:nama_kolom}\")",
+      "_struktur waktu()",
+      "_cek_buat = _db buat(_struktur)"
+    ],
+    "description": "Deklarasi tabel SQLite cepat"
+  }
+}

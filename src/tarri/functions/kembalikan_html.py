@@ -1,8 +1,25 @@
+#==============================================================================#
+# File    : kembalikan_html.py                                                 #
+# Proyek  : Bahasa TARRI versi 0.8.x                                           #
+#           Teknologi Algoritmik Representasi Rekayasa Indonesia               #
+#------------------------------------------------------------------------------#
+# Penulis : Ketut Dana                                                         #
+# Kontak  : danayasa2@gmail.com                                                #
+# Lisensi : MIT                                                                #
+# Situs   : bahasatarri.com                                                    #
+#------------------------------------------------------------------------------#
+# Deskripsi :                                                                  #
+#   Implementasi fungsi bawaan 'kembalikan_html' yang tersedia dalam           #
+#   bahasa Tarri.                                                              #
+#==============================================================================#
+
 def kembalikan_html(args, context):
     import re
 
     if not isinstance(args, (list, tuple)) or len(args) < 2:
-        raise Exception("[tarri] kembalikan_html() membutuhkan 2 argumen: (html, penampung)")
+        raise Exception(
+            "[tarri] kembalikan_html() membutuhkan 2 argumen: (html, penampung)"
+        )
 
     html_template = str(args[0] or "")
     penampung = args[1]

@@ -1,0 +1,41 @@
+{
+  "name": "tarri-lang",
+  "displayName": "TARRI Language Support",
+  "description": "Dukungan Bahasa Pemrograman TARRI dengan Syntax Highlighting & Auto-Complete.",
+  "version": "1.0.0",
+  "publisher": "TarriDev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tarri-dev/tarri"
+  },
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Snippets"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "tarri",
+        "aliases": ["TARRI", "tarri"],
+        "extensions": [".tarri", ".tr"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "tarri",
+        "scopeName": "source.tarri",
+        "path": "./syntaxes/tarri.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "tarri",
+        "path": "./snippets/tarri.code-snippets"
+      }
+    ]
+  }
+}
