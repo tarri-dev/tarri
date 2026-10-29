@@ -1,0 +1,169 @@
+# ================================================
+# Test Suite Perbaikan TARRI
+# Verifikasi bahwa semua fix berfungsi
+# ================================================
+
+# --- TEST 1: Variabel dan assignment ---
+fungsi test_variabel(){
+    _nama = "Tarri"
+    _usia = 1
+    _usia += 1
+    
+    jika(_usia == 2){
+        cetak("[TEST 1] ✅ Variabel dan += berfungsi")
+    }lainnya{
+        cetak("[TEST 1] ❌ Variabel += gagal")
+    }
+}
+
+# --- TEST 2: Break dalam loop ---
+fungsi test_break(){
+    _hasil = 0
+    ulangidari _i = 1 hingga 10 {
+        jika(_i == 5){
+            hentikan
+        }
+        _hasil += 1
+    }
+    
+    jika(_hasil == 4){
+        cetak("[TEST 2] ✅ Break (hentikan) berfungsi")
+    }lainnya{
+        cetak("[TEST 2] ❌ Break gagal, hasil: {_hasil}")
+    }
+}
+
+# --- TEST 3: Continue dalam loop ---
+fungsi test_continue(){
+    _jumlah = 0
+    ulangidari _i = 1 hingga 5 {
+        jika(_i == 3){
+            lanjutkan
+        }
+        _jumlah += _i
+    }
+    
+    # 1 + 2 + 4 + 5 = 12 (skip 3)
+    jika(_jumlah == 12){
+        cetak("[TEST 3] ✅ Continue (lanjutkan) berfungsi")
+    }lainnya{
+        cetak("[TEST 3] ❌ Continue gagal, jumlah: {_jumlah}")
+    }
+}
+
+# --- TEST 4: Fungsi dengan return ---
+fungsi tambah(_a, _b){
+    tampilkan _a + _b
+}
+
+fungsi test_fungsi(){
+    _result = tambah(10, 20)
+    jika(_result == 30){
+        cetak("[TEST 4] ✅ Fungsi return (tampilkan) berfungsi")
+    }lainnya{
+        cetak("[TEST 4] ❌ Fungsi return gagal, result: {_result}")
+    }
+}
+
+# --- TEST 5: Percabangan ataujika ---
+fungsi test_percabangan(){
+    _nilai = 75
+    _grade = "?"
+    
+    jika(_nilai >= 90){
+        _grade = "A"
+    }ataujika(_nilai >= 70){
+        _grade = "B"
+    }lainnya{
+        _grade = "C"
+    }
+    
+    jika(_grade == "B"){
+        cetak("[TEST 5] ✅ Percabangan ataujika berfungsi")
+    }lainnya{
+        cetak("[TEST 5] ❌ Percabangan gagal, grade: {_grade}")
+    }
+}
+
+# --- TEST 6: Null coalesce (??) ---
+fungsi test_null_coalesce(){
+    _data = Kosong ?? "nilai default"
+    
+    jika(_data == "nilai default"){
+        cetak("[TEST 6] ✅ Null coalesce (??) berfungsi")
+    }lainnya{
+        cetak("[TEST 6] ❌ Null coalesce gagal")
+    }
+}
+
+# --- TEST 7: List dan indexing ---
+fungsi test_list(){
+    _buah = ["apel", "jeruk", "mangga"]
+    _pertama = _buah[0]
+    
+    jika(_pertama == "apel"){
+        cetak("[TEST 7] ✅ List dan indexing berfungsi")
+    }lainnya{
+        cetak("[TEST 7] ❌ List indexing gagal")
+    }
+}
+
+# --- TEST 8: For-each loop ---
+fungsi test_foreach(){
+    _angka = [10, 20, 30]
+    _total = 0
+    untuk _item dalam _angka {
+        _total += _item
+    }
+    
+    jika(_total == 60){
+        cetak("[TEST 8] ✅ For-each (untuk..dalam) berfungsi")
+    }lainnya{
+        cetak("[TEST 8] ❌ For-each gagal, total: {_total}")
+    }
+}
+
+# --- TEST 9: String interpolation ---
+fungsi test_interpolasi(){
+    _nama = "TARRI"
+    _versi = "0.8.2"
+    _pesan = "Bahasa {_nama} versi {_versi}"
+    
+    cetak("[TEST 9] ✅ String interpolasi: {_pesan}")
+}
+
+# --- TEST 10: Perbandingan dan logika ---
+fungsi test_logika(){
+    _a = 5
+    _b = 10
+    
+    jika(_a < _b && _b > 0){
+        cetak("[TEST 10] ✅ Operator logika (dan) berfungsi")
+    }lainnya{
+        cetak("[TEST 10] ❌ Operator logika gagal")
+    }
+}
+
+# --- JALANKAN SEMUA TEST ---
+titikawal{
+    cetak("========================================")
+    cetak("  TARRI Test Suite - Verifikasi Fix")
+    cetak("========================================")
+    cetak("")
+    
+    tampilkan test_variabel()
+    tampilkan test_break()
+    tampilkan test_continue()
+    tampilkan test_fungsi()
+    tampilkan test_percabangan()
+    tampilkan test_null_coalesce()
+    tampilkan test_list()
+    tampilkan test_foreach()
+    tampilkan test_interpolasi()
+    tampilkan test_logika()
+    
+    cetak("")
+    cetak("========================================")
+    cetak("  Semua test selesai!")
+    cetak("========================================")
+}

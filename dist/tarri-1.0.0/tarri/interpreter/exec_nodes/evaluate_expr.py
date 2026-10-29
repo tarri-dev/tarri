@@ -51,6 +51,17 @@ def evaluate_expr(self, node):
             # Jika semua null, kembalikan nilai terakhir
             return self.evaluate_expr(node.children[-1])
 
+        elif node.data == "attr_access":
+            left = self.evaluate_expr(node.children[0]) if len(node.children) > 0 else None
+            attr_name = (node.children[1].value if hasattr(node.children[1], "value") else str(node.children[1])) if len(node.children) > 1 else None
+            try:
+                if left is not None and hasattr(left, "__dict__"):
+                    return left.__dict__.get(attr_name)
+                return getattr(left, attr_name, None)
+            except Exception as e:
+                self.error(f"Gagal akses atribut '{attr_name}': {e}")
+                return None
+
         elif node.data == "method_chain":
             obj = self.evaluate_expr(node.children[0])
             method_name = node.children[1].value
@@ -122,6 +133,26 @@ def evaluate_expr(self, node):
                 func_name = first.value if isinstance(first, Token) else str(first)
             else:
                 func_name = str(func_node)
+
+            # Handle method call on instance: diri.inisialisasi(...)
+            if isinstance(func_node, Tree) and func_node.data == "attr_access":
+                obj_node = func_node.children[0] if len(func_node.children) > 0 else None
+                method_token = func_node.children[1] if len(func_node.children) > 1 else None
+                method_name = method_token.value if isinstance(method_token, Token) else str(method_token)
+                obj_val = self.evaluate_expr(obj_node) if obj_node else None
+                args_values = []
+                if len(node.children) > 1:
+                    maybe_args = node.children[1]
+                    if isinstance(maybe_args, Tree) and maybe_args.data == "args":
+                        args_values = [self.evaluate_expr(a) for a in maybe_args.children]
+                    else:
+                        args_values = [self.evaluate_expr(a) for a in node.children[1:]]
+                try:
+                    return self.call_method(obj_val, method_name, args_values)
+                except Exception as e:
+                    self.error(f"Metode '{method_name}' pada objek gagal: {e}")
+                    return None
+
             args_values = []
 
             if len(node.children) > 1:

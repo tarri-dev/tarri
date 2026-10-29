@@ -1,0 +1,19 @@
+titikawal{
+    _x = 10
+    cetak("Luar awal:", _x) # 10
+    
+    jika(Benar){
+        _x = 20
+        _y = 30
+        cetak("Dalam jika _x:", _x) # 20 (mengubah yang luar)
+        cetak("Dalam jika _y:", _y) # 30
+    }
+    
+    cetak("Luar akhir _x:", _x) # 20
+    
+    coba {
+        cetak("Luar akhir _y:", _y)
+    } tangkap (_err) {
+        cetak("Berhasil menangkap error _y:", _err) # Harusnya error karena _y hanya ada di blok jika
+    }
+}
