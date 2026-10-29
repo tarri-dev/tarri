@@ -1,4 +1,4 @@
-# Bahasa TARRI — v1.0.0
+# Bahasa TARRI — v1.0.2
 
 ## Apa itu Tarri?
 
@@ -24,7 +24,7 @@ Tujuan utama Tarri adalah membuat kode terasa seperti **membaca cerita sehari-ha
 ```bash
 # Download di dist/ dan copy ke PATH (jalankan ini sekali)
 cp /ke/sini/dist/tarri /usr/local/bin/tarri
-tarri -v          # ✅ Tarri | 1.0.0
+tarri -v          # ✅ Tarri | 1.0.2
 tarri             # ✅ interaktif (REPL)
 tarri jalankan file.tarri   # ✅ jalankan kode
 ```
@@ -32,8 +32,8 @@ tarri jalankan file.tarri   # ✅ jalankan kode
 ### B. .deb (Linux / Ubuntu)
 
 ```bash
-sudo dpkg -i dist/tarri-1.0.0.deb
-tarri -v         # ✅ Tarri | 1.0.0
+sudo dpkg -i dist/tarri-1.0.2.deb
+tarri -v         # ✅ Tarri | 1.0.2
 ```
 
 ### C. Windows .exe (via panduan BUILD_WINDOWS.bat)
@@ -72,7 +72,7 @@ Tidak ada `python`, `pip`, `venv` saat pakai tarri.
 - `src/tarri/` — kode sumber interpreter, grammar (`grammar.lark`), parser
 - `tests/` — test file (`.tarri`)
 - `archive/` — backup grammar lama
-- `/dist/` — distribusi (`tarri-1.0.0.deb`, bundle, panduan Windows/macOS)
+- `/dist/` — distribusi (`tarri-1.0.2.deb`, bundle, panduan Windows/macOS)
 - `README.md` — dokumentasi ini
 
 ---
@@ -253,10 +253,10 @@ titikawal{
 
 ---
 
-## Distribusi (v1.0.0)
+## Distribusi (v1.0.2)
 
-- `.deb` — `tarri-1.0.0.deb`
-- Source — `tarri-1.0.0/`
+- `.deb` — `tarri-1.0.2.deb`
+- Source — `tarri-1.0.2/`
 - Windows — `dist/windows/BUILD_WINDOWS.bat`
 - macOS — `dist/macos/BUILD_MACOS.md`
 - Script — `install_tarri.sh`

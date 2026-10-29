@@ -1,18 +1,29 @@
-# complex_class.tarri — Kelas kompleks (pewarisan, diri, metode)
-# Kunci: kelas, perluas, fungsi, diri, cetak, titikawal, jika
-
+# complex_class.tarri — FIXED v1.0.2 (tanpa diri.inisialisasi(...), langsung penugasan)
 kelas Hewan {
+  fungsi inisialisasi(_n) {
+    diri._nama = _n
+    diri._usia = 0
+    diri._hidup = Benar
+  }
   fungsi sapa() {
-    cetak("Halo, saya hewan.")
+    cetak("Halo, saya " + diri._nama + ", usia " + ubah_kata(diri._usia))
   }
   fungsi bernafas() {
-    cetak("Bernapas...")
+    cetak(diri._nama + " bernafas...")
+  }
+  fungsi mati() {
+    diri._hidup = Salah
+    cetak(diri._nama + " telah mati.")
   }
 }
 
 kelas Anjing perluas Hewan {
+  fungsi inisialisasi(_n) {
+    diri._nama = _n
+    diri._ras = "Campur"
+  }
   fungsi sapa() {
-    cetak("Guk guk! Saya anjing.")
+    cetak("Guk guk! Saya " + diri._nama + " (ras: " + diri._ras + ")")
   }
   fungsi menggonggong() {
     cetak("Guk guk guk!")
@@ -20,8 +31,12 @@ kelas Anjing perluas Hewan {
 }
 
 kelas Kucing perluas Hewan {
+  fungsi inisialisasi(_n) {
+    diri._nama = _n
+    diri._warna = "Hitam"
+  }
   fungsi sapa() {
-    cetak("Meong! Saya kucing.")
+    cetak("Meong! Saya " + diri._nama + ", warna " + diri._warna)
   }
   fungsi mengeong() {
     cetak("Meong...")
@@ -29,28 +44,33 @@ kelas Kucing perluas Hewan {
 }
 
 kelas Burung perluas Hewan {
-  fungsi sapa() {
-    cetak("Cekrek! Saya burung.")
+  fungsi inisialisasi(_n) {
+    diri._nama = _n
+    diri._sayap = 2
   }
   fungsi terbang() {
-    cetak("Terbang ke langit!")
+    jika (diri._hidup) {
+      cetak(diri._nama + " terbang dengan " + ubah_kata(diri._sayap) + " sayap!")
+    } lainnya {
+      cetak(diri._nama + " tidak bisa terbang karena sudah mati.")
+    }
   }
 }
 
 titikawal{
   cetak("=== Kelas Kompleks ===")
-
   _anjing = Anjing()
+  _anjing.inisialisasi("Buddy")
   _anjing.sapa()
   _anjing.menggonggong()
-
   _kucing = Kucing()
+  _kucing.inisialisasi("Mimi")
   _kucing.sapa()
   _kucing.mengeong()
-
   _burung = Burung()
+  _burung.inisialisasi("Cakrawala")
   _burung.sapa()
   _burung.terbang()
-
+  cetak("--- Selesai ---")
   cetak("=== Selesai ===")
 }
