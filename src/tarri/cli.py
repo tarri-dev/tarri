@@ -28,13 +28,10 @@ from tarri.interpreter.core import Context
 from tarri.parser_global import parser
 from tarri import __version__
 from lark import Tree, Token
-from tarri.loging import logger
+from tarri.logging_utils import logger
 from tarri.errors import TarriRuntimeError
 
-try:
-    from tarriweb.server import ROOT_DIR
-except ModuleNotFoundError:
-    ROOT_DIR = None
+ROOT_DIR = None
 
 
 GREEN = "\033[92m"

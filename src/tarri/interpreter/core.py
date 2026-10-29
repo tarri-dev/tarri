@@ -27,6 +27,7 @@ from tarri.interpreter.exec_nodes.index_assign import exec_index_assign
 from tarri.interpreter.exec_nodes.dict_literal import exec_dict_literal
 from tarri.interpreter.exec_nodes.node import exec_node
 from tarri.interpreter.exec_nodes.func_decl import exec_func_decl
+from tarri.interpreter.exec_nodes.class_decl import exec_class_decl, TarriClass, TarriInstance
 from tarri.interpreter.exec_nodes.call_expr import exec_call_expr
 from tarri.interpreter.exec_nodes.func_call import exec_func_call
 from tarri.interpreter.exec_nodes.call_stmt import exec_call_stmt
@@ -83,6 +84,9 @@ class Context:
 
         # Fungsi runtime
         self.functions = dict()
+
+        # Registrasi kelas (OOP)
+        self.classes = dict()
 
         # Sesi harus benar-benar unik per instance
         if sesi is not None:
@@ -434,6 +438,8 @@ class Context:
             return exec_dict_literal(self, node)
         elif tipe == "func_decl":
             return exec_func_decl(self, node)
+        elif tipe == "class_decl":
+            return exec_class_decl(self, node)
         elif tipe == "call_expr":
             return exec_call_expr(self, node)
         elif tipe == "func_call":
@@ -464,7 +470,7 @@ class Context:
     def run(self, ast):
         self._return_flag = None
 
-        # 1. Daftarkan semua fungsi terlebih dahulu
+        # 1. Daftarkan semua fungsi dan kelas terlebih dahulu
         if isinstance(ast, Tree) and ast.data == "start":
             for node in ast.children:
                 if isinstance(node, Tree) and node.data == "func_decl":
@@ -472,6 +478,11 @@ class Context:
                         exec_func_decl(self, node)
                     except Exception as e:
                         self.error(f"Gagal memuat fungsi: {e}")
+                elif isinstance(node, Tree) and node.data == "class_decl":
+                    try:
+                        exec_class_decl(self, node)
+                    except Exception as e:
+                        self.error(f"Gagal memuat kelas: {e}")
 
         # 2. Jalankan eksekusi
         try:

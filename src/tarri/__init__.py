@@ -16,6 +16,6 @@
 __version__ = "0.8.2"
 
 
-from .loging import logger  # aktifkan sistem log global
+from .logging_utils import logger  # aktifkan sistem log global
 
 logger.info("[tarri | log]")

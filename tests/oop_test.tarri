@@ -1,0 +1,41 @@
+# Test OOP lintas file
+kelas Hewan {
+  fungsi suara() {
+    cetak("Hewan suar")
+  }
+}
+
+kelas Anjing perluas Hewan {
+  fungsi nama(_n) {
+    diri._nama = _n
+  }
+
+  fungsi suara() {
+    cetak("Guk guk")
+  }
+}
+
+titikawal{
+  _a = Anjing()
+  _a.suara()
+  cetak("Nama " + _a._nama)
+}
+
+# Konstruktor dini
+kelas Petunjuk {
+  _nama = "Abdul"
+  
+  fungsi tulis(_msg) {
+    diri._isilam = _msg
+  }
+  
+  fungsi isilam() {
+    kembalikan diri._isilam
+  }
+}
+
+titikawal{
+  _j = Petunjuk()
+  _j.tulis("Budi")
+  cetak("Isi " + _j.isilam())
+}

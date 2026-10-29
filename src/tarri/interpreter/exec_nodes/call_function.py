@@ -20,7 +20,6 @@ from tarri.functions.tujuan import tujuan
 from tarri.functions.rute import rute
 from tarri.functions.cetak import cetak
 from tarri.functions.ctk import ctk
-from tarri.functions.cetak_web import cetak_web
 from tarri.functions.cetak_html import cetak_html
 from tarri.functions.ctkw import ctkw
 from tarri.functions.ctkh import ctkh
@@ -34,6 +33,7 @@ from tarri.functions.lempar_pesan import lempar_pesan
 from tarri.functions.kata_bijak import kata_bijak
 from tarri.functions.json import json
 from tarri.functions.sandi import buat_sandi, cek_sandi
+from tarri.interpreter.exec_nodes.class_decl import TarriClass, TarriInstance
 from tarri.functions.kelolaTxt import simpanTxt, bacaTxt, perbaruiTxt, hapusTxt
 from tarri.functions.kelolaJson import baca_json, buat_json, simpan_json
 
@@ -128,12 +128,6 @@ def _handle_ctk(ctx, args):
 
 # Re-register ctk dengan handler spesifik
 BUILTINS["ctk"] = _handle_ctk
-
-
-@daftar("cetak_web")
-def _handle_cetak_web(ctx, args):
-    return cetak_web(ctx, args)
-
 
 @daftar("ctkw")
 def _handle_ctkw(ctx, args):
@@ -1003,8 +997,29 @@ def call_method(context, obj_tarri, method_name, args_tarri):
 # =====================================================
 
 
-def call_function(self, func_name, args):
-    """Dispatcher utama untuk semua fungsi built-in TARRI.
+def call_function(self, func_name, args=None, node=None):
+    if args is None:
+        args = []
+    # Cek apakah memanggil kelas sebagai konstruktor
+    try:
+        if hasattr(self, 'classes') and func_name in self.classes:
+            cls = self.classes[func_name]
+            if isinstance(cls, TarriClass):
+                inst = TarriInstance(cls)
+                # panggil konstruktor jika ada
+                ctor = cls.get_method('buat') or cls.get_method('__init__') or cls.get_method('konstruktor')
+                if ctor is not None:
+                    try:
+                        ctor(inst, *args)
+                    except Exception as e:
+                        self.error(str(e))
+                        raise
+                return inst
+    except Exception:
+        pass
+
+    """
+    Call function dispatcher
 
     Menggunakan dispatch table BUILTINS untuk lookup O(1)
     alih-alih rantai elif O(n).

@@ -36,7 +36,7 @@ block: "{" statement* "}"
 // TABEL & METHOD
 // --------------------
 tabel_stmt: VAR_NAME ("untuk"|"utk") method_call
-method_call: NAME "(" [args] ")"
+method_call: (VAR_NAME | NAME) "(" [args] ")"
 
 // --------------------
 // IMPORT & MODUL
@@ -46,8 +46,8 @@ import_stmt: "undang" NAME ("dari" NAME)?
 // --------------------
 // VARIABEL & KONST
 // --------------------
-var_decl: VAR_NAME (EQUAL | PLUS_EQUAL | MINUS_EQUAL) expr -> auto_var_decl
-        | VAR_NAME "[" index_expr "]" (EQUAL | PLUS_EQUAL | MINUS_EQUAL) expr -> index_assign
+var_decl: (VAR_NAME | NAME) (EQUAL | PLUS_EQUAL | MINUS_EQUAL) expr -> auto_var_decl
+        | (VAR_NAME | NAME) "[" index_expr "]" (EQUAL | PLUS_EQUAL | MINUS_EQUAL) expr -> index_assign
 
 // --------------------
 // FUNGSI
@@ -63,7 +63,11 @@ return_stmt: ("tampilkan"|"tamp") expr
 // --------------------
 // KELAS & OOP
 // --------------------
-class_decl: "kelas" NAME ["perluas" NAME] block
+class_decl: "kelas" NAME ["perluas" NAME] class_block
+class_block: "{" class_stmt* "}"
+?class_stmt: var_decl
+           | func_decl
+           | expr_stmt
 
 // --------------------
 // KONTROL ALUR
@@ -129,15 +133,15 @@ expr_stmt: expr
 ?expr_atom: atom
           | "(" expr ")" -> grouped_expr
           | expr_atom "(" [args] ")" -> call_expr
+          | expr_atom "." (VAR_NAME | NAME) "(" [args] ")" -> method_call
           | expr_atom "." VAR_NAME -> attr_access
           | expr_atom "[" index_expr "]" -> indexing
           | expr_atom "->" TYPE_CAST -> type_cast
-          | subcall_expr
 
 // Hanya untuk subcall khusus modul: sqlite koneksi(...), dll
 modul_call: NAME NAME "(" [args] ")"
 
-subcall_expr: (VAR_NAME | NAME) NAME "(" [args] ")"
+// subcall_expr: (VAR_NAME | NAME) NAME "(" [args] ")"
 
 // --------------------
 // ARGUMEN / INDEX

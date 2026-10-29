@@ -37,7 +37,7 @@ def get_tarri_version():
         )
         return result.stdout.strip()
     except Exception:
-        return "[tarriweb | server] Versi tidak ditemukan"
+        return "[tarri | server] Versi tidak ditemukan"
 
 
 # Template HTML bawaan untuk semua error

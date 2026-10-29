@@ -29,7 +29,7 @@ def ctkw(interpreter, args):
         # Jika value adalah nama variabel Tarri (diawali "_")
         if isinstance(value, str) and value.startswith("_"):
             val = interpreter.context.get(
-                value, f"[tarri | cetak_web] variabel '{value}' tidak ditemukan"
+                value, f"[tarri | cetak] variabel '{value}' tidak ditemukan"
             )
         else:
             val = value
@@ -56,7 +56,7 @@ def ctkw(interpreter, args):
 
     # Mode CLI vs Browser
     if sys.stdout.isatty():
-        print(f"[tarri | cetak_web]\n{final_text}")
+        print(f"[tarri | cetak]\n{final_text}")
     else:
         print(output_html)
 

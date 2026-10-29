@@ -140,6 +140,17 @@ def evaluate_expr(self, node):
                             args_values.append(self.evaluate_expr(a))
 
             if func_name in self.functions:
+                stored = self.functions[func_name]
+                try:
+                    from tarri.interpreter.exec_nodes.class_decl import TarriClass, TarriInstance
+                    if isinstance(stored, TarriClass):
+                        inst = TarriInstance(stored)
+                        ctor = stored.get_method('buat') or stored.get_method('__init__') or stored.get_method('konstruktor')
+                        if ctor is not None:
+                            ctor(inst, *args_values)
+                        return inst
+                except Exception as e:
+                    self.error(f"Gagal membuat objek: {e}")
                 return self.exec_func_call(func_name, args_values)
             return self.call_function(func_name, args_values)
 
@@ -298,6 +309,36 @@ def evaluate_expr(self, node):
                 return left + right
             elif op == "-":
                 return left - right
+
+        elif node.data == "method_call":
+            obj = self.evaluate_expr(node.children[0])
+            method_name = None
+            if len(node.children) > 1 and isinstance(node.children[1], Token):
+                method_name = node.children[1].value
+            elif len(node.children) > 1 and isinstance(node.children[1], Tree):
+                m = node.children[1]
+                if m.data == "method_call":
+                    method_name = m.children[0].value if m.children else None
+            elif len(node.children) > 1:
+                m = node.children[1]
+                if isinstance(m, Token):
+                    method_name = m.value
+            if method_name is None and len(node.children) > 1:
+                method_name = str(node.children[1])
+            args = []
+            if len(node.children) > 2 and isinstance(node.children[2], Tree) and node.children[2].data == "args":
+                args = [self.evaluate_expr(c) for c in node.children[2].children]
+
+            if hasattr(obj, method_name):
+                method = getattr(obj, method_name)
+                if callable(method):
+                    return method(*args)
+                else:
+                    raise Exception(
+                        f"'{method_name}' adalah atribut, bukan metode pada objek {type(obj).__name__}"
+                    )
+            else:
+                raise Exception(f"Objek {type(obj).__name__} tidak memiliki metode '{method_name}'")
 
         elif node.data == "method_call_expr":
             # expr_atom "->" NAME "(" [args] ")"
