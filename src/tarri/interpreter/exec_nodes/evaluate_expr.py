@@ -51,6 +51,17 @@ def evaluate_expr(self, node):
             # Jika semua null, kembalikan nilai terakhir
             return self.evaluate_expr(node.children[-1])
 
+        elif node.data == "attr_access":
+            left = self.evaluate_expr(node.children[0]) if len(node.children) > 0 else None
+            attr_name = (node.children[1].value if hasattr(node.children[1], "value") else str(node.children[1])) if len(node.children) > 1 else None
+            try:
+                if left is not None and hasattr(left, "__dict__"):
+                    return left.__dict__.get(attr_name)
+                return getattr(left, attr_name, None)
+            except Exception as e:
+                self.error(f"Gagal akses atribut '{attr_name}': {e}")
+                return None
+
         elif node.data == "method_chain":
             obj = self.evaluate_expr(node.children[0])
             method_name = node.children[1].value
