@@ -1,0 +1,103 @@
+# complex_class.tarri — Contoh kelas kompleks: pewarisan, diri, metode, konstruktor sederhana
+# Keywords: kelas, perluas, fungsi, diri, cetak, kembalikan, titikawal, jika, baru/lenyap
+
+# Kelas dasar Hewan dengan konstruktor sederhana
+kelas Hewan {
+  fungsi inisialisasi(_n) {
+    diri._nama = _n
+    diri._usia = 0
+    diri._hidup = Benar
+  }
+
+  fungsi sapa() {
+    cetak("Halo, saya " + diri._nama + ", usia " + ubah_kata(diri._usia))
+  }
+
+  fungsi bernafas() {
+    cetak(diri._nama + " bernafas...")
+  }
+
+  fungsi mati() {
+    diri._hidup = Salah
+    cetak(diri._nama + " telah mati.")
+  }
+}
+
+# Kelas Anjing (pewarisan)
+kelas Anjing perluas Hewan {
+  fungsi inisialisasi(_n) {
+    diri.inisialisasi(_n)
+    diri._ras = "Campur"
+  }
+
+  fungsi sapa() {
+    cetak("Guk guk! Saya " + diri._nama + " (ras: " + diri._ras + ")")
+  }
+
+  fungsi menggonggong() {
+    cetak("Guk guk guk!")
+  }
+}
+
+# Kelas Kucing (pewarisan)
+kelas Kucing perluas Hewan {
+  fungsi inisialisasi(_n) {
+    diri.inisialisasi(_n)
+    diri._warna = "Hitam"
+  }
+
+  fungsi sapa() {
+    cetak("Meong! Saya " + diri._nama + ", warna " + diri._warna)
+  }
+
+  fungsi mengeong() {
+    cetak("Meong...")
+  }
+}
+
+# Kelas Burung (pewarisan)
+kelas Burung perluas Hewan {
+  fungsi inisialisasi(_n) {
+    diri.inisialisasi(_n)
+    diri._sayap = 2
+  }
+
+  fungsi terbang() {
+    jika (diri._hidup) {
+      cetak(diri._nama + " terbang dengan " + ubah_kata(diri._sayap) + " sayap!")
+    } lainnya {
+      cetak(diri._nama + " tidak bisa terbang karena sudah mati.")
+    }
+  }
+}
+
+# Program utama
+titikawal{
+  cetak("=== Kelas Kompleks Tarri ===")
+
+  # Instansiasi
+  _anjing = Anjing()
+  _anjing.inisialisasi("Buddy")
+  _anjing.sapa()
+  _anjing.menggonggong()
+
+  _kucing = Kucing()
+  _kucing.inisialisasi("Mimi")
+  _kucing.sapa()
+  _kucing.mengeong()
+
+  _burung = Burung()
+  _burung.inisialisasi("Cakrawala")
+  _burung.sapa()
+  _burung.terbang()
+
+  # Polimorfisme sederhana
+  cetak("--- Polimorfisme ---")
+  _hewan_list = [Anjing(), Kucing(), Burung()]
+  # (Jika tarri mendukung iterasi daftar, bisa di-loop; jika belum, tampilkan manual)
+  _anjing2 = Anjing()
+  _anjing2.inisialisasi("Max")
+  _anjing2.sapa()
+
+  cetak("=== Selesai ===")
+}
