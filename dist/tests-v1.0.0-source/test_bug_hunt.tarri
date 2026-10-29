@@ -1,0 +1,357 @@
+# ================================================================
+# test_bug_hunt.tarri
+# Test Suite: Pencarian Bug & Edge Case Bahasa Tarri
+# Menguji area-area kritis yang berpotensi bug:
+#   1. Scoping variable (kebocoran antar fungsi & loop)
+#   2. Operator logika AND / OR chaining
+#   3. Null coalescing (??)
+#   4. Konversi tipe data (->angka, ->kata)
+#   5. Perulangan bersarang (nested loop)
+#   6. Rekursi dalam (deep recursion)
+#   7. List & Dict mutation (ubah nilai di dalam fungsi)
+#   8. Break/Continue dalam loop bersarang
+#   9. Fungsi tanpa return value
+#  10. Aritmatika campuran int + float
+#  11. String interpolasi ekspresi kompleks
+#  12. Error handling bertingkat (coba dalam coba)
+#  13. Variabel dengan nilai 0 / "" / Salah (falsy edge case)
+#  14. Loop dengan list kosong
+#  15. Operator perbandingan chaining
+# ================================================================
+
+fungsi ok(_nama) {
+    cetak("[✅] {_nama}")
+}
+
+fungsi gagal(_nama, _info) {
+    cetak("[❌] {_nama} => {_info}")
+}
+
+fungsi cek(_nama, _kondisi) {
+    jika (_kondisi) {
+        ok(_nama)
+    } lainnya {
+        gagal(_nama, "kondisi salah")
+    }
+}
+
+# ================================================================
+# TEST 1: Scoping - variable lokal tidak bocor ke luar fungsi
+# ================================================================
+fungsi ubah_lokal() {
+    _x = 999
+}
+
+fungsi test_scoping() {
+    cetak("--- [1] SCOPING ---")
+    _x = 1
+    ubah_lokal()
+    cek("Scope: var lokal tidak bocor keluar fungsi", _x == 1)
+
+    _count_loop = 0
+    ulangi {
+        _count_loop += 1
+        jika (_count_loop == 3) {
+            hentikan
+        }
+    }
+    cek("Scope: loop berhenti tepat di iterasi ke-3", _count_loop == 3)
+}
+
+# ================================================================
+# TEST 2: Operator AND / OR chaining
+# ================================================================
+fungsi test_logika() {
+    cetak("--- [2] LOGIKA ---")
+    _a = Benar
+    _b = Salah
+    _c = Benar
+
+    cek("Logika: AND benar dan benar", (_a dan _c) == Benar)
+    cek("Logika: AND benar dan salah", (_a dan _b) == Salah)
+    cek("Logika: OR salah atau benar", (_b atau _c) == Benar)
+    cek("Logika: OR salah atau salah", (_b atau _b) == Salah)
+    cek("Logika: NOT benar", (bukan _a) == Salah)
+    cek("Logika: NOT salah", (bukan _b) == Benar)
+    cek("Logika: chain AND OR", (_a dan _c atau _b) == Benar)
+    cek("Logika: 3-way AND", (_a dan _c dan _a) == Benar)
+}
+
+# ================================================================
+# TEST 3: Null Coalescing (??)
+# ================================================================
+fungsi test_null_coalesce() {
+    cetak("--- [3] NULL COALESCE ---")
+    _ada = "nilai"
+    _kosong = Kosong
+
+    cek("Null: nilai ada tidak diganti", (_ada ?? "default") == "nilai")
+    cek("Null: Kosong diganti default", (_kosong ?? "default") == "default")
+    cek("Null: chain default", (Kosong ?? Kosong ?? "akhir") == "akhir")
+}
+
+# ================================================================
+# TEST 4: Konversi Tipe Data
+# ================================================================
+fungsi test_konversi() {
+    cetak("--- [4] KONVERSI TIPE ---")
+    _angka_str = "42"
+    _desimal_str = "3.14"
+    _num = 100
+
+    cek("Konversi: kata ke angka", (_angka_str->angka) == 42)
+    cek("Konversi: angka ke kata", (_num->kata) == "100")
+}
+
+# ================================================================
+# TEST 5: Perulangan Bersarang (Nested Loop)
+# ================================================================
+fungsi test_nested_loop() {
+    cetak("--- [5] NESTED LOOP ---")
+    _total = 0
+    _i = 0
+    selama (_i < 3) {
+        _j = 0
+        selama (_j < 3) {
+            _total += 1
+            _j += 1
+        }
+        _i += 1
+    }
+    cek("Nested loop: 3x3 = 9 iterasi", _total == 9)
+}
+
+# ================================================================
+# TEST 6: Rekursi Dalam
+# ================================================================
+fungsi fib(_n) {
+    jika (_n <= 1) {
+        tampilkan _n
+    } lainnya {
+        tampilkan fib(_n - 1) + fib(_n - 2)
+    }
+}
+
+fungsi test_rekursi() {
+    cetak("--- [6] REKURSI ---")
+    cek("Rekursi: fibonacci(0) = 0", fib(0) == 0)
+    cek("Rekursi: fibonacci(1) = 1", fib(1) == 1)
+    cek("Rekursi: fibonacci(7) = 13", fib(7) == 13)
+    cek("Rekursi: faktorial via rekursi", hitung_faktorial(6) == 720)
+}
+
+fungsi hitung_faktorial(_n) {
+    jika (_n <= 1) {
+        tampilkan 1
+    } lainnya {
+        tampilkan _n * hitung_faktorial(_n - 1)
+    }
+}
+
+# ================================================================
+# TEST 7: Mutasi List dalam Fungsi
+# ================================================================
+fungsi isi_list(_lst) {
+    tambah(_lst, 99)
+}
+
+fungsi test_list_mutation() {
+    cetak("--- [7] MUTASI LIST ---")
+    _data = [1, 2, 3]
+    _data[0] = 10
+    cek("List: index assign [0] = 10", _data[0] == 10)
+
+    _kosong = []
+    tambah(_kosong, 5)
+    tambah(_kosong, 10)
+    cek("List: tambah 2 elemen", panjang(_kosong) == 2)
+    cek("List: nilai elemen ke-2", _kosong[1] == 10)
+}
+
+# ================================================================
+# TEST 8: Break dan Continue dalam Loop Bersarang
+# ================================================================
+fungsi test_break_continue() {
+    cetak("--- [8] BREAK & CONTINUE ---")
+
+    _count = 0
+    _i = 0
+    selama (_i < 10) {
+        _i += 1
+        jika (_i % 2 == 0) {
+            lanjutkan
+        }
+        _count += 1
+        jika (_count == 3) {
+            hentikan
+        }
+    }
+    cek("Continue: hanya angka ganjil dihitung", _count == 3)
+
+    _hasil_break = 0
+    _j = 0
+    selama (_j < 100) {
+        _j += 1
+        _hasil_break = _j
+        jika (_j == 5) {
+            hentikan
+        }
+    }
+    cek("Break: berhenti di iterasi ke-5", _hasil_break == 5)
+}
+
+# ================================================================
+# TEST 9: Fungsi tanpa Return (Harus kembalikan Kosong)
+# ================================================================
+fungsi fungsi_tanpa_return() {
+    _x = 1
+}
+
+fungsi test_fungsi_tanpa_return() {
+    cetak("--- [9] FUNGSI TANPA RETURN ---")
+    _hasil = fungsi_tanpa_return()
+    cek("Fungsi tanpa return: hasilnya Kosong", _hasil == Kosong)
+}
+
+# ================================================================
+# TEST 10: Aritmatika Campuran int + float
+# ================================================================
+fungsi test_aritmatika_campuran() {
+    cetak("--- [10] ARITMATIKA CAMPURAN ---")
+    _a = 5
+    _b = 2.5
+    cek("Aritmatika: int + float", (_a + _b) == 7.5)
+    cek("Aritmatika: int * float", (_a * _b) == 12.5)
+    cek("Aritmatika: int / int hasilnya float", (10 / 4) == 2.5)
+    cek("Aritmatika: modulo", (10 % 3) == 1)
+    cek("Aritmatika: pangkat negatif base", ((-2) * (-2)) == 4)
+}
+
+# ================================================================
+# TEST 11: String Interpolasi Ekspresi Kompleks
+# ================================================================
+fungsi test_interpolasi() {
+    cetak("--- [11] INTERPOLASI STRING ---")
+    _nama = "Tarri"
+    _versi = 8
+    _pesan = "Bahasa {_nama} v{_versi}"
+    cek("Interpolasi: teks + angka", _pesan == "Bahasa Tarri v8")
+
+    _daftar = [10, 20, 30]
+    _gabung = "Nilai: {_daftar[1]}"
+    cek("Interpolasi: akses list dalam string", _gabung == "Nilai: 20")
+}
+
+# ================================================================
+# TEST 12: Error Handling Bertingkat
+# ================================================================
+fungsi test_error_handling() {
+    cetak("--- [12] ERROR HANDLING ---")
+
+    _tangkap_luar = Salah
+    _tangkap_dalam = Salah
+    _masih_jalan = Salah
+
+    coba {
+        coba {
+            _tidak_ada = _var_tidak_ada_sama_sekali
+        } tangkap (_e1) {
+            _tangkap_dalam = Benar
+        }
+        _masih_jalan = Benar
+    } tangkap (_e2) {
+        _tangkap_luar = Benar
+    }
+
+    cek("Error: coba dalam coba tertangkap", _tangkap_dalam == Benar)
+    cek("Error: blok luar tetap jalan", _masih_jalan == Benar)
+    cek("Error: blok luar tidak ikut error", _tangkap_luar == Salah)
+}
+
+# ================================================================
+# TEST 13: Nilai Falsy (0, "", Salah) sebagai kondisi
+# ================================================================
+fungsi test_falsy() {
+    cetak("--- [13] NILAI FALSY ---")
+
+    _nol = 0
+    _kosong_str = ""
+    _salah = Salah
+
+    jika (_nol) {
+        cek("Falsy: 0 dianggap Benar (BUG!)", Salah)
+    } lainnya {
+        cek("Falsy: 0 dianggap Salah", Benar)
+    }
+
+    jika (_kosong_str) {
+        cek("Falsy: string kosong dianggap Benar (BUG!)", Salah)
+    } lainnya {
+        cek("Falsy: string kosong dianggap Salah", Benar)
+    }
+
+    jika (_salah) {
+        cek("Falsy: Salah dianggap Benar (BUG!)", Salah)
+    } lainnya {
+        cek("Falsy: Salah dianggap Salah", Benar)
+    }
+}
+
+# ================================================================
+# TEST 14: Loop dengan List Kosong
+# ================================================================
+fungsi test_loop_list_kosong() {
+    cetak("--- [14] LOOP LIST KOSONG ---")
+    _list_kosong = []
+    _dijalankan = Salah
+    untuk _item dalam _list_kosong {
+        _dijalankan = Benar
+    }
+    cek("Loop: list kosong tidak dieksekusi", _dijalankan == Salah)
+}
+
+# ================================================================
+# TEST 15: Operator Perbandingan
+# ================================================================
+fungsi test_perbandingan() {
+    cetak("--- [15] PERBANDINGAN ---")
+    cek("Perbandingan: == benar", (5 == 5) == Benar)
+    cek("Perbandingan: != benar", (5 != 6) == Benar)
+    cek("Perbandingan: > benar", (10 > 5) == Benar)
+    cek("Perbandingan: < benar", (3 < 7) == Benar)
+    cek("Perbandingan: >= sama", (5 >= 5) == Benar)
+    cek("Perbandingan: <= lebih kecil", (4 <= 5) == Benar)
+    cek("Perbandingan: string ==", ("abc" == "abc") == Benar)
+    cek("Perbandingan: string !=", ("abc" != "xyz") == Benar)
+}
+
+# ================================================================
+# JALANKAN SEMUA TEST
+# ================================================================
+titikawal {
+    cetak("================================================")
+    cetak("  🔍 TARRI BUG HUNT TEST SUITE")
+    cetak("================================================")
+    cetak("")
+
+    test_scoping()
+    test_logika()
+    test_null_coalesce()
+    test_konversi()
+    test_nested_loop()
+    test_rekursi()
+    test_list_mutation()
+    test_break_continue()
+    test_fungsi_tanpa_return()
+    test_aritmatika_campuran()
+    test_interpolasi()
+    test_error_handling()
+    test_falsy()
+    test_loop_list_kosong()
+    test_perbandingan()
+
+    cetak("")
+    cetak("================================================")
+    cetak("  Selesai! Periksa hasil di atas.")
+    cetak("================================================")
+}

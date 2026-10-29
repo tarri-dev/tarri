@@ -1,0 +1,2 @@
+NOTE: .exe build requires Windows + pyinstaller.
+Run: build_windows.bat

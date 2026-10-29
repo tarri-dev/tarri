@@ -1,0 +1,16 @@
+kelas Hewan {
+  fungsi suara() {
+    cetak("Hewan suar")
+  }
+}
+
+kelas Anjing perluas Hewan {
+  fungsi suara() {
+    cetak("Guk guk")
+  }
+}
+
+titikawal{
+  _a = Anjing()
+  _a.suara()
+}

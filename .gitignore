@@ -14,7 +14,7 @@ env/
 ENV/
 
 # Distribution / packaging / Installer
-dist/
+# (dist included for releases)
 build/
 *.egg-info/
 .eggs/
