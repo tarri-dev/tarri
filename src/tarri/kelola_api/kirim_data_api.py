@@ -13,9 +13,10 @@
 #==============================================================================#
 
 import requests
+from typing import Optional
 
 
-def kirim_data_api(url: str, data: dict, headers: dict | None = None, context=None):
+def kirim_data_api(url: str, data: dict, headers: Optional[dict] = None, context=None):
     """
     Mengirim data ke API menggunakan metode POST dengan otomatisasi sesi.
     """
