@@ -1,0 +1,28 @@
+# kondisi.tarri — If, else-if, else, break, continue
+# Keywords: jika, ataUJIKA, lainnya, hentikan, lanjutkan, kembalikan
+
+titikawal{
+  _x = 5
+  jika (_x > 10) {
+    cetak("Besar")
+  } ataUJIKA (_x == 10) {
+    cetak("Sama")
+  } lainnya {
+    cetak("Kecil")
+  }
+
+  # Break + continue: inside loop
+  _n = 0
+  selama (_n < 5) {
+    jika (_n == 2) { hentikan }
+    cetak(ubah_kata(_n))
+    _n += 1
+    jika (_n == 3) { lanjutkan }
+  }
+
+  # kembalikan
+  fungsi hitung(_a, _b) {
+    kembalikan _a * _b
+  }
+  cetak(ubah_kata(hitung(3, 4)))
+}

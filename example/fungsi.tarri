@@ -1,0 +1,10 @@
+# fungsi.tarri — Fungsi, kembalikan, sembunyikan
+# Keywords: fungsi, kembalikan, sembunyikan, tampilkan
+
+fungsi tambah(_a, _b) {
+  kembalikan _a + _b
+}
+
+titikawal{
+  cetak(ubah_kata(tambah(5, 3)))
+}

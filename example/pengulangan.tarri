@@ -1,0 +1,24 @@
+# pengulangan.tarri — Semua loop
+# Keywords: ulangi, selama, untuk, hentikan, lanjutkan, kembalikan
+
+titikawal{
+  # Loop tanpa batas (ulangi)
+  _i = 0
+  ulangi {
+    cetak("Ulangi ke-" + ubah_kata(_i))
+    _i += 1
+    jika (_i > 3) { hentikan }
+  }
+
+  # While loop (selama)
+  _j = 0
+  selama (_j < 3) {
+    cetak("Selama: " + ubah_kata(_j))
+    _j += 1
+  }
+
+  # For loop (untuk)
+  untuk (_k = 0; _k < 3; _k++) {
+    cetak("Untuk: " + ubah_kata(_k))
+  }
+}

@@ -1,0 +1,18 @@
+# variabel.tarri — Variabel, boolean, null coalesce, cast
+# Keywords: _, ??, benar/salah, Kosong/Hampa, ->, kembalikan, cetak, tampilkan, sembunyikan
+
+titikawal{
+  _nama = "Budi"
+  _angka = 42
+  _kosong = Kosong
+  _hasil = _kosong ?? "default"
+  cetak(ubah_kata(_hasil))  # "default"
+
+  _benar = Benar
+  _salah = Salah
+  cetak(ubah_kata(_benar) + " dan " + ubah_kata(_salah))
+
+  # Type cast
+  _val = angka(42)
+  cetak(ubah_kata(_val))
+}

@@ -1,0 +1,7 @@
+# tabel.tarri — Tabel / data
+# Keywords: tabel, cetak, panjang
+
+titikawal{
+  _t = tabel()
+  cetak(ubah_kata(panjang(_t)))
+}

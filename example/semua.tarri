@@ -1,0 +1,39 @@
+# semua.tarri — Contoh lengkap semua fitur
+# Keywords: titikawal, kelas, perluas, fungsi, jika, ulangi, selama, untuk, coba, tangkap, akhirnya, kembalikan, cetak, tampilkan, sembunyikan, ??, benar, Kosong, tabel, undang
+
+titikawal{
+  cetak("=== TARRI v1.0.0 — Semua fitur ===")
+
+  # Variabel + null coalesce
+  _a = Kosong
+  _val = _a ?? "default"
+  cetak("?? result: " + _val)
+
+  # Fungsi
+  fungsi kali(_x, _y) {
+    kembalikan _x * _y
+  }
+  cetak("Fungsi: " + ubah_kata(kali(5, 4)))
+
+  # Kondisi
+  jika (Benar) {
+    cetak("Benar")
+  } lainnya {
+    cetak("Salah")
+  }
+
+  # Loop
+  untuk (_i = 0; _i < 3; _i++) {
+    cetak("Loop: " + ubah_kata(_i))
+  }
+
+  # OOP
+  kelas Hewan {
+    fungsi suara() { cetak("Suara umum") }
+  }
+  kelas Anjing perluas Hewan {
+    fungsi suara() { cetak("Guk guk") }
+  }
+  _anjing = Anjing()
+  _anjing.suara()
+}

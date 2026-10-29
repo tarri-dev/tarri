@@ -1,0 +1,8 @@
+# string.tarri — Fungsi bawaan string/array/file
+# Built-in: cetak, masukkan, ubah_kata, subkata, panjang, baca_json, simpa_json, baca_txt, simpa_txt
+
+titikawal{
+  _kata = "Halo Dunia"
+  cetak(subkata(_kata, 0, 4))  # "Halo"
+  cetak(ubah_kata(panjang(_kata)))  # 11
+}

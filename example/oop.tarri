@@ -1,0 +1,31 @@
+# kelas.tarri — Deklarasi kelas, pewarisan, diri, metode
+# Keywords: kelas, perluas, fungsi, diri, cetak, kembalikan
+
+kelas Hewan {
+  _nama = "Anonim"
+
+  fungsi suara() {
+    cetak("...")
+  }
+}
+
+kelas Anjing perluas Hewan {
+  fungsi suara() {
+    cetak("Guk guk!")
+  }
+}
+
+kelas Kucing perluas Hewan {
+  fungsi suara() {
+    cetak("Meong!")
+  }
+}
+
+titikawal{
+  _a = Anjing()
+  _a.suara()
+  _k = Kucing()
+  _k.suara()
+  _h = Hewan()
+  _h.suara()
+}

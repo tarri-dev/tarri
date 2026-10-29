@@ -1,0 +1,13 @@
+# try.tarri — Coba, tangkap, akhirnya
+# Keywords: coba, tangkap, akhirnya
+
+titikawal{
+  coba {
+    cetak("Mencoba...")
+    _a = 10 / 0
+  } tangkap (_e) {
+    cetak("Error: " + ubah_kata(_e))
+  } akhirnya {
+    cetak("Selesai")
+  }
+}

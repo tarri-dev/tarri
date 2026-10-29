@@ -1,0 +1,6 @@
+# titikawal.tarri — Titik awal program
+# Keyword: titikawal / awal / @
+
+titikawal{
+  cetak("Halo Indonesia!")
+}
