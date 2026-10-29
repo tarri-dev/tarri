@@ -1,4 +1,4 @@
-# Bahasa TARRI — v1.0.0
+# Bahasa TARRI — v1.0.2
 
 ## Apa itu Tarri?
 
@@ -15,6 +15,11 @@ Tujuan utama Tarri adalah membuat kode terasa seperti **membaca cerita sehari-ha
 
 ---
 
+## Versi 1.0.2 — Perbaikan
+- Interpreter: `diri.inisialisasi(...)`, `diri._attr`, `diri.VAR = expr` sudah didukung
+- Grammar: `attr_assign`, `attr_access`, `method_call` diperbaiki (`VAR_NAME | NAME`)
+- `.deb`/`.tar.gz` dibangun ulang; `install_tarri.sh` diperbarui ke `v1.0.2`
+
 ## Instalasi — Tidak perlu Python
 
 **Tarri sudah menjadi bahasa mandiri.** Tidak perlu memikirkan `python`, `pip`, atau `venv`.
@@ -27,8 +32,8 @@ curl -fsSL https://raw.githubusercontent.com/tarri-dev/tarri/main/install_tarri.
 
 ### 2. .deb (Linux / Ubuntu)
 ```bash
-wget https://github.com/tarri-dev/tarri/releases/download/v1.0.0/tarri-1.0.0.deb
-sudo dpkg -i tarri-1.0.0.deb
+wget https://github.com/tarri-dev/tarri/releases/download/v1.0.2/tarri-1.0.2.deb
+sudo dpkg -i tarri-1.0.2.deb
 ```
 
 ### 3. .pkg (macOS — pakai pkgbuild)
@@ -39,7 +44,7 @@ Lihat panduan: `dist/windows/BUILD_WINDOWS.bat`
 
 Setelah terpasang:
 ```bash
-tarri -v         # 1.0.0
+tarri -v         # 1.0.2
 tarri            # interaktif (REPL)
 tarri jalankan file.tarri
 ```
@@ -49,7 +54,7 @@ tarri jalankan file.tarri
 ```bash
 # Download di dist/ dan copy ke PATH (jalankan ini sekali)
 cp /ke/sini/dist/tarri /usr/local/bin/tarri
-tarri -v          # ✅ Tarri | 1.0.0
+tarri -v          # ✅ Tarri | 1.0.2
 tarri             # ✅ interaktif (REPL)
 tarri jalankan file.tarri   # ✅ jalankan kode
 ```
@@ -57,8 +62,8 @@ tarri jalankan file.tarri   # ✅ jalankan kode
 ### B. .deb (Linux / Ubuntu)
 
 ```bash
-sudo dpkg -i dist/tarri-1.0.0.deb
-tarri -v         # ✅ Tarri | 1.0.0
+sudo dpkg -i dist/tarri-1.0.2.deb
+tarri -v         # ✅ Tarri | 1.0.2
 ```
 
 ### C. Windows .exe (via panduan BUILD_WINDOWS.bat)
@@ -97,7 +102,7 @@ Tidak ada `python`, `pip`, `venv` saat pakai tarri.
 - `src/tarri/` — kode sumber interpreter, grammar (`grammar.lark`), parser
 - `tests/` — test file (`.tarri`)
 - `archive/` — backup grammar lama
-- `/dist/` — distribusi (`tarri-1.0.0.deb`, bundle, panduan Windows/macOS)
+- `/dist/` — distribusi (`tarri-1.0.2.deb`, bundle, panduan Windows/macOS)
 - `README.md` — dokumentasi ini
 
 ---
@@ -278,10 +283,10 @@ titikawal{
 
 ---
 
-## Distribusi (v1.0.0)
+## Distribusi (v1.0.2)
 
-- `.deb` — `tarri-1.0.0.deb`
-- Source — `tarri-1.0.0/`
+- `.deb` — `tarri-1.0.2.deb`
+- Source — `tarri-1.0.2/`
 - Windows — `dist/windows/BUILD_WINDOWS.bat`
 - macOS — `dist/macos/BUILD_MACOS.md`
 - Script — `install_tarri.sh`
