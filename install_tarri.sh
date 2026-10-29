@@ -25,6 +25,8 @@ fi
 echo "[tarri] Using repo at: ${REPO_DIR}"
 find "${REPO_DIR}/src" -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 
+# Clean old installation and cache
+${pip_install_cmd} uninstall -y tarri 2>/dev/null || true
 # Upgrade pip, then install package
 if command -v pip3 >/dev/null 2>&1; then
     pip3 install --upgrade pip 2>/dev/null || python3 -m pip install --upgrade pip 2>/dev/null || true
@@ -38,9 +40,9 @@ else
 fi
 
 # Try editable, fallback normal install
-${pip_install_cmd} install --break-system-packages -e "${REPO_DIR}" 2>/dev/null || \
-${pip_install_cmd} install --break-system-packages "${REPO_DIR}" 2>/dev/null || \
-${pip_install_cmd} install "${REPO_DIR}"
+${pip_install_cmd} install --upgrade --force-reinstall --no-cache-dir --break-system-packages -e "${REPO_DIR}" 2>/dev/null || \
+${pip_install_cmd} install --upgrade --force-reinstall --no-cache-dir --break-system-packages "${REPO_DIR}" 2>/dev/null || \
+${pip_install_cmd} install --upgrade --force-reinstall --no-cache-dir "${REPO_DIR}"
 
 # Put pip-generated 'tarri' binary into /usr/local/bin (global, no python visible)
 if command -v tarri >/dev/null 2>&1; then
