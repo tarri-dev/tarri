@@ -1,0 +1,57 @@
+# oop_super_complex.tarri — Uji semua fitur kelas + diri + metode + kelas pewarisan
+
+kelas Hewan {
+  fungsi sapa() {
+    cetak("Hewan " + diri._nama)
+  }
+  fungsi mati() {
+    diri._hidup = Salah
+  }
+}
+
+kelas Anjing perluas Hewan {
+  fungsi info() {
+    cetak("Anjing " + diri._nama + ", ras: " + diri._ras)
+  }
+  fungsi menggonggong() {
+    cetak("Guk guk guk!")
+  }
+}
+
+kelas Kucing perluas Hewan {
+  fungsi info() {
+    cetak("Kucing " + diri._nama + ", warna: " + diri._warna)
+  }
+  fungsi mengeong() {
+    cetak("Meong!")
+  }
+}
+
+fungsi hitung(daftar) {
+  kembalikan panjang(ubah_kata(daftar))
+}
+
+titikawal{
+  cetak("=== OOP SUPER COMPLEX ===")
+
+  _a1 = Anjing()
+  _a1.info()
+  _a1.menggonggong()
+  _a1.sapa()
+
+  _k1 = Kucing()
+  _k1.info()
+  _k1.mengeong()
+  _k1.sapa()
+
+  _a2 = Anjing()
+  _a2.mati()
+  cetak("A2 hidup: " + ubah_kata(benar(_a2)))
+
+  _d = ["h", "i", "j"]
+  cetak(ubah_kata(panjang(_d)))
+
+  cetak(ubah_kata(hitung([_a1, _k1])))
+
+  cetak("=== SELESAI ===")
+}
