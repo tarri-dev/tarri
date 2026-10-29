@@ -45,11 +45,13 @@ echo "[tarri] Using repo at: $REPO_DIR"
 # Clean caches
 find "$REPO_DIR/src" -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 
-# Install
+# Install (editable if possible, else normal install)
 if command -v pip3 &> /dev/null; then
-    pip3 install --break-system-packages -e "$REPO_DIR" 2>/dev/null || pip3 install -e "$REPO_DIR"
+    pip3 install --upgrade pip 2>/dev/null || true
+    pip3 install --break-system-packages -e "$REPO_DIR" 2>/dev/null || pip3 install --break-system-packages "$REPO_DIR" || pip3 install "$REPO_DIR"
 else
-    python3 -m pip install --break-system-packages -e "$REPO_DIR" 2>/dev/null || python3 -m pip install -e "$REPO_DIR"
+    python3 -m pip install --upgrade pip 2>/dev/null || true
+    python3 -m pip install --break-system-packages -e "$REPO_DIR" 2>/dev/null || python3 -m pip install --break-system-packages "$REPO_DIR" || python3 -m pip install "$REPO_DIR"
 fi
 
 echo "[tarri] Done. Try: tarri -v  /  tarri jalankan"
