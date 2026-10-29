@@ -6,8 +6,10 @@ echo "[tarri] Installing Tarri v1.0.0 ..."
 
 REPO_DIR=""
 if [ -d "tarri" ]; then
-    REPO_DIR="tarri"
-elif [ -d "/home/ubuntu/tarri" ]; then
+    echo "[tarri] Deleting old local clone ..."
+    rm -rf tarri
+fi
+if [ -d "/home/ubuntu/tarri" ]; then
     REPO_DIR="/home/ubuntu/tarri"
 else
     echo "[tarri] Cloning repo ..."
@@ -40,20 +42,14 @@ ${pip_install_cmd} install --break-system-packages -e "${REPO_DIR}" 2>/dev/null 
 ${pip_install_cmd} install --break-system-packages "${REPO_DIR}" 2>/dev/null || \
 ${pip_install_cmd} install "${REPO_DIR}"
 
-# Create standalone /usr/local/bin/tarri symlink/script for direct access
+# Put pip-generated 'tarri' binary into /usr/local/bin (global, no python visible)
 if command -v tarri >/dev/null 2>&1; then
-    echo "[tarri] Command 'tarri' available."
+    TARRI_BIN=$(command -v tarri)
+    echo "[tarri] Command 'tarri' available at: ${TARRI_BIN}"
+    # Ensure /usr/local/bin copy exists globally
+    sudo cp "${TARRI_BIN}" /usr/local/bin/tarri 2>/dev/null || cp "${TARRI_BIN}" /usr/local/bin/tarri 2>/dev/null || echo "[tarri] Note: ensure /usr/local/bin is in PATH."
 else
-    TARRI_CMD=$(python3 -c 'import importlib.util, sys; spec=importlib.util.find_spec("tarri.cli"); print("ok")' 2>/dev/null || echo "")
-    if [ -n "${TARRI_CMD}" ]; then
-        cat > /tmp/tarri_wrapper << 'WRAPPER'
-#!/bin/bash
-exec python3 -c 'from tarri.cli import main; import sys; sys.argv=["tarri"]+sys.argv[1:]; main()' "${@}"
-WRAPPER
-        chmod +x /tmp/tarri_wrapper
-        sudo cp /tmp/tarri_wrapper /usr/local/bin/tarri 2>/dev/null || cp /tmp/tarri_wrapper /usr/local/bin/tarri 2>/dev/null || echo "[tarri] Note: add user bin to PATH for 'tarri' command."
-        echo "[tarri] Created wrapper at /usr/local/bin/tarri (if writable)."
-    fi
+    echo "[tarri] Note: 'tarri' binary not found; add pip user/bin to PATH."
 fi
 
 echo "[tarri] Done. Try: tarri -v  /  tarri jalankan file.tarri"
