@@ -1,0 +1,57 @@
+# Fungsi pembantu untuk testing
+fungsi cek(_pesan, _kondisi) {
+    jika _kondisi == Benar {
+        cetak("[✅]", _pesan)
+    } lainnya {
+        cetak("[❌]", _pesan)
+    }
+}
+
+fungsi test_string_tambah() {
+    cetak("--- [1] STRING += ---")
+    _s = ""
+    _s += "a"
+    _s = _s + "b"
+    cek("string += bekerja", _s == "ab")
+}
+
+fungsi test_short_circuit() {
+    cetak("--- [2] SHORT CIRCUIT ---")
+    _a = Benar
+    coba {
+        _hasil = Benar atau (1/0 == 0)
+        cek("short-circuit OR jalan", Benar)
+    } tangkap (_error) {
+        cek("short-circuit OR gagal (pembagian nol tereksekusi)", Salah)
+    }
+}
+
+fungsi test_negative_index() {
+    cetak("--- [3] NEGATIVE INDEX ---")
+    _l = [10, 20, 30]
+    coba {
+        _x = _l[-1]
+        cek("Negative index = 30", _x == 30)
+    } tangkap (_error) {
+        cek("Negative index gagal: " + _error, Salah)
+    }
+}
+
+fungsi test_loop_concat() {
+    cetak("--- [4] LOOP CONCAT ---")
+    _l = ["x", "y", "z"]
+    _s = ""
+    untuk _k dalam _l {
+        _s += _k
+    }
+    cek("Loop concat +=", _s == "xyz")
+}
+
+fungsi jalankan_semua() {
+    test_string_tambah()
+    test_short_circuit()
+    test_negative_index()
+    test_loop_concat()
+}
+
+jalankan_semua()

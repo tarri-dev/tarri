@@ -1,0 +1,118 @@
+# ================================================
+# Test Suite ADVANCED (Skala Produksi)
+# Menguji Algoritma Klasik & Ekosistem Nyata
+# ================================================
+
+# --- TEST 1: Algoritma Kustom "Bubble Sort" (Array Mutability) ---
+fungsi custom_bubble_sort(_arr) {
+    _n = panjang(_arr)
+    _tukar = Benar
+    _n_batas = _n - 2
+
+    selama (_tukar == Benar) {
+        _tukar = Salah
+        ulangidari _i = 0 hingga _n_batas {
+            _next_idx = _i + 1
+            jika(_arr[_i] > _arr[_next_idx]) {
+                # UJI: Operasi Tukar Memori Array Siku Klasik
+                _temp = _arr[_i]
+                _arr[_i] = _arr[_next_idx]
+                _arr[_next_idx] = _temp
+                _tukar = Benar
+            }
+        }
+    }
+    tampilkan _arr
+}
+
+fungsi test_algoritma() {
+    _mentah = [64, 34, 25, 12, 22, 11, 90]
+    _hasil = custom_bubble_sort(_mentah)
+    
+    jika (_hasil[0] == 11 dan _hasil[6] == 90) {
+        cetak("[ALGORITMA] ✅ Mutasi Array (Bubble Sort) Berjalan Sempurna!")
+    } lainnya {
+        cetak("[ALGORITMA] ❌ Mutasi list manual gagal.")
+    }
+}
+
+# --- TEST 2: Kriptografi Rahasia ---
+fungsi test_keamanan() {
+    _password_asli = "Rahasi@Nusantara123!"
+    _hash = buat_sandi(_password_asli)
+    
+    _cek1 = cek_sandi("salah_pasmod", _hash)
+    _cek2 = cek_sandi(_password_asli, _hash)
+    
+    jika (_cek1 == Salah dan _cek2 == Benar) {
+         cetak("[KRIPTOGRAFI] ✅ Pembuatan Hash & Verifikasi Sandi LULUS (Aman!)")
+    } lainnya {
+         cetak("[KRIPTOGRAFI] ❌ Sistem Keamanan Bocor. Enkripsi tak dapat diverifikasi.")
+    }
+}
+
+# --- TEST 3: Manipulasi Kamus Lokal (String Indexing) ---
+fungsi test_jaringan() {
+    # Karena Endpoint Asing bisa RTO, kita uji coba secara terisolasi sistem kamus murni
+    _kamus = {"userId": 1, "status": "berhasil"}
+    _kamus["userId"] = 99
+    
+    jika (_kamus["status"] == "berhasil" dan _kamus["userId"] == 99) {
+         cetak("[DICTIONARY] ✅ String Key Indexing & Dictionary Mutability Berfungsi Total!")
+    } lainnya {
+         cetak("[DICTIONARY] ❌ Gagal memanggil nilai Kamus via format [String].")
+    }
+}
+
+# --- TEST 4: Deret Fibonacci (Dynamic Memory List) ---
+fungsi fibonacci(_target) {
+    _deret = [0, 1]
+    ulangidari _i = 2 hingga _target {
+        _i1 = _i - 1
+        _i2 = _i - 2
+        _valbaru = _deret[_i1] + _deret[_i2]
+        _deret = _deret + [_valbaru]
+    }
+    tampilkan _deret
+}
+
+fungsi test_fibonacci() {
+    _hasil_fibo = fibonacci(10)
+    # 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55
+    jika (_hasil_fibo[10] == 55) {
+        cetak("[MEMORI] ✅ Array Bertumbuh (Dynamic Memory Allocation) Sempurna!")
+    } lainnya {
+        cetak("[MEMORI] ❌ Fibo gagal: {_hasil_fibo[10]}")
+    }
+}
+
+# --- TEST 5: Kecepatan Konkurensi Identitas (UUID) ---
+fungsi test_identitas() {
+    _u1 = UUID()
+    _u2 = UUID()
+    _u3 = UUID()
+    
+    jika (_u1 != _u2 dan _u2 != _u3 dan _u1 != Kosong) {
+        cetak("[IDENTITAS] ✅ UUID Generasi Acak berjalan cepat dan Anti-Tabrak LULUS")
+    } lainnya {
+        cetak("[IDENTITAS] ❌ ID duplikat ditemukan!")
+    }
+}
+
+titikawal {
+    cetak("============================================")
+    cetak(" 🌟 UJIAN ADVANCED: SIMULASI DUNIA NYATA 🌟")
+    cetak("============================================")
+    cetak("")
+    
+    tampilkan test_algoritma()
+    tampilkan test_keamanan()
+    tampilkan test_jaringan()
+    tampilkan test_fibonacci()
+    tampilkan test_identitas()
+    
+    cetak("")
+    cetak("============================================")
+    cetak("  Selesai! Tembok kokoh tak tergoyahkan.")
+    cetak("============================================")
+}

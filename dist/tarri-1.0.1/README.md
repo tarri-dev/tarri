@@ -17,7 +17,32 @@ Tujuan utama Tarri adalah membuat kode terasa seperti **membaca cerita sehari-ha
 
 ## Instalasi — Tidak perlu Python
 
-**Tarri sudah menjadi bahasa mandiri, instalasi dengan satu baris: `tarri`**. User tidak perlu memikirkan `python`, `pip`, atau `venv`. Tiga cara instalasi tersedia:
+**Tarri sudah menjadi bahasa mandiri.** Tidak perlu memikirkan `python`, `pip`, atau `venv`.
+
+### 1. Binari Mandiri (paling cepat — Linux/macOS/Windows)
+```bash
+curl -fsSL https://raw.githubusercontent.com/tarri-dev/tarri/main/install_tarri.sh | bash
+# Atau download manual dari GitHub Releases /dist/
+```
+
+### 2. .deb (Linux / Ubuntu)
+```bash
+wget https://github.com/tarri-dev/tarri/releases/download/v1.0.0/tarri-1.0.0.deb
+sudo dpkg -i tarri-1.0.0.deb
+```
+
+### 3. .pkg (macOS — pakai pkgbuild)
+Lihat panduan: `dist/macos/BUILD_MACOS.md`
+
+### 4. .exe (Windows — pakai pyinstaller)
+Lihat panduan: `dist/windows/BUILD_WINDOWS.bat`
+
+Setelah terpasang:
+```bash
+tarri -v         # 1.0.0
+tarri            # interaktif (REPL)
+tarri jalankan file.tarri
+```
 
 ### A. Binari terpisah (paling cepat)
 

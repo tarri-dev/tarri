@@ -1,8 +1,8 @@
 #!/bin/bash
-# Install Tarri v1.0.1 — one-shot installer (curl -fsSL ... | bash)
+# Install Tarri v1.0.2 — one-shot installer (curl -fsSL ... | bash)
 set -euo pipefail
 
-echo "[tarri] Installing Tarri v1.0.1 ..."
+echo "[tarri] Installing Tarri v1.0.2 ..."
 
 REPO_DIR=""
 if [ -d "tarri" ]; then

@@ -55,8 +55,12 @@ def evaluate_expr(self, node):
             left = self.evaluate_expr(node.children[0]) if len(node.children) > 0 else None
             attr_name = (node.children[1].value if hasattr(node.children[1], "value") else str(node.children[1])) if len(node.children) > 1 else None
             try:
-                if left is not None and hasattr(left, "__dict__"):
-                    return left.__dict__.get(attr_name)
+                if left is not None:
+                    result = getattr(left, attr_name, None)
+                    if result is not None:
+                        return result
+                    if hasattr(left, "__dict__") and attr_name in left.__dict__:
+                        return left.__dict__[attr_name]
                 return getattr(left, attr_name, None)
             except Exception as e:
                 self.error(f"Gagal akses atribut '{attr_name}': {e}")

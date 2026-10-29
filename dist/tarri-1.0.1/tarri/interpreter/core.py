@@ -147,22 +147,18 @@ class Context:
                 return self.get_var(first.value)
 
             elif a.data == "attr_access":
-                # diri._nama (akses atribut pada objek diri/instance)
                 left = self.eval_arg(a.children[0]) if len(a.children) > 0 else None
-                attr_tok = a.children[1] if len(a.children) > 1 else None
-                attr_name = attr_tok.value if hasattr(attr_tok, "value") else str(attr_tok)
+                attr_name = (a.children[1].value if hasattr(a.children[1], "value") else str(a.children[1])) if len(a.children) > 1 else None
                 if left is None:
                     raise Exception(f"Objek tidak ditemukan untuk akses '{attr_name}'")
-                # Coba akses lewat __dict__ atau getattr
+                try:
+                    result = getattr(left, attr_name, None)
+                    if result is not None:
+                        return result
+                except Exception:
+                    pass
                 if hasattr(left, "__dict__") and attr_name in left.__dict__:
                     return left.__dict__[attr_name]
-                if hasattr(left, attr_name):
-                    val = getattr(left, attr_name)
-                    if callable(val) and not isinstance(val, type(lambda: None)):
-                        # method bound — tapi jika hanya akses atribut, kembalikan saja
-                        pass
-                    return val
-                # Fallback: coba str atau None
                 return getattr(left, attr_name, None)
 
             elif a.data == "slice_expr":  # Asumsi parser mendukung slice_expr

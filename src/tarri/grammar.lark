@@ -50,7 +50,7 @@ import_stmt: "undang" NAME ("dari" NAME)?
 // --------------------
 var_decl: (VAR_NAME | NAME) (EQUAL | PLUS_EQUAL | MINUS_EQUAL) expr -> auto_var_decl
         | (VAR_NAME | NAME) "[" index_expr "]" (EQUAL | PLUS_EQUAL | MINUS_EQUAL) expr -> index_assign
-attr_assign: ("diri" | "ini") "." VAR_NAME (EQUAL | PLUS_EQUAL | MINUS_EQUAL) expr -> attr_assign
+attr_assign: ("diri" | "ini") "." (VAR_NAME | NAME) (EQUAL | PLUS_EQUAL | MINUS_EQUAL) expr -> attr_assign
 
 // --------------------
 // FUNGSI
@@ -139,7 +139,7 @@ expr_stmt: expr
           | "(" expr ")" -> grouped_expr
           | expr_atom "(" [args] ")" -> call_expr
           | expr_atom "." (VAR_NAME | NAME) "(" [args] ")" -> method_call
-          | expr_atom "." VAR_NAME -> attr_access
+          | expr_atom "." (VAR_NAME | NAME) -> attr_access
           | expr_atom "[" index_expr "]" -> indexing
           | expr_atom "->" TYPE_CAST -> type_cast
 

@@ -13,7 +13,7 @@
 #==============================================================================#
 
 # tarri/__init__.py
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 
 
 from .logging_utils import logger  # aktifkan sistem log global
