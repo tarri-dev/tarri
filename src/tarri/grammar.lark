@@ -11,6 +11,7 @@ start: top_level_stmt*
                | entry_point
                | import_stmt
                | expr_stmt
+          | attr_assign
 
 // --------------------
 // Struktur program
@@ -29,6 +30,7 @@ block: "{" statement* "}"
           | break_stmt
           | continue_stmt
           | expr_stmt
+          | attr_assign
           | entry_point
           | tabel_stmt
 
@@ -48,6 +50,7 @@ import_stmt: "undang" NAME ("dari" NAME)?
 // --------------------
 var_decl: (VAR_NAME | NAME) (EQUAL | PLUS_EQUAL | MINUS_EQUAL) expr -> auto_var_decl
         | (VAR_NAME | NAME) "[" index_expr "]" (EQUAL | PLUS_EQUAL | MINUS_EQUAL) expr -> index_assign
+attr_assign: ("diri" | "ini") "." VAR_NAME (EQUAL | PLUS_EQUAL | MINUS_EQUAL) expr -> attr_assign
 
 // --------------------
 // FUNGSI
@@ -66,8 +69,10 @@ return_stmt: ("tampilkan"|"tamp") expr
 class_decl: "kelas" NAME ["perluas" NAME] class_block
 class_block: "{" class_stmt* "}"
 ?class_stmt: var_decl
+           | attr_assign
            | func_decl
            | expr_stmt
+          | attr_assign
 
 // --------------------
 // KONTROL ALUR

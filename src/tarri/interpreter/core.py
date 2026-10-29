@@ -434,6 +434,30 @@ class Context:
             return exec_auto_var_decl(self, node)
         elif tipe == "index_assign":
             return exec_index_assign(self, node)
+
+        elif tipe == "attr_assign":
+            # diri._nama = expr  (penugasan atribut dalam metode)
+            # node.children: [VAR_NAME, EQUAL, expr] (diri token may not appear in tree)
+            attr_tok = node.children[0] if len(node.children) > 0 else None
+            expr_tree = node.children[2] if len(node.children) > 2 else None
+            attr_name = attr_tok.value if isinstance(attr_tok, Token) else str(attr_tok)
+            # Ambil objek diri dari konteks
+            try:
+                diri_obj = self.get_var("diri")
+            except Exception:
+                diri_obj = None
+            if diri_obj is not None:
+                val = self.evaluate_expr(expr_tree) if expr_tree else None
+                try:
+                    if hasattr(diri_obj, "__dict__"):
+                        diri_obj.__dict__[attr_name] = val
+                    else:
+                        setattr(diri_obj, attr_name, val)
+                except Exception as e:
+                    self.error(f"Gagal menetapkan diri.{attr_name} = {val}: {e}")
+            else:
+                self.error("Variabel 'diri' tidak ditemukan untuk penugasan atribut.")
+            return None
         elif tipe == "dict_literal":
             return exec_dict_literal(self, node)
         elif tipe == "func_decl":
