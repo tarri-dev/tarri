@@ -971,8 +971,20 @@ def call_method(context, obj_tarri, method_name, args_tarri):
     args_py = [context.translate_to_python(a) for a in args_tarri]
 
     try:
+        # Inject diri = instance supaya attr_assign dalam metode bekerja
+        if hasattr(context, 'context') and isinstance(context.context, dict):
+            old_diri = context.context.get("diri")
+            context.context["diri"] = obj_py
         method = getattr(obj_py, method_name)
-        result_py = method(*args_py)
+        try:
+            result_py = method(*args_py)
+        finally:
+            # Restore old diri
+            if hasattr(context, 'context') and isinstance(context.context, dict):
+                if old_diri is not None:
+                    context.context["diri"] = old_diri
+                else:
+                    context.context.pop("diri", None)
 
         if result_py is None:
             return None
