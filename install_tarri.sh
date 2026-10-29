@@ -25,18 +25,19 @@ fi
 echo "[tarri] Using repo at: ${REPO_DIR}"
 find "${REPO_DIR}/src" -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 
-# Clean old installation and cache
-${pip_install_cmd} uninstall -y tarri 2>/dev/null || true
-# Upgrade pip, then install package
-if command -v pip3 >/dev/null 2>&1; then
-    pip3 install --upgrade pip 2>/dev/null || python3 -m pip install --upgrade pip 2>/dev/null || true
-fi
-
+# Determine pip command first
 pip_install_cmd=""
 if command -v pip3 >/dev/null 2>&1; then
     pip_install_cmd="pip3"
 else
     pip_install_cmd="python3 -m pip"
+fi
+
+# Clean old installation and cache
+${pip_install_cmd} uninstall -y tarri 2>/dev/null || true
+# Upgrade pip, then install package
+if command -v pip3 >/dev/null 2>&1; then
+    pip3 install --upgrade pip 2>/dev/null || python3 -m pip install --upgrade pip 2>/dev/null || true
 fi
 
 # Try editable, fallback normal install
